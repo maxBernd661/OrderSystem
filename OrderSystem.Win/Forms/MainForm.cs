@@ -1,0 +1,10 @@
+﻿namespace OrderSystem.Win.Forms
+{
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+    }
+}
