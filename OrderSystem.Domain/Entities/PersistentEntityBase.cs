@@ -1,5 +1,8 @@
 ﻿namespace OrderSystem.Domain.Entities
 {
+    /// <summary>
+    /// Persistente Basisklasse
+    /// </summary>
     public abstract class PersistentEntityBase
     {
         public Guid Id { get; set; }
