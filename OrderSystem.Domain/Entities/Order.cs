@@ -41,7 +41,7 @@
                 CustomerId = customer.Id
             };
 
-            order.history.Add(OrderStatusHistory.Created());
+            order.history.Add(OrderStatusHistory.Created(order));
             return order;
         }
 
@@ -59,7 +59,7 @@
                     return Result.Fail("Order has already been cancelled");
             }
 
-            history.Add(OrderStatusHistory.Changed(Status, OrderStatus.Confirmed));
+            history.Add(OrderStatusHistory.Changed(this, Status, OrderStatus.Confirmed));
             Status = OrderStatus.Confirmed;
 
             return Result.Ok();
@@ -79,7 +79,7 @@
                     return Result.Fail("Order has to be confirmed before shipping.");
             }
 
-            history.Add(OrderStatusHistory.Changed(Status, OrderStatus.Shipped));
+            history.Add(OrderStatusHistory.Changed(this, Status, OrderStatus.Shipped));
             Status = OrderStatus.Shipped;
             return Result.Ok();
         }
@@ -96,7 +96,7 @@
                 return Result.Fail("Shipped orders cannot be cancelled.");
             }
 
-            history.Add(OrderStatusHistory.Changed(Status, OrderStatus.Cancelled));
+            history.Add(OrderStatusHistory.Changed(this, Status, OrderStatus.Cancelled));
             Status = OrderStatus.Cancelled;
 
             return Result.Ok();

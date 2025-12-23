@@ -3,7 +3,7 @@
     /// <summary>
     /// Bestellungsposition
     /// </summary>
-    public class OrderItem
+    public class OrderItem : PersistentEntityBase
     {
         public Guid OrderId { get; set; }
 

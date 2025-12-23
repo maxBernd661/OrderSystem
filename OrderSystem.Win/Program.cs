@@ -24,7 +24,7 @@ namespace OrderSystem.Win
                                         services.AddLogging();
                                         services.AddDbContext<OrderContext>(options =>
                                         {
-                                            options.UseNpgsql(context.Configuration.GetConnectionString("Default"));
+                                            options.UseSqlite(context.Configuration.GetConnectionString("Default"));
                                         });
 
                                         services.AddScoped<MainForm>();
