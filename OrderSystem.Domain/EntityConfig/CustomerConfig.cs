@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderSystem.Domain.Entities;
 
-namespace OrderSystem.Domain.EntiityConfig
+namespace OrderSystem.Domain.EntityConfig
 {
     public class CustomerConfig : IEntityTypeConfiguration<Customer>
     {
