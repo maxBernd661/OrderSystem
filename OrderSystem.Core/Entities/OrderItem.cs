@@ -1,4 +1,4 @@
-﻿namespace OrderSystem.Domain.Entities
+﻿namespace OrderSystem.Core.Entities
 {
     /// <summary>
     /// Bestellungsposition

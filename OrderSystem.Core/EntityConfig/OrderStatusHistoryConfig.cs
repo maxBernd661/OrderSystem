@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderSystem.Domain.Entities;
+using OrderSystem.Core.Entities;
 
-namespace OrderSystem.Domain.EntityConfig
+namespace OrderSystem.Core.EntityConfig
 {
     public class OrderStatusHistoryConfig : IEntityTypeConfiguration<OrderStatusHistory>
     {
@@ -17,11 +17,6 @@ namespace OrderSystem.Domain.EntityConfig
 
             b.Property(x => x.ChangedFrom)
              .HasConversion<string>();
-
-            b.HasOne(x => x.Order)
-             .WithMany("history")
-             .HasForeignKey(x => x.OrderId)
-             .OnDelete(DeleteBehavior.Cascade);
 
             b.HasIndex(x => x.OrderId);
         }

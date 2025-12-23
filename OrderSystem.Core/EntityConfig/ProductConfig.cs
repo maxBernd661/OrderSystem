@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderSystem.Domain.Entities;
+using OrderSystem.Core.Entities;
 
-namespace OrderSystem.Domain.EntityConfig
+namespace OrderSystem.Core.EntityConfig
 {
     public class ProductConfig : IEntityTypeConfiguration<Product>
     {

@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderSystem.Domain.Entities;
+using OrderSystem.Core.Entities;
 
-namespace OrderSystem.Domain.EntityConfig
+namespace OrderSystem.Core.EntityConfig
 {
     public class OrderConfig : IEntityTypeConfiguration<Order>
     {
@@ -16,22 +17,22 @@ namespace OrderSystem.Domain.EntityConfig
              .IsRequired();
 
             b.HasOne(x => x.Customer)
-             .WithMany()
+             .WithMany(x => x.Orders)
              .HasForeignKey(x => x.CustomerId)
              .OnDelete(DeleteBehavior.Restrict);
 
-            b.HasMany<OrderItem>("items")
-             .WithOne()
+            b.HasMany(x => x.Items)
+             .WithOne(x => x.Order)
              .HasForeignKey(x => x.OrderId)
              .OnDelete(DeleteBehavior.Cascade);
 
-            b.HasMany<OrderStatusHistory>("history")
-             .WithOne()
+            b.HasMany(x => x.History)
+             .WithOne(x => x.Order)
              .HasForeignKey(x => x.OrderId)
              .OnDelete(DeleteBehavior.Cascade);
 
-            b.Navigation(nameof(Order.Items)).UsePropertyAccessMode(PropertyAccessMode.Field);
-            b.Navigation(nameof(Order.History)).UsePropertyAccessMode(PropertyAccessMode.Field);
+            b.Navigation(x => x.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+            b.Navigation(x => x.History).UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

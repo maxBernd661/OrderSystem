@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderSystem.Domain.Entities;
+using OrderSystem.Core.Entities;
 
-namespace OrderSystem.Domain.EntityConfig
+namespace OrderSystem.Core.EntityConfig
 {
     public class CustomerConfig : IEntityTypeConfiguration<Customer>
     {
@@ -11,12 +11,10 @@ namespace OrderSystem.Domain.EntityConfig
             b.ToTable(nameof(Customer));
             b.HasKey(x => x.Id);
 
-            b.HasMany<Order>("orders")
-             .WithOne()
-             .HasForeignKey(x => x.CustomerId)
-             .OnDelete(DeleteBehavior.Cascade);
+            b.Property(x => x.Name).IsRequired().HasMaxLength(200);
+            b.Property(x => x.Email).HasMaxLength(200);
 
-            b.Navigation(nameof(Customer.Orders)).UsePropertyAccessMode(PropertyAccessMode.Field);
+            b.Navigation(x => x.Orders).UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

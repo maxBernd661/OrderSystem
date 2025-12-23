@@ -53,3 +53,7 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 No newline at end of file
+app.db
+app.db-shm
+app.db-wal
+OrderSystem.Win/.vs
