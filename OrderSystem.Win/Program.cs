@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderSystem.Core;
+using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
 
 namespace OrderSystem.Win
@@ -29,6 +30,7 @@ namespace OrderSystem.Win
                                         });
 
                                         services.AddScoped<MainForm>();
+                                        services.AddScoped<ProductListView>();
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();
