@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using OrderSystem.Core;
 using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
+using OrderSystem.Win.View;
 
 namespace OrderSystem.Win
 {
@@ -29,8 +30,9 @@ namespace OrderSystem.Win
                                             options.UseSqlite(context.Configuration.GetConnectionString("Default"));
                                         });
 
-                                        services.AddScoped<MainForm>();
-                                        services.AddScoped<ProductListView>();
+                                        services.AddTransient<MainForm>();
+                                        services.AddTransient<ProductListView>();
+                                        services.AddTransient<ProductDetailView>();
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();

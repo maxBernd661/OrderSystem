@@ -38,6 +38,10 @@
             allTabsToolStripMenuItem = new ToolStripMenuItem();
             otherTabsToolStripMenuItem = new ToolStripMenuItem();
             seperatorCloseTab = new ToolStripSeparator();
+            buttonSave = new ToolStripSplitButton();
+            saveAndNewToolStripMenuItem = new ToolStripMenuItem();
+            saveAndExitToolStripMenuItem = new ToolStripMenuItem();
+            seperatorSave = new ToolStripSeparator();
             mainContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             sidebarLayout = new TableLayoutPanel();
@@ -73,12 +77,14 @@
             // 
             // toolStrip1
             // 
+            toolStrip1.GripMargin = new Padding(0);
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
             toolStrip1.ImageScalingSize = new Size(32, 32);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(1235, 56);
+            toolStrip1.Padding = new Padding(5, 5, 0, 5);
+            toolStrip1.Size = new Size(1235, 66);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "mainToolStrip";
             // 
@@ -95,21 +101,21 @@
             // productToolStripMenuItem
             // 
             productToolStripMenuItem.Name = "productToolStripMenuItem";
-            productToolStripMenuItem.Size = new Size(132, 22);
+            productToolStripMenuItem.Size = new Size(180, 22);
             productToolStripMenuItem.Text = "Product";
             productToolStripMenuItem.Click += productToolStripMenuItem_Click;
             // 
             // customerToolStripMenuItem
             // 
             customerToolStripMenuItem.Name = "customerToolStripMenuItem";
-            customerToolStripMenuItem.Size = new Size(132, 22);
+            customerToolStripMenuItem.Size = new Size(180, 22);
             customerToolStripMenuItem.Text = "Customer";
             customerToolStripMenuItem.Click += customerToolStripMenuItem_Click;
             // 
             // orderToolStripMenuItem
             // 
             orderToolStripMenuItem.Name = "orderToolStripMenuItem";
-            orderToolStripMenuItem.Size = new Size(132, 22);
+            orderToolStripMenuItem.Size = new Size(180, 22);
             orderToolStripMenuItem.Text = "Order";
             orderToolStripMenuItem.Click += orderToolStripMenuItem_Click;
             // 
@@ -132,14 +138,14 @@
             // allTabsToolStripMenuItem
             // 
             allTabsToolStripMenuItem.Name = "allTabsToolStripMenuItem";
-            allTabsToolStripMenuItem.Size = new Size(180, 22);
+            allTabsToolStripMenuItem.Size = new Size(140, 22);
             allTabsToolStripMenuItem.Text = "All Tabs";
             allTabsToolStripMenuItem.Click += allTabsToolStripMenuItem_Click;
             // 
             // otherTabsToolStripMenuItem
             // 
             otherTabsToolStripMenuItem.Name = "otherTabsToolStripMenuItem";
-            otherTabsToolStripMenuItem.Size = new Size(180, 22);
+            otherTabsToolStripMenuItem.Size = new Size(140, 22);
             otherTabsToolStripMenuItem.Text = "Other Tabs";
             otherTabsToolStripMenuItem.Click += otherTabsToolStripMenuItem_Click;
             // 
@@ -148,12 +154,42 @@
             seperatorCloseTab.Name = "seperatorCloseTab";
             seperatorCloseTab.Size = new Size(6, 56);
             // 
+            // buttonSave
+            // 
+            buttonSave.DropDownItems.AddRange(new ToolStripItem[] { saveAndNewToolStripMenuItem, saveAndExitToolStripMenuItem });
+            buttonSave.Image = resources.save;
+            buttonSave.ImageTransparentColor = Color.Magenta;
+            buttonSave.Name = "buttonSave";
+            buttonSave.Size = new Size(51, 53);
+            buttonSave.Text = "Save";
+            buttonSave.TextImageRelation = TextImageRelation.ImageAboveText;
+            buttonSave.ButtonClick += buttonSave_ButtonClick;
+            // 
+            // saveAndNewToolStripMenuItem
+            // 
+            saveAndNewToolStripMenuItem.Name = "saveAndNewToolStripMenuItem";
+            saveAndNewToolStripMenuItem.Size = new Size(159, 22);
+            saveAndNewToolStripMenuItem.Text = "Save and New";
+            saveAndNewToolStripMenuItem.Click += saveAndNewToolStripMenuItem_Click;
+            // 
+            // saveAndExitToolStripMenuItem
+            // 
+            saveAndExitToolStripMenuItem.Name = "saveAndExitToolStripMenuItem";
+            saveAndExitToolStripMenuItem.Size = new Size(159, 22);
+            saveAndExitToolStripMenuItem.Text = "Save and Exit";
+            saveAndExitToolStripMenuItem.Click += saveAndExitToolStripMenuItem_Click;
+            // 
+            // seperatorSave
+            // 
+            seperatorSave.Name = "seperatorSave";
+            seperatorSave.Size = new Size(6, 56);
+            // 
             // mainContainer
             // 
             mainContainer.BackColor = Color.FromArgb(224, 224, 224);
             mainContainer.BorderStyle = BorderStyle.Fixed3D;
             mainContainer.Dock = DockStyle.Fill;
-            mainContainer.Location = new Point(0, 56);
+            mainContainer.Location = new Point(0, 66);
             mainContainer.Name = "mainContainer";
             // 
             // mainContainer.Panel1
@@ -168,7 +204,7 @@
             mainContainer.Panel2.Controls.Add(mainTabControl);
             mainContainer.Panel2.Controls.Add(toolStrip2);
             mainContainer.Panel2MinSize = 900;
-            mainContainer.Size = new Size(1235, 643);
+            mainContainer.Size = new Size(1235, 633);
             mainContainer.SplitterDistance = 241;
             mainContainer.SplitterWidth = 5;
             mainContainer.TabIndex = 3;
@@ -189,7 +225,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Enabled = false;
-            splitContainer1.Size = new Size(237, 639);
+            splitContainer1.Size = new Size(237, 629);
             splitContainer1.SplitterDistance = 172;
             splitContainer1.TabIndex = 0;
             // 
@@ -357,7 +393,7 @@
             mainTabControl.Location = new Point(0, 0);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(985, 614);
+            mainTabControl.Size = new Size(985, 604);
             mainTabControl.SizeMode = TabSizeMode.Fixed;
             mainTabControl.TabIndex = 1;
             // 
@@ -366,7 +402,7 @@
             toolStrip2.Dock = DockStyle.Bottom;
             toolStrip2.GripStyle = ToolStripGripStyle.Hidden;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toggleSidebarButton });
-            toolStrip2.Location = new Point(0, 614);
+            toolStrip2.Location = new Point(0, 604);
             toolStrip2.Name = "toolStrip2";
             toolStrip2.Size = new Size(985, 25);
             toolStrip2.TabIndex = 0;
@@ -389,7 +425,9 @@
             ClientSize = new Size(1235, 699);
             Controls.Add(mainContainer);
             Controls.Add(toolStrip1);
+            DoubleBuffered = true;
             Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
@@ -444,5 +482,9 @@
         private ToolStripSplitButton buttonCloseTab;
         private ToolStripMenuItem allTabsToolStripMenuItem;
         private ToolStripMenuItem otherTabsToolStripMenuItem;
+        private ToolStripSplitButton buttonSave;
+        private ToolStripMenuItem saveAndNewToolStripMenuItem;
+        private ToolStripMenuItem saveAndExitToolStripMenuItem;
+        private ToolStripSeparator seperatorSave;
     }
 }

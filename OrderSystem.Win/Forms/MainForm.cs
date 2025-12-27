@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Win.Controls;
+using OrderSystem.Win.View;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrderSystem.Win.Forms
@@ -15,6 +16,14 @@ namespace OrderSystem.Win.Forms
 
             buttonCloseTab.Visible = false;
             seperatorCloseTab.Visible = false;
+
+            buttonSave.Visible = false;
+            seperatorSave.Visible = false;
+
+            SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                          ControlStyles.AllPaintingInWmPaint |
+                          ControlStyles.UserPaint, true);
+            UpdateStyles();
         }
 
         #region Panels
@@ -67,6 +76,13 @@ namespace OrderSystem.Win.Forms
 
         private void productToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ProductDetailView detailView = serviceProvider.GetRequiredService<ProductDetailView>();
+            TabPage page = new("New Product");
+            page.Controls.Add(detailView);
+            detailView.Dock = DockStyle.Fill;
+
+            mainTabControl.TabPages.Add(page);
+            ToggleButtonVisibility();
         }
 
         private void customerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -86,10 +102,10 @@ namespace OrderSystem.Win.Forms
 
             mainTabControl.TabPages.Add(page);
 
-            ToggleCloseVisibility();
+            ToggleButtonVisibility();
         }
 
-        private void ToggleCloseVisibility()
+        private void ToggleButtonVisibility()
         {
             if (mainTabControl.TabPages.Count > 0)
             {
@@ -117,6 +133,8 @@ namespace OrderSystem.Win.Forms
             {
                 mainTabControl.TabPages.Remove(tab);
             }
+
+            ToggleButtonVisibility();
         }
 
         private void otherTabsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -128,6 +146,8 @@ namespace OrderSystem.Win.Forms
                 if (mainTabControl.TabPages[i] != selected)
                 { mainTabControl.TabPages.Remove(mainTabControl.TabPages[i]); }
             }
+
+            ToggleButtonVisibility();
         }
 
         private void buttonCloseTab_Click(object sender, EventArgs e)
@@ -136,6 +156,20 @@ namespace OrderSystem.Win.Forms
             {
                 mainTabControl.TabPages.Remove(tab);
             }
+
+            ToggleButtonVisibility();
+        }
+
+        private void buttonSave_ButtonClick(object sender, EventArgs e)
+        {
+        }
+
+        private void saveAndNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void saveAndExitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
         }
     }
 }
