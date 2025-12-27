@@ -57,3 +57,4 @@ app.db
 app.db-shm
 app.db-wal
 OrderSystem.Win/.vs
+ef-migrate.bat

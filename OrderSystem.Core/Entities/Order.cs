@@ -14,7 +14,7 @@
 
         public Guid CustomerId { get; private set; }
 
-        public Customer? Customer { get; private set; } = null!;
+        public Customer Customer { get; private set; } = null!;
 
         private readonly List<OrderItem> items = [];
 
@@ -29,6 +29,8 @@
         {
             get { return history; }
         }
+
+        public OrderStatus Status { get; private set; }
 
         #endregion Properties
 
@@ -118,12 +120,11 @@
 
             return Result.Ok();
         }
-
-        public OrderStatus Status { get; private set; }
     }
 
     public enum OrderStatus
     {
+        None,
         Draft,
         Confirmed,
         Shipped,

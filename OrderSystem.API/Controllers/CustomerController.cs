@@ -102,7 +102,13 @@ namespace OrderSystem.API.Controllers
         }
     }
 
-    public sealed record CustomerLite(Guid Id, string Name, string Email, bool IsActive);
+    public sealed record CustomerLite(Guid Id, string Name, string Email, bool IsActive)
+    {
+        public static CustomerLite Empty()
+        {
+            return new CustomerLite(Guid.Empty, string.Empty, string.Empty, false);
+        }
+    }
 
     public sealed record CreateCustomerRequest(string Name, string Email);
 
