@@ -1,17 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core.Entities;
 using OrderSystem.Win.Controls;
 using OrderSystem.Win.View;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrderSystem.Win.Forms
 {
     public partial class MainForm : Form
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly IReadOnlyList<IViewDescriptor> viewDescriptors;
 
-        public MainForm(IServiceProvider serviceProvider)
+        public MainForm(IServiceProvider serviceProvider, IEnumerable<IViewDescriptor> viewDescriptors)
         {
             this.serviceProvider = serviceProvider;
+            this.viewDescriptors = viewDescriptors.ToList();
             InitializeComponent();
 
             buttonCloseTab.Visible = false;
@@ -58,73 +60,62 @@ namespace OrderSystem.Win.Forms
             panelCustomer.BackColor = Color.White;
         }
 
-        #endregion Panels
-
         private void toggleSidebarButton_Click(object sender, EventArgs e)
         {
             if (!mainContainer.Panel1Collapsed)
             {
-                toggleSidebarButton.Image = resources.right;
+                toggleSidebarButton.Image = projectResources.right;
                 mainContainer.Panel1Collapsed = true;
             }
             else
             {
-                toggleSidebarButton.Image = resources.left;
+                toggleSidebarButton.Image = projectResources.left;
                 mainContainer.Panel1Collapsed = false;
             }
         }
 
-        private void productToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ProductDetailView detailView = serviceProvider.GetRequiredService<ProductDetailView>();
-            TabPage page = new("New Product");
-            page.Controls.Add(detailView);
-            detailView.Dock = DockStyle.Fill;
+        #endregion Panels
 
-            mainTabControl.TabPages.Add(page);
-            ToggleButtonVisibility();
+        #region Views
+
+        private async void productToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await AddDetailView<Product>();
         }
 
-        private void customerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void navProducts_Click(object sender, EventArgs e)
         {
+            AddListView<Product>();
+        }
+
+        private async void customerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddDetailView<Customer>();
+        }
+
+        private void navCustomers_Click(object sender, EventArgs e)
+        {
+            AddListView<Customer>();
         }
 
         private void orderToolStripMenuItem_Click(object sender, EventArgs e)
         {
         }
 
-        private void navProducts_Click(object sender, EventArgs e)
+        private void navOrders_Click(object sender, EventArgs e)
         {
-            ProductListView view = serviceProvider.GetRequiredService<ProductListView>();
-            TabPage page = new("Products");
-            page.Controls.Add(view);
-            view.Dock = DockStyle.Fill;
-
-            mainTabControl.TabPages.Add(page);
-
-            ToggleButtonVisibility();
         }
+
+        #endregion Views
 
         private void ToggleButtonVisibility()
         {
-            if (mainTabControl.TabPages.Count > 0)
+            if (mainTabControl.SelectedTab is ViewHolder holder)
             {
-                buttonCloseTab.Visible = true;
-                seperatorCloseTab.Visible = true;
+                ShowSave(holder.View.Kind == ViewKind.DetailView);
             }
-            else
-            {
-                buttonCloseTab.Visible = false;
-                seperatorCloseTab.Visible = false;
-            }
-        }
 
-        private void navCustomers_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void navOrders_Click(object sender, EventArgs e)
-        {
+            ShowClose(mainTabControl.TabPages.Count > 0);
         }
 
         private void allTabsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -171,5 +162,59 @@ namespace OrderSystem.Win.Forms
         private void saveAndExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
         }
+
+        private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ToggleButtonVisibility();
+        }
+
+        private async Task AddView<TView>() where TView : ViewBase
+        {
+            ViewBase view = (ViewBase)serviceProvider.GetRequiredService(typeof(TView));
+            IViewDescriptor descriptor = viewDescriptors.Single(x => x.ViewType == typeof(TView));
+
+            ViewHolder holder = new(descriptor.Title, view);
+
+            mainTabControl.TabPages.Add(holder);
+
+            ToggleButtonVisibility();
+        }
+
+        private void AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
+        {
+        }
+
+        private void AddListView<TEntity>() where TEntity : PersistentEntityBase
+        {
+            ListView<TEntity> listview = serviceProvider.GetRequiredService<ListView<TEntity>>();
+            ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview);
+            mainTabControl.TabPages.Add(holder);
+            ToggleButtonVisibility();
+        }
+
+        private void ShowSave(bool visible)
+        {
+            buttonSave.Visible = visible;
+            seperatorSave.Visible = visible;
+        }
+
+        private void ShowClose(bool visible)
+        {
+            buttonCloseTab.Visible = visible;
+            seperatorCloseTab.Visible = visible;
+        }
+    }
+
+    public interface IView
+    {
+        public ViewHolder Holder { get; }
+
+        public void SetHolder(ViewHolder holder);
+
+        public ViewKind Kind { get; }
+
+        public Task LoadData(Guid? id = null);
+
+        public Task SaveData();
     }
 }

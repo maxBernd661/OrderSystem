@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderSystem.Core;
-using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
 using OrderSystem.Win.View;
 
@@ -31,8 +30,14 @@ namespace OrderSystem.Win
                                         });
 
                                         services.AddTransient<MainForm>();
-                                        services.AddTransient<ProductListView>();
+                                        services.AddTransient(typeof(ListView<>));
                                         services.AddTransient<ProductDetailView>();
+                                        services.AddTransient<CustomerDetailView>();
+
+                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<CustomerListView, Customer>(ViewKind.ListView, "All Customers"));
+                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<CustomerDetailView, Customer>(ViewKind.DetailView, "New Customer"));
+                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<ProductListView, Product>(ViewKind.ListView, "All Products"));
+                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<ProductDetailView, Product>(ViewKind.DetailView, "New Product"));
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();
@@ -40,7 +45,14 @@ namespace OrderSystem.Win
             db.Database.Migrate();
 
             MainForm mainForm = host.Services.GetRequiredService<MainForm>();
-            Application.Run(mainForm);
+            try
+            {
+                Application.Run(mainForm);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK);
+            }
         }
     }
 }

@@ -68,9 +68,11 @@
             // 
             // numericUpDownWeight
             // 
+            numericUpDownWeight.DecimalPlaces = 2;
             numericUpDownWeight.Dock = DockStyle.Fill;
             numericUpDownWeight.Location = new Point(220, 80);
             numericUpDownWeight.Margin = new Padding(4);
+            numericUpDownWeight.Maximum = new decimal(new int[] { 99999, 0, 0, 0 });
             numericUpDownWeight.MinimumSize = new Size(200, 0);
             numericUpDownWeight.Name = "numericUpDownWeight";
             numericUpDownWeight.Size = new Size(200, 25);
@@ -114,9 +116,11 @@
             // 
             // numericUpDownPrice
             // 
+            numericUpDownPrice.DecimalPlaces = 2;
             numericUpDownPrice.Dock = DockStyle.Fill;
             numericUpDownPrice.Location = new Point(220, 45);
             numericUpDownPrice.Margin = new Padding(4);
+            numericUpDownPrice.Maximum = new decimal(new int[] { 99999, 0, 0, 0 });
             numericUpDownPrice.MinimumSize = new Size(200, 0);
             numericUpDownPrice.Name = "numericUpDownPrice";
             numericUpDownPrice.Size = new Size(200, 25);

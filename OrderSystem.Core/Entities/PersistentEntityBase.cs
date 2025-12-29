@@ -27,4 +27,10 @@
 
         public DateTime UpdatedAt { get; set; }
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ColumnNameAttribute(string name) : Attribute
+    {
+        public string Name { get; set; } = name;
+    }
 }

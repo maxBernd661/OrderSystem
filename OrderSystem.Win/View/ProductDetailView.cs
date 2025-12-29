@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using OrderSystem.Core;
 
 namespace OrderSystem.Win.View
 {
-    public partial class ProductDetailView : UserControl
+    public partial class ProductDetailView : DetailView
     {
         public ProductDetailView()
+        {
+            InitializeComponent();
+        }
+
+        public ProductDetailView(OrderContext context) : base(context)
         {
             InitializeComponent();
         }

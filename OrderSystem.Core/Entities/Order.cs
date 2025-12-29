@@ -122,6 +122,17 @@
         }
     }
 
+    public class OrderDTO : BaseDTO
+    {
+        public CustomerDTO Customer { get; set; }
+
+        public List<OrderItemDTO> Items { get; set; }
+
+        public List<OrderStatusHistoryDTO> History { get; set; }
+
+        public OrderStatus Status { get; set; }
+    }
+
     public enum OrderStatus
     {
         None,

@@ -11,7 +11,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="View\CustomerListView.cs" />
+    <Compile Remove="View\CustomerListView.Designer.cs" />
+    <Compile Remove="View\OrderItemListView.cs" />
+    <Compile Remove="View\OrderItemListView.Designer.cs" />
+    <Compile Remove="View\OrderListView.cs" />
+    <Compile Remove="View\OrderListView.Designer.cs" />
+    <Compile Remove="View\OrderStatusHistoryListView.cs" />
+    <Compile Remove="View\OrderStatusHistoryListView.Designer.cs" />
+    <Compile Remove="View\ProductListView.cs" />
+    <Compile Remove="View\ProductListView.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="View\CustomerListView.resx" />
+    <EmbeddedResource Remove="View\OrderItemListView.resx" />
+    <EmbeddedResource Remove="View\OrderListView.resx" />
+    <EmbeddedResource Remove="View\OrderStatusHistoryListView.resx" />
+    <EmbeddedResource Remove="View\ProductListView.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="View\nwuk4txw.vyz~" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,10 +63,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="resources.Designer.cs">
+    <Compile Update="projectResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>resources.resx</DependentUpon>
+      <DependentUpon>projectResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -53,9 +75,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="resources.resx">
+    <EmbeddedResource Update="projectResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>projectResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

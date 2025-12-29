@@ -15,4 +15,13 @@
 
         public int Quantity { get; set; }
     }
+
+    public class OrderItemDTO : BaseDTO
+    {
+        public OrderDTO Order { get; set; }
+
+        public ProductDTO Product { get; set; }
+
+        public int Quantity { get; set; }
+    }
 }

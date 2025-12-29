@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            toolStrip1 = new ToolStrip();
+            mainToolStrip = new ToolStrip();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
             productToolStripMenuItem = new ToolStripMenuItem();
             customerToolStripMenuItem = new ToolStripMenuItem();
@@ -57,7 +57,7 @@
             mainTabControl = new TabControl();
             toolStrip2 = new ToolStrip();
             toggleSidebarButton = new ToolStripButton();
-            toolStrip1.SuspendLayout();
+            mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainContainer).BeginInit();
             mainContainer.Panel1.SuspendLayout();
             mainContainer.Panel2.SuspendLayout();
@@ -75,64 +75,70 @@
             toolStrip2.SuspendLayout();
             SuspendLayout();
             // 
-            // toolStrip1
+            // mainToolStrip
             // 
-            toolStrip1.GripMargin = new Padding(0);
-            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.ImageScalingSize = new Size(32, 32);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Padding = new Padding(5, 5, 0, 5);
-            toolStrip1.Size = new Size(1235, 66);
-            toolStrip1.TabIndex = 0;
-            toolStrip1.Text = "mainToolStrip";
+            mainToolStrip.GripMargin = new Padding(0);
+            mainToolStrip.GripStyle = ToolStripGripStyle.Hidden;
+            mainToolStrip.ImageScalingSize = new Size(32, 32);
+            mainToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave });
+            mainToolStrip.Location = new Point(0, 0);
+            mainToolStrip.Margin = new Padding(5);
+            mainToolStrip.Name = "mainToolStrip";
+            mainToolStrip.Padding = new Padding(5);
+            mainToolStrip.Size = new Size(1235, 54);
+            mainToolStrip.Stretch = true;
+            mainToolStrip.TabIndex = 0;
+            mainToolStrip.Text = "mainToolStrip";
             // 
             // toolStripDropDownButton1
             // 
             toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { productToolStripMenuItem, customerToolStripMenuItem, orderToolStripMenuItem });
-            toolStripDropDownButton1.Image = resources.newItem;
+            toolStripDropDownButton1.Image = projectResources.newItem;
             toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownButton1.Margin = new Padding(2);
             toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            toolStripDropDownButton1.Size = new Size(47, 53);
+            toolStripDropDownButton1.Padding = new Padding(2);
+            toolStripDropDownButton1.Size = new Size(83, 40);
             toolStripDropDownButton1.Text = "New";
-            toolStripDropDownButton1.TextImageRelation = TextImageRelation.ImageAboveText;
             // 
             // productToolStripMenuItem
             // 
             productToolStripMenuItem.Name = "productToolStripMenuItem";
-            productToolStripMenuItem.Size = new Size(180, 22);
+            productToolStripMenuItem.Size = new Size(132, 22);
             productToolStripMenuItem.Text = "Product";
             productToolStripMenuItem.Click += productToolStripMenuItem_Click;
             // 
             // customerToolStripMenuItem
             // 
             customerToolStripMenuItem.Name = "customerToolStripMenuItem";
-            customerToolStripMenuItem.Size = new Size(180, 22);
+            customerToolStripMenuItem.Size = new Size(132, 22);
             customerToolStripMenuItem.Text = "Customer";
             customerToolStripMenuItem.Click += customerToolStripMenuItem_Click;
             // 
             // orderToolStripMenuItem
             // 
             orderToolStripMenuItem.Name = "orderToolStripMenuItem";
-            orderToolStripMenuItem.Size = new Size(180, 22);
+            orderToolStripMenuItem.Size = new Size(132, 22);
             orderToolStripMenuItem.Text = "Order";
             orderToolStripMenuItem.Click += orderToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
+            toolStripSeparator1.Margin = new Padding(2);
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 56);
+            toolStripSeparator1.Padding = new Padding(2);
+            toolStripSeparator1.Size = new Size(6, 40);
             // 
             // buttonCloseTab
             // 
             buttonCloseTab.DropDownItems.AddRange(new ToolStripItem[] { allTabsToolStripMenuItem, otherTabsToolStripMenuItem });
-            buttonCloseTab.Image = resources.close;
+            buttonCloseTab.Image = projectResources.close;
             buttonCloseTab.ImageTransparentColor = Color.Magenta;
+            buttonCloseTab.Margin = new Padding(2);
             buttonCloseTab.Name = "buttonCloseTab";
-            buttonCloseTab.Size = new Size(81, 53);
+            buttonCloseTab.Padding = new Padding(2);
+            buttonCloseTab.Size = new Size(117, 40);
             buttonCloseTab.Text = "Close Tab";
-            buttonCloseTab.TextImageRelation = TextImageRelation.ImageAboveText;
             buttonCloseTab.ButtonClick += buttonCloseTab_Click;
             // 
             // allTabsToolStripMenuItem
@@ -151,18 +157,21 @@
             // 
             // seperatorCloseTab
             // 
+            seperatorCloseTab.Margin = new Padding(2);
             seperatorCloseTab.Name = "seperatorCloseTab";
-            seperatorCloseTab.Size = new Size(6, 56);
+            seperatorCloseTab.Padding = new Padding(2);
+            seperatorCloseTab.Size = new Size(6, 40);
             // 
             // buttonSave
             // 
             buttonSave.DropDownItems.AddRange(new ToolStripItem[] { saveAndNewToolStripMenuItem, saveAndExitToolStripMenuItem });
-            buttonSave.Image = resources.save;
+            buttonSave.Image = projectResources.save;
             buttonSave.ImageTransparentColor = Color.Magenta;
+            buttonSave.Margin = new Padding(2);
             buttonSave.Name = "buttonSave";
-            buttonSave.Size = new Size(51, 53);
+            buttonSave.Padding = new Padding(2);
+            buttonSave.Size = new Size(87, 40);
             buttonSave.Text = "Save";
-            buttonSave.TextImageRelation = TextImageRelation.ImageAboveText;
             buttonSave.ButtonClick += buttonSave_ButtonClick;
             // 
             // saveAndNewToolStripMenuItem
@@ -181,15 +190,17 @@
             // 
             // seperatorSave
             // 
+            seperatorSave.Margin = new Padding(2);
             seperatorSave.Name = "seperatorSave";
-            seperatorSave.Size = new Size(6, 56);
+            seperatorSave.Padding = new Padding(2);
+            seperatorSave.Size = new Size(6, 40);
             // 
             // mainContainer
             // 
             mainContainer.BackColor = Color.FromArgb(224, 224, 224);
             mainContainer.BorderStyle = BorderStyle.Fixed3D;
             mainContainer.Dock = DockStyle.Fill;
-            mainContainer.Location = new Point(0, 66);
+            mainContainer.Location = new Point(0, 54);
             mainContainer.Name = "mainContainer";
             // 
             // mainContainer.Panel1
@@ -204,7 +215,7 @@
             mainContainer.Panel2.Controls.Add(mainTabControl);
             mainContainer.Panel2.Controls.Add(toolStrip2);
             mainContainer.Panel2MinSize = 900;
-            mainContainer.Size = new Size(1235, 633);
+            mainContainer.Size = new Size(1235, 645);
             mainContainer.SplitterDistance = 241;
             mainContainer.SplitterWidth = 5;
             mainContainer.TabIndex = 3;
@@ -225,7 +236,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Enabled = false;
-            splitContainer1.Size = new Size(237, 629);
+            splitContainer1.Size = new Size(237, 641);
             splitContainer1.SplitterDistance = 172;
             splitContainer1.TabIndex = 0;
             // 
@@ -283,7 +294,7 @@
             // pictureOrders
             // 
             pictureOrders.Dock = DockStyle.Fill;
-            pictureOrders.Image = resources.order;
+            pictureOrders.Image = projectResources.order;
             pictureOrders.Location = new Point(3, 3);
             pictureOrders.Name = "pictureOrders";
             pictureOrders.Size = new Size(83, 44);
@@ -330,7 +341,7 @@
             // pictureProduct
             // 
             pictureProduct.Dock = DockStyle.Fill;
-            pictureProduct.Image = resources.product;
+            pictureProduct.Image = projectResources.product;
             pictureProduct.Location = new Point(3, 3);
             pictureProduct.Name = "pictureProduct";
             pictureProduct.Size = new Size(83, 42);
@@ -376,7 +387,7 @@
             // pictureCustomer
             // 
             pictureCustomer.Dock = DockStyle.Fill;
-            pictureCustomer.Image = resources.customer;
+            pictureCustomer.Image = projectResources.customer;
             pictureCustomer.Location = new Point(3, 3);
             pictureCustomer.Name = "pictureCustomer";
             pictureCustomer.Size = new Size(83, 42);
@@ -393,16 +404,17 @@
             mainTabControl.Location = new Point(0, 0);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(985, 604);
+            mainTabControl.Size = new Size(985, 616);
             mainTabControl.SizeMode = TabSizeMode.Fixed;
             mainTabControl.TabIndex = 1;
+            mainTabControl.SelectedIndexChanged += mainTabControl_SelectedIndexChanged;
             // 
             // toolStrip2
             // 
             toolStrip2.Dock = DockStyle.Bottom;
             toolStrip2.GripStyle = ToolStripGripStyle.Hidden;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toggleSidebarButton });
-            toolStrip2.Location = new Point(0, 604);
+            toolStrip2.Location = new Point(0, 616);
             toolStrip2.Name = "toolStrip2";
             toolStrip2.Size = new Size(985, 25);
             toolStrip2.TabIndex = 0;
@@ -411,7 +423,7 @@
             // toggleSidebarButton
             // 
             toggleSidebarButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toggleSidebarButton.Image = resources.left;
+            toggleSidebarButton.Image = projectResources.left;
             toggleSidebarButton.ImageTransparentColor = Color.Magenta;
             toggleSidebarButton.Name = "toggleSidebarButton";
             toggleSidebarButton.Size = new Size(23, 22);
@@ -424,13 +436,13 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1235, 699);
             Controls.Add(mainContainer);
-            Controls.Add(toolStrip1);
+            Controls.Add(mainToolStrip);
             DoubleBuffered = true;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            mainToolStrip.ResumeLayout(false);
+            mainToolStrip.PerformLayout();
             mainContainer.Panel1.ResumeLayout(false);
             mainContainer.Panel2.ResumeLayout(false);
             mainContainer.Panel2.PerformLayout();
@@ -457,7 +469,7 @@
 
         #endregion
 
-        private ToolStrip toolStrip1;
+        private ToolStrip mainToolStrip;
         private ToolStripDropDownButton toolStripDropDownButton1;
         private ToolStripMenuItem productToolStripMenuItem;
         private ToolStripMenuItem customerToolStripMenuItem;
