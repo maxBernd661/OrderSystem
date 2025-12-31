@@ -1,6 +1,8 @@
-﻿namespace OrderSystem.Win.View
+﻿using OrderSystem.Win.View;
+
+namespace OrderSystem.Win.Templates
 {
-    partial class CustomerDetailView
+    partial class CustomerDetailViewDummy
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,7 +33,7 @@
             orderListView1 = new ListViewDummy();
             customerControl = new OrderSystem.Win.Controls.CustomerControl();
             tableLayoutPanel1 = new TableLayoutPanel();
-            persistentBaseInfoControl1 = new OrderSystem.Win.Controls.PersistentBaseInfoControl();
+            persistentEntityBaseControl1 = new OrderSystem.Win.Controls.PersistentEntityBaseControl();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -41,9 +43,11 @@
             orderListView1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             orderListView1.Dock = DockStyle.Fill;
             orderListView1.EntityType = "Order";
+            orderListView1.FilterKey = null;
             orderListView1.Location = new Point(5, 132);
             orderListView1.MinimumSize = new Size(300, 200);
             orderListView1.Name = "orderListView1";
+            orderListView1.OnlyRelevantData = true;
             orderListView1.Size = new Size(430, 200);
             orderListView1.TabIndex = 1;
             // 
@@ -66,7 +70,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(customerControl, 0, 0);
             tableLayoutPanel1.Controls.Add(orderListView1, 0, 1);
-            tableLayoutPanel1.Controls.Add(persistentBaseInfoControl1, 0, 2);
+            tableLayoutPanel1.Controls.Add(persistentEntityBaseControl1, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -77,24 +81,24 @@
             tableLayoutPanel1.Size = new Size(440, 460);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // persistentBaseInfoControl1
+            // persistentEntityBaseControl1
             // 
-            persistentBaseInfoControl1.AutoSize = true;
-            persistentBaseInfoControl1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            persistentBaseInfoControl1.Dock = DockStyle.Fill;
-            persistentBaseInfoControl1.Location = new Point(5, 340);
-            persistentBaseInfoControl1.Name = "persistentBaseInfoControl1";
-            persistentBaseInfoControl1.Size = new Size(430, 115);
-            persistentBaseInfoControl1.TabIndex = 2;
+            persistentEntityBaseControl1.AutoSize = true;
+            persistentEntityBaseControl1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            persistentEntityBaseControl1.Dock = DockStyle.Fill;
+            persistentEntityBaseControl1.Location = new Point(5, 340);
+            persistentEntityBaseControl1.Name = "persistentEntityBaseControl1";
+            persistentEntityBaseControl1.Size = new Size(430, 115);
+            persistentEntityBaseControl1.TabIndex = 2;
             // 
-            // CustomerDetailView
+            // CustomerDetailViewDummy
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Controls.Add(tableLayoutPanel1);
-            Name = "CustomerDetailView";
+            Name = "CustomerDetailViewDummy";
             Size = new Size(440, 460);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -107,6 +111,6 @@
         private ListViewDummy orderListView1;
         private Controls.CustomerControl customerControl;
         private TableLayoutPanel tableLayoutPanel1;
-        private Controls.PersistentBaseInfoControl persistentBaseInfoControl1;
+        private Controls.PersistentEntityBaseControl persistentEntityBaseControl1;
     }
 }

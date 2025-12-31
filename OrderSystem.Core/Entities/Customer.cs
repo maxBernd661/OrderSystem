@@ -5,8 +5,11 @@
     /// </summary>
     public class Customer : PersistentEntityBase
     {
+        [Required]
+        [ClampLength(5, 50)]
         public string Name { get; set; }
 
+        [ClampLength(5, 50)]
         public string Email { get; set; }
 
         [ColumnName("Is Active")]
@@ -14,22 +17,16 @@
 
         private readonly List<Order> orders = [];
 
+        [HideInListView]
         public IReadOnlyCollection<Order> Orders
         {
             get { return orders; }
         }
-    }
 
-    public class CustomerDTO : BaseDTO
-    {
-        public string Name { get; set; }
-
-        public string Email { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public List<OrderDTO> Orders { get; set; } = [];
-
-        public int OpenOrders { get; set; }
+        [ColumnName("Unshipped Orders")]
+        public int OpenOrders
+        {
+            get { return Orders.Count(x => x.Status != OrderStatus.Shipped); }
+        }
     }
 }

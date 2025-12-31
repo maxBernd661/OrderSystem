@@ -1,6 +1,6 @@
-﻿namespace OrderSystem.Win.Controls
+﻿namespace OrderSystem.Win.View
 {
-    partial class ProductListView
+    partial class OrderItemListView
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,14 +31,15 @@
             components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             dataGrid = new DataGridView();
+            orderDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            productDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            quantityDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             idDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            unitPriceDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             createdAtDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             updatedAtDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            productDTOBindingSource = new BindingSource(components);
+            bindingSource = new BindingSource(components);
             ((System.ComponentModel.ISupportInitialize)dataGrid).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)productDTOBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)bindingSource).BeginInit();
             SuspendLayout();
             // 
             // dataGrid
@@ -59,14 +60,36 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGrid.Columns.AddRange(new DataGridViewColumn[] { idDataGridViewTextBoxColumn, nameDataGridViewTextBoxColumn, unitPriceDataGridViewTextBoxColumn, createdAtDataGridViewTextBoxColumn, updatedAtDataGridViewTextBoxColumn });
-            dataGrid.DataSource = productDTOBindingSource;
+            dataGrid.Columns.AddRange(new DataGridViewColumn[] { orderDataGridViewTextBoxColumn, productDataGridViewTextBoxColumn, quantityDataGridViewTextBoxColumn, idDataGridViewTextBoxColumn, createdAtDataGridViewTextBoxColumn, updatedAtDataGridViewTextBoxColumn });
+            dataGrid.DataSource = bindingSource;
             dataGrid.Dock = DockStyle.Fill;
             dataGrid.Location = new Point(0, 0);
+            dataGrid.MinimumSize = new Size(300, 200);
             dataGrid.Name = "dataGrid";
             dataGrid.ReadOnly = true;
-            dataGrid.Size = new Size(950, 552);
+            dataGrid.Size = new Size(300, 200);
             dataGrid.TabIndex = 1;
+            // 
+            // orderDataGridViewTextBoxColumn
+            // 
+            orderDataGridViewTextBoxColumn.DataPropertyName = "Order";
+            orderDataGridViewTextBoxColumn.HeaderText = "Order";
+            orderDataGridViewTextBoxColumn.Name = "orderDataGridViewTextBoxColumn";
+            orderDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // productDataGridViewTextBoxColumn
+            // 
+            productDataGridViewTextBoxColumn.DataPropertyName = "Product";
+            productDataGridViewTextBoxColumn.HeaderText = "Product";
+            productDataGridViewTextBoxColumn.Name = "productDataGridViewTextBoxColumn";
+            productDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // quantityDataGridViewTextBoxColumn
+            // 
+            quantityDataGridViewTextBoxColumn.DataPropertyName = "Quantity";
+            quantityDataGridViewTextBoxColumn.HeaderText = "Quantity";
+            quantityDataGridViewTextBoxColumn.Name = "quantityDataGridViewTextBoxColumn";
+            quantityDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // idDataGridViewTextBoxColumn
             // 
@@ -74,20 +97,6 @@
             idDataGridViewTextBoxColumn.HeaderText = "Id";
             idDataGridViewTextBoxColumn.Name = "idDataGridViewTextBoxColumn";
             idDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            nameDataGridViewTextBoxColumn.HeaderText = "Name";
-            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            nameDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // unitPriceDataGridViewTextBoxColumn
-            // 
-            unitPriceDataGridViewTextBoxColumn.DataPropertyName = "UnitPrice";
-            unitPriceDataGridViewTextBoxColumn.HeaderText = "UnitPrice";
-            unitPriceDataGridViewTextBoxColumn.Name = "unitPriceDataGridViewTextBoxColumn";
-            unitPriceDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // createdAtDataGridViewTextBoxColumn
             // 
@@ -103,29 +112,34 @@
             updatedAtDataGridViewTextBoxColumn.Name = "updatedAtDataGridViewTextBoxColumn";
             updatedAtDataGridViewTextBoxColumn.ReadOnly = true;
             // 
-            // productDTOBindingSource
+            // bindingSource
             // 
-            productDTOBindingSource.DataSource = typeof(Core.Entities.ProductDTO);
+            bindingSource.DataSource = typeof(Core.Entities.OrderItemDTO);
             // 
-            // ProductListView
+            // OrderItemListView
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Controls.Add(dataGrid);
-            Name = "ProductListView";
-            Size = new Size(950, 552);
+            MinimumSize = new Size(300, 200);
+            Name = "OrderItemListView";
+            Size = new Size(300, 200);
             ((System.ComponentModel.ISupportInitialize)dataGrid).EndInit();
-            ((System.ComponentModel.ISupportInitialize)productDTOBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)bindingSource).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
-        private BindingSource productDTOBindingSource;
+
+        private DataGridView dataGrid;
+        private BindingSource bindingSource;
+        private DataGridViewTextBoxColumn orderDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn productDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn quantityDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn unitPriceDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn createdAtDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn updatedAtDataGridViewTextBoxColumn;
-        public DataGridView dataGrid;
     }
 }

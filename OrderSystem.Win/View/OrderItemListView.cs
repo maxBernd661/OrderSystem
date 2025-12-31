@@ -4,17 +4,19 @@ using OrderSystem.Core.Entities;
 
 namespace OrderSystem.Win.View
 {
-    public partial class CustomerDetailView : DetailView
+    public partial class OrderItemListView : ListView
     {
-        public CustomerDetailView()
+        public OrderItemListView()
         {
             InitializeComponent();
+            InitializeView<OrderItem>(dataGrid, bindingSource);
         }
 
         [ActivatorUtilitiesConstructor]
-        public CustomerDetailView(OrderContext context) : base(context)
+        public OrderItemListView(OrderContext context) : base(context)
         {
             InitializeComponent();
+            InitializeView<OrderItem>(dataGrid, bindingSource);
         }
 
         public override Task LoadData(Guid? id = null)

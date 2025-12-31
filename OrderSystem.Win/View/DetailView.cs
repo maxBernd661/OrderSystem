@@ -1,0 +1,100 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core.Entities;
+using OrderSystem.Win.Forms;
+using OrderSystem.Win.Services;
+
+namespace OrderSystem.Win.View
+{
+    public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
+    {
+        private readonly IServiceProvider sp;
+
+        public DetailViewDummy Template { get; }
+
+        public override ViewKind Kind
+        {
+            get { return ViewKind.DetailView; }
+        }
+
+        public DetailView(IServiceProvider sp, DetailViewDummy template)
+        {
+            this.sp = sp;
+
+            InitializeCore<TEntity>();
+            Template = template;
+
+            Dock = DockStyle.Fill;
+            Control content = template.Root;
+            content.Dock = DockStyle.Fill;
+            Controls.Add(content);
+
+            MaterializeOthers(this);
+        }
+
+        private void MaterializeOthers(Control root)
+        {
+            foreach (Control control in root.Controls)
+            {
+                if (control is ListViewDummy dummy)
+                {
+                    MaterializeListView(dummy);
+                }
+
+                MaterializeOthers(control);
+            }
+        }
+
+        private void MaterializeListView(ListViewDummy dummy)
+        {
+            Control? parent = dummy.Parent;
+            if (parent is null)
+            {
+                return;
+            }
+
+            int index = parent.Controls.GetChildIndex(dummy);
+            Type entityType = sp.GetRequiredService<ViewFactory>().GetTypeByName(dummy.EntityType);
+            Type listType = typeof(ListView<>).MakeGenericType(entityType);
+
+            Control listView = (Control)ActivatorUtilities.CreateInstance(sp, listType);
+
+            listView.Dock = dummy.Dock;
+            listView.Margin = dummy.Margin;
+            listView.Padding = dummy.Padding;
+            listView.Size = dummy.Size;
+            listView.Location = dummy.Location;
+            listView.Anchor = dummy.Anchor;
+            listView.MinimumSize = dummy.MinimumSize;
+            listView.MaximumSize = dummy.MaximumSize;
+            listView.Visible = dummy.Visible;
+            listView.Enabled = dummy.Enabled;
+
+            parent.SuspendLayout();
+            parent.Controls.Remove(dummy);
+            parent.Controls.Add(listView);
+            parent.Controls.SetChildIndex(listView, index);
+            parent.ResumeLayout(true);
+
+            dummy.Dispose();
+        }
+    }
+
+    public interface IDataControl
+    {
+        void LoadData(object entity);
+
+        object GetData();
+    }
+
+    public interface IDataControl<TEntity> : IDataControl
+    {
+        void LoadData(TEntity entity);
+
+        new TEntity GetData();
+    }
+
+    public interface IDetailView
+    {
+        public DetailViewDummy Template { get; }
+    }
+}

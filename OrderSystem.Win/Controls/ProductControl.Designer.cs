@@ -35,6 +35,7 @@
             labelUnitPrice = new Label();
             numericUpDownPrice = new NumericUpDown();
             labelWeight = new Label();
+            checkBoxAvailable = new CheckBox();
             mainLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownWeight).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownPrice).BeginInit();
@@ -54,16 +55,18 @@
             mainLayout.Controls.Add(labelUnitPrice, 0, 1);
             mainLayout.Controls.Add(numericUpDownPrice, 1, 1);
             mainLayout.Controls.Add(labelWeight, 0, 2);
+            mainLayout.Controls.Add(checkBoxAvailable, 0, 3);
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.Location = new Point(0, 0);
             mainLayout.Margin = new Padding(4);
             mainLayout.Name = "mainLayout";
             mainLayout.Padding = new Padding(4);
-            mainLayout.RowCount = 3;
+            mainLayout.RowCount = 4;
             mainLayout.RowStyles.Add(new RowStyle());
             mainLayout.RowStyles.Add(new RowStyle());
             mainLayout.RowStyles.Add(new RowStyle());
-            mainLayout.Size = new Size(430, 115);
+            mainLayout.RowStyles.Add(new RowStyle());
+            mainLayout.Size = new Size(430, 148);
             mainLayout.TabIndex = 1;
             // 
             // numericUpDownWeight
@@ -139,6 +142,20 @@
             labelWeight.TabIndex = 4;
             labelWeight.Text = "Weight";
             // 
+            // checkBoxAvailable
+            // 
+            checkBoxAvailable.AutoSize = true;
+            checkBoxAvailable.Dock = DockStyle.Fill;
+            checkBoxAvailable.Location = new Point(9, 114);
+            checkBoxAvailable.MinimumSize = new Size(0, 25);
+            checkBoxAvailable.Name = "checkBoxAvailable";
+            checkBoxAvailable.RightToLeft = RightToLeft.Yes;
+            checkBoxAvailable.Size = new Size(202, 25);
+            checkBoxAvailable.TabIndex = 6;
+            checkBoxAvailable.Text = "Is Available";
+            checkBoxAvailable.TextAlign = ContentAlignment.MiddleRight;
+            checkBoxAvailable.UseVisualStyleBackColor = true;
+            // 
             // ProductControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -147,7 +164,7 @@
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Controls.Add(mainLayout);
             Name = "ProductControl";
-            Size = new Size(430, 115);
+            Size = new Size(430, 148);
             mainLayout.ResumeLayout(false);
             mainLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownWeight).EndInit();
@@ -165,5 +182,6 @@
         private Label labelUnitPrice;
         private NumericUpDown numericUpDownPrice;
         private Label labelWeight;
+        private CheckBox checkBoxAvailable;
     }
 }

@@ -12,12 +12,23 @@
 
         #region Properties
 
+        [HideInListView]
         public Guid CustomerId { get; private set; }
 
+        [HideInListView]
+        [Required]
         public Customer Customer { get; private set; } = null!;
+
+        [ColumnName("Customer")]
+        public string CustomerName
+        {
+            get { return Customer.Name; }
+        }
 
         private readonly List<OrderItem> items = [];
 
+        [HideInListView]
+        [Required]
         public IReadOnlyCollection<OrderItem> Items
         {
             get { return items; }
@@ -25,6 +36,7 @@
 
         private readonly List<OrderStatusHistory> history = [];
 
+        [HideInListView]
         public IReadOnlyCollection<OrderStatusHistory> History
         {
             get { return history; }
@@ -120,17 +132,6 @@
 
             return Result.Ok();
         }
-    }
-
-    public class OrderDTO : BaseDTO
-    {
-        public CustomerDTO Customer { get; set; }
-
-        public List<OrderItemDTO> Items { get; set; }
-
-        public List<OrderStatusHistoryDTO> History { get; set; }
-
-        public OrderStatus Status { get; set; }
     }
 
     public enum OrderStatus

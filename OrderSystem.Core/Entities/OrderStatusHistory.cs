@@ -35,13 +35,4 @@
             };
         }
     }
-
-    public class OrderStatusHistoryDTO : BaseDTO
-    {
-        public OrderDTO Order { get; set; }
-
-        public OrderStatus ChangedTo { get; set; }
-
-        public OrderStatus ChangedFrom { get; set; }
-    }
 }

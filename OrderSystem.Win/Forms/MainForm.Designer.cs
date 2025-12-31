@@ -42,6 +42,8 @@
             saveAndNewToolStripMenuItem = new ToolStripMenuItem();
             saveAndExitToolStripMenuItem = new ToolStripMenuItem();
             seperatorSave = new ToolStripSeparator();
+            buttonDelete = new ToolStripButton();
+            seperatorDelete = new ToolStripSeparator();
             mainContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             sidebarLayout = new TableLayoutPanel();
@@ -57,6 +59,7 @@
             mainTabControl = new TabControl();
             toolStrip2 = new ToolStrip();
             toggleSidebarButton = new ToolStripButton();
+            labelStatus = new ToolStripLabel();
             mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainContainer).BeginInit();
             mainContainer.Panel1.SuspendLayout();
@@ -80,7 +83,7 @@
             mainToolStrip.GripMargin = new Padding(0);
             mainToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             mainToolStrip.ImageScalingSize = new Size(32, 32);
-            mainToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave });
+            mainToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave, buttonDelete, seperatorDelete });
             mainToolStrip.Location = new Point(0, 0);
             mainToolStrip.Margin = new Padding(5);
             mainToolStrip.Name = "mainToolStrip";
@@ -194,6 +197,24 @@
             seperatorSave.Name = "seperatorSave";
             seperatorSave.Padding = new Padding(2);
             seperatorSave.Size = new Size(6, 40);
+            // 
+            // buttonDelete
+            // 
+            buttonDelete.Image = projectResources.delete;
+            buttonDelete.ImageTransparentColor = Color.Magenta;
+            buttonDelete.Margin = new Padding(2);
+            buttonDelete.Name = "buttonDelete";
+            buttonDelete.Padding = new Padding(2);
+            buttonDelete.Size = new Size(85, 40);
+            buttonDelete.Text = "Delete";
+            buttonDelete.Click += buttonDelete_Click;
+            // 
+            // seperatorDelete
+            // 
+            seperatorDelete.Margin = new Padding(2);
+            seperatorDelete.Name = "seperatorDelete";
+            seperatorDelete.Padding = new Padding(2);
+            seperatorDelete.Size = new Size(6, 40);
             // 
             // mainContainer
             // 
@@ -404,8 +425,7 @@
             mainTabControl.Location = new Point(0, 0);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(985, 616);
-            mainTabControl.SizeMode = TabSizeMode.Fixed;
+            mainTabControl.Size = new Size(985, 613);
             mainTabControl.TabIndex = 1;
             mainTabControl.SelectedIndexChanged += mainTabControl_SelectedIndexChanged;
             // 
@@ -413,10 +433,10 @@
             // 
             toolStrip2.Dock = DockStyle.Bottom;
             toolStrip2.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip2.Items.AddRange(new ToolStripItem[] { toggleSidebarButton });
-            toolStrip2.Location = new Point(0, 616);
+            toolStrip2.Items.AddRange(new ToolStripItem[] { toggleSidebarButton, labelStatus });
+            toolStrip2.Location = new Point(0, 613);
             toolStrip2.Name = "toolStrip2";
-            toolStrip2.Size = new Size(985, 25);
+            toolStrip2.Size = new Size(985, 28);
             toolStrip2.TabIndex = 0;
             toolStrip2.Text = "toolStrip2";
             // 
@@ -425,10 +445,20 @@
             toggleSidebarButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toggleSidebarButton.Image = projectResources.left;
             toggleSidebarButton.ImageTransparentColor = Color.Magenta;
+            toggleSidebarButton.Margin = new Padding(2);
             toggleSidebarButton.Name = "toggleSidebarButton";
-            toggleSidebarButton.Size = new Size(23, 22);
+            toggleSidebarButton.Padding = new Padding(2);
+            toggleSidebarButton.Size = new Size(24, 24);
             toggleSidebarButton.Text = "toolStripButton2";
             toggleSidebarButton.Click += toggleSidebarButton_Click;
+            // 
+            // labelStatus
+            // 
+            labelStatus.Alignment = ToolStripItemAlignment.Right;
+            labelStatus.Margin = new Padding(2);
+            labelStatus.Name = "labelStatus";
+            labelStatus.Padding = new Padding(2);
+            labelStatus.Size = new Size(4, 24);
             // 
             // MainForm
             // 
@@ -498,5 +528,8 @@
         private ToolStripMenuItem saveAndNewToolStripMenuItem;
         private ToolStripMenuItem saveAndExitToolStripMenuItem;
         private ToolStripSeparator seperatorSave;
+        private ToolStripButton buttonDelete;
+        private ToolStripSeparator seperatorDelete;
+        private ToolStripLabel labelStatus;
     }
 }

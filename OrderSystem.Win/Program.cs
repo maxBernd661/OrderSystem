@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderSystem.Core;
+using OrderSystem.Core.Entities;
 using OrderSystem.Win.Forms;
+using OrderSystem.Win.Services;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win
@@ -31,13 +33,10 @@ namespace OrderSystem.Win
 
                                         services.AddTransient<MainForm>();
                                         services.AddTransient(typeof(ListView<>));
-                                        services.AddTransient<ProductDetailView>();
-                                        services.AddTransient<CustomerDetailView>();
+                                        services.AddTransient(typeof(DetailView<>));
 
-                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<CustomerListView, Customer>(ViewKind.ListView, "All Customers"));
-                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<CustomerDetailView, Customer>(ViewKind.DetailView, "New Customer"));
-                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<ProductListView, Product>(ViewKind.ListView, "All Products"));
-                                        //services.AddSingleton<IViewDescriptor>(new ViewDescriptor<ProductDetailView, Product>(ViewKind.DetailView, "New Product"));
+                                        services.AddSingleton<ViewFactory>();
+                                        services.AddSingleton<FilterRegistry>();
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();
@@ -45,6 +44,9 @@ namespace OrderSystem.Win
             db.Database.Migrate();
 
             MainForm mainForm = host.Services.GetRequiredService<MainForm>();
+
+            BuildFilterKeys(host.Services);
+
             try
             {
                 Application.Run(mainForm);
@@ -53,6 +55,12 @@ namespace OrderSystem.Win
             {
                 MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK);
             }
+        }
+
+        private static void BuildFilterKeys(IServiceProvider sp)
+        {
+            FilterRegistry registry = sp.GetRequiredService<FilterRegistry>();
+            registry.Register<Order>("OpenOrders", order => order.Status is not OrderStatus.Shipped);
         }
     }
 }

@@ -1,26 +1,30 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.Controls;
+using OrderSystem.Win.Services;
 using OrderSystem.Win.View;
+using System.Reflection;
 
 namespace OrderSystem.Win.Forms
 {
     public partial class MainForm : Form
     {
+        private readonly ViewFactory factory;
         private readonly IServiceProvider serviceProvider;
-        private readonly IReadOnlyList<IViewDescriptor> viewDescriptors;
 
-        public MainForm(IServiceProvider serviceProvider, IEnumerable<IViewDescriptor> viewDescriptors)
+        private readonly List<OpenView> openViews = [];
+
+        public MainForm(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            this.viewDescriptors = viewDescriptors.ToList();
+            factory = serviceProvider.GetRequiredService<ViewFactory>();
             InitializeComponent();
 
-            buttonCloseTab.Visible = false;
-            seperatorCloseTab.Visible = false;
-
-            buttonSave.Visible = false;
-            seperatorSave.Visible = false;
+            ShowDelete(false);
+            ShowSave(false);
+            ShowClose(false);
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer |
                           ControlStyles.AllPaintingInWmPaint |
@@ -78,9 +82,9 @@ namespace OrderSystem.Win.Forms
 
         #region Views
 
-        private async void productToolStripMenuItem_Click(object sender, EventArgs e)
+        private void productToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await AddDetailView<Product>();
+            AddDetailView<Product>();
         }
 
         private void navProducts_Click(object sender, EventArgs e)
@@ -88,7 +92,7 @@ namespace OrderSystem.Win.Forms
             AddListView<Product>();
         }
 
-        private async void customerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void customerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddDetailView<Customer>();
         }
@@ -104,28 +108,19 @@ namespace OrderSystem.Win.Forms
 
         private void navOrders_Click(object sender, EventArgs e)
         {
+            AddListView<Order>();
         }
 
         #endregion Views
 
-        private void ToggleButtonVisibility()
-        {
-            if (mainTabControl.SelectedTab is ViewHolder holder)
-            {
-                ShowSave(holder.View.Kind == ViewKind.DetailView);
-            }
-
-            ShowClose(mainTabControl.TabPages.Count > 0);
-        }
+        #region Buttons
 
         private void allTabsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (TabPage tab in mainTabControl.TabPages)
+            foreach (ViewHolder view in mainTabControl.TabPages.OfType<ViewHolder>())
             {
-                mainTabControl.TabPages.Remove(tab);
+                RemoveView(view);
             }
-
-            ToggleButtonVisibility();
         }
 
         private void otherTabsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -134,24 +129,30 @@ namespace OrderSystem.Win.Forms
 
             for (int i = 0; i < mainTabControl.TabPages.Count; i++)
             {
-                if (mainTabControl.TabPages[i] != selected)
-                { mainTabControl.TabPages.Remove(mainTabControl.TabPages[i]); }
+                if (mainTabControl.TabPages[i] != selected && mainTabControl.TabPages[i] is ViewHolder holder)
+                {
+                    RemoveView(holder);
+                }
             }
-
-            ToggleButtonVisibility();
         }
 
         private void buttonCloseTab_Click(object sender, EventArgs e)
         {
-            if (mainTabControl.SelectedTab is { } tab)
+            if (mainTabControl.SelectedTab is ViewHolder holder)
             {
-                mainTabControl.TabPages.Remove(tab);
+                RemoveView(holder);
             }
-
-            ToggleButtonVisibility();
         }
 
         private void buttonSave_ButtonClick(object sender, EventArgs e)
+        {
+            if (mainTabControl.SelectedTab is ViewHolder { View: IDetailView dv})
+            {
+                Result evalResult = dv.Template.Evaluate();
+            }
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
         {
         }
 
@@ -163,33 +164,64 @@ namespace OrderSystem.Win.Forms
         {
         }
 
+        #endregion Buttons
+
         private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToggleButtonVisibility();
         }
 
-        private async Task AddView<TView>() where TView : ViewBase
+        public void AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
         {
-            ViewBase view = (ViewBase)serviceProvider.GetRequiredService(typeof(TView));
-            IViewDescriptor descriptor = viewDescriptors.Single(x => x.ViewType == typeof(TView));
+            DetailView<TEntity> view = factory.CreateDetailView<TEntity>();
 
-            ViewHolder holder = new(descriptor.Title, view);
+            TEntity? existingItem = null;
+            string viewName = $"New {typeof(TEntity).Name}";
+            if (id != null)
+            {
+                existingItem = serviceProvider.GetRequiredService<OrderContext>()
+                                                      .Set<TEntity>()
+                                                      .AsNoTracking()
+                                                      .Single(x => x.Id == id);
 
-            mainTabControl.TabPages.Add(holder);
+                PropertyInfo? identProp = serviceProvider.GetRequiredService<ViewFactory>().GetIdentifier(typeof(TEntity));
+                if (identProp != null)
+                {
+                    object? identvalue = identProp.GetValue(existingItem);
+                    viewName = identvalue is string s ? s : string.Empty;
+                }
 
-            ToggleButtonVisibility();
-        }
+                view.Template.LoadData(existingItem);
+            }
 
-        private void AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
-        {
+            ViewHolder holder = new(viewName, view, this);
+            AddView<TEntity>(holder, ViewKind.DetailView, existingItem);
         }
 
         private void AddListView<TEntity>() where TEntity : PersistentEntityBase
         {
             ListView<TEntity> listview = serviceProvider.GetRequiredService<ListView<TEntity>>();
-            ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview);
-            mainTabControl.TabPages.Add(holder);
-            ToggleButtonVisibility();
+            ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview, this);
+            AddView<TEntity>(holder, ViewKind.ListView);
+        }
+
+        private void ToggleButtonVisibility()
+        {
+            if (mainTabControl.TabPages.Count == 0)
+            {
+                ShowSave(false);
+                ShowDelete(false);
+                ShowClose(false);
+                return;
+            }
+
+            if (mainTabControl.SelectedTab is ViewHolder holder)
+            {
+                ShowSave(holder.View.Kind == ViewKind.DetailView);
+                ShowDelete(holder.View.Kind == ViewKind.DetailView);
+            }
+
+            ShowClose(true);
         }
 
         private void ShowSave(bool visible)
@@ -203,18 +235,63 @@ namespace OrderSystem.Win.Forms
             buttonCloseTab.Visible = visible;
             seperatorCloseTab.Visible = visible;
         }
+
+        private void ShowDelete(bool visible)
+        {
+            buttonDelete.Visible = visible;
+            seperatorDelete.Visible = visible;
+        }
+
+        private void AddView<TEntity>(ViewHolder holder, ViewKind kind, PersistentEntityBase? loadedEntity = null)
+        {
+            //dont open the same unfiltered listview twice
+            if (kind == ViewKind.ListView)
+            {
+                OpenView? openListView = openViews.FirstOrDefault(x => x.EntityType == typeof(TEntity));
+                if (openListView != null)
+                {
+                    mainTabControl.SelectedTab = openListView.Holder;
+                    return;
+                }
+            }
+
+            //if this object is already showing in a detailview, dont show again
+            if (loadedEntity != null)
+            {
+                OpenView? existingView = openViews.FirstOrDefault(x => x.Kind == ViewKind.DetailView && x.Entity?.Id == loadedEntity.Id);
+                if (existingView != null)
+                {
+                    mainTabControl.SelectedTab = existingView.Holder;
+                    return;
+                }
+            }
+
+            openViews.Add(new OpenView(holder, kind, typeof(TEntity), loadedEntity));
+            mainTabControl.TabPages.Add(holder);
+            mainTabControl.SelectedTab = holder;
+            ToggleButtonVisibility();
+        }
+
+        //properly dispose view
+        private void RemoveView(ViewHolder holder)
+        {
+            OpenView? existingView = openViews.FirstOrDefault(x => x.Holder == holder);
+            if (existingView != null)
+            {
+                mainTabControl.TabPages.Remove(holder);
+                openViews.Remove(existingView);
+                existingView.Holder.Dispose();
+            }
+
+            ToggleButtonVisibility();
+        }
     }
 
-    public interface IView
+    public record OpenView(ViewHolder Holder, ViewKind Kind, Type EntityType, PersistentEntityBase? Entity);
+
+    public enum ViewKind
     {
-        public ViewHolder Holder { get; }
-
-        public void SetHolder(ViewHolder holder);
-
-        public ViewKind Kind { get; }
-
-        public Task LoadData(Guid? id = null);
-
-        public Task SaveData();
+        DetailView,
+        ListView
     }
 }

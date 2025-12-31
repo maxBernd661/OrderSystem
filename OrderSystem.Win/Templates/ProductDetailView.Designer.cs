@@ -1,6 +1,6 @@
-﻿namespace OrderSystem.Win.View
+﻿namespace OrderSystem.Win.Templates
 {
-    partial class ProductDetailView
+    partial class ProductDetailViewDummy
     {
         /// <summary> 
         /// Required designer variable.
@@ -30,7 +30,7 @@
         {
             mainLayout = new TableLayoutPanel();
             productControl1 = new OrderSystem.Win.Controls.ProductControl();
-            persistentBaseInfoControl1 = new OrderSystem.Win.Controls.PersistentBaseInfoControl();
+            persistentEntityBaseControl1 = new OrderSystem.Win.Controls.PersistentEntityBaseControl();
             mainLayout.SuspendLayout();
             SuspendLayout();
             // 
@@ -39,7 +39,7 @@
             mainLayout.ColumnCount = 1;
             mainLayout.ColumnStyles.Add(new ColumnStyle());
             mainLayout.Controls.Add(productControl1, 0, 0);
-            mainLayout.Controls.Add(persistentBaseInfoControl1, 0, 1);
+            mainLayout.Controls.Add(persistentEntityBaseControl1, 0, 1);
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.Location = new Point(4, 4);
             mainLayout.Margin = new Padding(4);
@@ -63,26 +63,26 @@
             productControl1.Size = new Size(528, 123);
             productControl1.TabIndex = 0;
             // 
-            // persistentBaseInfoControl1
+            // persistentEntityBaseControl1
             // 
-            persistentBaseInfoControl1.AutoSize = true;
-            persistentBaseInfoControl1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            persistentBaseInfoControl1.Dock = DockStyle.Fill;
-            persistentBaseInfoControl1.Location = new Point(8, 139);
-            persistentBaseInfoControl1.Margin = new Padding(4);
-            persistentBaseInfoControl1.Name = "persistentBaseInfoControl1";
-            persistentBaseInfoControl1.Padding = new Padding(4);
-            persistentBaseInfoControl1.Size = new Size(528, 156);
-            persistentBaseInfoControl1.TabIndex = 1;
+            persistentEntityBaseControl1.AutoSize = true;
+            persistentEntityBaseControl1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            persistentEntityBaseControl1.Dock = DockStyle.Fill;
+            persistentEntityBaseControl1.Location = new Point(8, 139);
+            persistentEntityBaseControl1.Margin = new Padding(4);
+            persistentEntityBaseControl1.Name = "persistentEntityBaseControl1";
+            persistentEntityBaseControl1.Padding = new Padding(4);
+            persistentEntityBaseControl1.Size = new Size(528, 156);
+            persistentEntityBaseControl1.TabIndex = 1;
             // 
-            // ProductDetailView
+            // ProductDetailViewDummy
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             Controls.Add(mainLayout);
             Margin = new Padding(4);
-            Name = "ProductDetailView";
+            Name = "ProductDetailViewDummy";
             Padding = new Padding(4);
             Size = new Size(552, 311);
             mainLayout.ResumeLayout(false);
@@ -92,7 +92,7 @@
 
         #endregion
         private Controls.ProductControl productControl1;
-        private Controls.PersistentBaseInfoControl persistentBaseInfoControl1;
+        private Controls.PersistentEntityBaseControl persistentEntityBaseControl1;
         public TableLayoutPanel mainLayout;
     }
 }

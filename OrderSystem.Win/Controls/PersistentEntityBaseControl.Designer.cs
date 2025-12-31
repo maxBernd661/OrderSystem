@@ -1,6 +1,6 @@
 ﻿namespace OrderSystem.Win.Controls
 {
-    partial class PersistentBaseInfoControl
+    partial class PersistentEntityBaseControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -134,14 +134,14 @@
             labelUpdated.TabIndex = 3;
             labelUpdated.Text = "Updated At";
             // 
-            // PersistentBaseInfoControl
+            // PersistentEntityBaseControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Controls.Add(mainLayout);
-            Name = "PersistentBaseInfoControl";
+            Name = "PersistentEntityBaseControl";
             Size = new Size(430, 115);
             mainLayout.ResumeLayout(false);
             mainLayout.PerformLayout();

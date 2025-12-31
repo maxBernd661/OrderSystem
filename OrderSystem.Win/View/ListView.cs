@@ -1,0 +1,154 @@
+﻿using System.ComponentModel;
+using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core;
+using OrderSystem.Core.Entities;
+
+namespace OrderSystem.Win.View
+{
+    public class ListView<T> : ViewBase where T : PersistentEntityBase
+    {
+        public ListView(IServiceProvider sp) : base(sp)
+        {
+            InitializeCore<T>();
+            InitializeListView();
+            Load += async (_, _) => { await LoadSourceData(); };
+        }
+
+        public ListView(IServiceProvider sp, Func<T, bool> filter) : this(sp)
+        {
+            this.filter = filter;
+        }
+
+        private readonly Func<T, bool>? filter;
+
+        public DataGridView Grid { get; set; }
+
+        public BindingSource Source { get; set; }
+
+        private List<T> unorderedData;
+
+        private ListViewColumn idColumn;
+
+        private void InitializeListView()
+        {
+            components = new Container();
+            Source = new BindingSource(components);
+
+            Grid = new DataGridView()
+            {
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                AllowUserToOrderColumns = true,
+                AllowUserToResizeColumns = true,
+                AutoGenerateColumns = false,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                BackgroundColor = Color.FromArgb(224, 224, 224),
+                ReadOnly = true,
+                Size = new Size(300, 200),
+                DataSource = Source,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+            };
+
+            Grid.Dock = DockStyle.Fill;
+
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
+            MinimumSize = new Size(300, 200);
+            Size = new Size(300, 200);
+
+            Controls.Add(Grid);
+
+            Grid.ColumnHeaderMouseClick += (sender, args) =>
+            {
+                ListViewColumn? column = (ListViewColumn)Grid.Columns[args.ColumnIndex];
+                OrderByColumn(column);
+            };
+
+            Grid.CellDoubleClick += (sender, args) =>
+            {
+                Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
+                Holder.MainForm.AddDetailView<T>(selectedItem);
+            };
+        }
+
+        private async Task LoadSourceData()
+        {
+            List<T> dbData = await sp.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+            if (filter != null)
+            {
+                List<T> filtered = dbData.Where(filter).ToList();
+                dbData = filtered;
+            }
+
+            Source.DataSource = dbData;
+            unorderedData = dbData;
+
+            Dictionary<PropertyInfo, string> props = typeof(T).GetProperties()
+                                                              .Select(x => (x, x.GetCustomAttribute<ColumnNameAttribute>()?.Name ?? x.Name))
+                                                              .ToDictionary();
+
+            List<string> basePropNames = typeof(PersistentEntityBase).GetProperties().Select(x => x.Name).ToList();
+
+            foreach (KeyValuePair<PropertyInfo, string> prop in props)
+            {
+                if (prop.Key.GetCustomAttribute<HideInListViewAttribute>() != null)
+                {
+                    continue;
+                }
+
+                ListViewColumn propColumn = new()
+                {
+                    DataPropertyName = prop.Key.Name,
+                    HeaderText = prop.Value,
+                    ReadOnly = true,
+                    BackingProperty = prop.Key,
+                    ColumnText = prop.Value,
+                    Visible = !basePropNames.Contains(prop.Key.Name)
+                };
+
+                if (propColumn.DataPropertyName == "Id")
+                {
+                    idColumn = propColumn;
+                }
+
+                Grid.Columns.Add(propColumn);
+            }
+        }
+
+        private void OrderByColumn(ListViewColumn column)
+        {
+            foreach (ListViewColumn existingColumn in Grid.Columns.OfType<ListViewColumn>())
+            {
+                existingColumn.HeaderText = existingColumn.ColumnText;
+            }
+
+            List<T> curList;
+
+            if (column.Direction is SortingDirection.None)
+            {
+                curList = unorderedData.OrderByProperty(column.BackingProperty).ToList();
+                column.HeaderText += @" (↑)";
+                column.Direction = SortingDirection.Ascending;
+            }
+            else if (column.Direction is SortingDirection.Ascending)
+            {
+                curList = unorderedData.OrderByPropertyDescending(column.BackingProperty).ToList();
+                column.HeaderText += @" (↓)";
+                column.Direction = SortingDirection.Descending;
+            }
+            else
+            {
+                curList = unorderedData;
+                column.Direction = SortingDirection.None;
+            }
+
+            Source.DataSource = curList;
+        }
+    }
+}
