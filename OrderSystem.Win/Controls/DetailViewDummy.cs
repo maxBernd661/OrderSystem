@@ -1,18 +1,20 @@
 ﻿using OrderSystem.Core.Entities;
+using OrderSystem.Win.View;
 
-namespace OrderSystem.Win.View
+namespace OrderSystem.Win.Controls
 {
     public class DetailViewDummy : UserControl
     {
-        public DetailViewDummy()
-        {
-        }
-
-        private readonly IServiceProvider sp;
-
         public Control Root
         {
             get { return this; }
+        }
+
+        public event EventHandler<EventArgs> Changed;
+
+        protected void OnChanged()
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
         }
 
         public virtual void LoadData<TEntity>(TEntity entity)
@@ -31,8 +33,7 @@ namespace OrderSystem.Win.View
 
         public virtual object ReadData()
         {
-            List<IDataControl> controls = GetControls(Root);
-            return null;
+            return string.Empty;
         }
 
         protected List<IDataControl> GetControls(Control root, List<IDataControl>? items = null)

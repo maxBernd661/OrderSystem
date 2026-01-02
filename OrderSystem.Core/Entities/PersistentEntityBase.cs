@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
 using System.Reflection;
 
 namespace OrderSystem.Core.Entities
@@ -24,9 +24,28 @@ namespace OrderSystem.Core.Entities
             IsDeleted = true;
         }
 
-        public void Validate()
+        public Result SoftValidate()
         {
-            var errors = ValidateCore();
+            List<string> errors = ValidateCore();
+            if (errors.Count == 0)
+            {
+                return Result.Ok();
+            }
+
+            string message = string.Join("\r\n", errors);
+            return Result.Fail(message);
+        }
+
+        public void ValidateOrThrow()
+        {
+            List<string> errors = ValidateCore();
+            if (errors.Count > 0)
+            {
+                string message = string.Join("\r\n", errors);
+                Type entityType = GetType();
+                Type exceptionType = typeof(ValidationException<>).MakeGenericType(entityType);
+                throw (Exception)Activator.CreateInstance(exceptionType, this, message)!;
+            }
         }
 
         private List<string> ValidateCore()
@@ -39,6 +58,22 @@ namespace OrderSystem.Core.Entities
             foreach (PropertyInfo prop in propsToCheck)
             {
                 object? value = prop.GetValue(this);
+
+                if (value is IEnumerable enumerable && prop.PropertyType != typeof(string))
+                {
+                    IEnumerator enumerator = enumerable.GetEnumerator();
+
+                    AtLeastOneAttribute? atLeastOne = prop.GetCustomAttribute<AtLeastOneAttribute>();
+                    if (atLeastOne != null)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            output.Add($"{type.Name}.{prop.Name} must contain at least one valid element.");
+                        }
+                    }
+
+                    ((IDisposable)enumerator).Dispose();
+                }
 
                 if (prop.GetCustomAttribute<RequiredAttribute>() is not null)
                 {
@@ -58,12 +93,12 @@ namespace OrderSystem.Core.Entities
                 {
                     if (len.Min > 0 && str.Length < len.Min)
                     {
-                        output.Add($"{type.Name}.{prop.Name} is too short (min. {len.Min}). ");
+                        output.Add($"{type.Name}.{prop.Name} is too short (min. {len.Min}).");
                     }
 
                     if (len.Max > 0 && str.Length > len.Max)
                     {
-                        output.Add($"{type.Name}.{prop.Name} is too long (max. {len.Max}). ");
+                        output.Add($"{type.Name}.{prop.Name} is too long (max. {len.Max}).");
                     }
                 }
 
@@ -75,11 +110,27 @@ namespace OrderSystem.Core.Entities
                         double d = Convert.ToDouble(value);
                         if (clamp.Min != 0 && d < clamp.Min)
                         {
+                            output.Add($"{type.Name}.{prop.Name} is too low (min. {clamp.Min}).");
                         }
 
                         if (clamp.Max != 0 && d > clamp.Max)
                         {
+                            output.Add($"{type.Name}.{prop.Name} is too high (max. {clamp.Max})");
                         }
+                    }
+                }
+
+                ClampDecimalValueAttribute? clampDec = prop.GetCustomAttribute<ClampDecimalValueAttribute>();
+                if (clampDec is not null && value is decimal dec)
+                {
+                    if (clampDec.Min != 0 && dec < (decimal)clampDec.Min)
+                    {
+                        output.Add($"{type.Name}.{prop.Name} is too low (min. {clampDec.Min}).");
+                    }
+
+                    if (clampDec.Max != 0 && dec > (decimal)clampDec.Max)
+                    {
+                        output.Add($"{type.Name}.{prop.Name} is too high (max. {clampDec.Max})");
                     }
                 }
             }
@@ -141,6 +192,17 @@ namespace OrderSystem.Core.Entities
 
         public float Max { get; set; } = max;
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ClampDecimalValueAttribute(double min = 0, double max = 0) : Attribute
+    {
+        public double Min { get; set; } = min;
+
+        public double Max { get; set; } = max;
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class AtLeastOneAttribute : Attribute;
 
     #endregion Attributes
 }

@@ -29,37 +29,35 @@
         private void InitializeComponent()
         {
             mainToolStrip = new ToolStrip();
-            toolStripDropDownButton1 = new ToolStripDropDownButton();
+            buttonNewOrder = new ToolStripButton();
+            buttonNewCustomer = new ToolStripButton();
+            buttonNewProduct = new ToolStripButton();
+            buttonNewGeneric = new ToolStripDropDownButton();
             productToolStripMenuItem = new ToolStripMenuItem();
             customerToolStripMenuItem = new ToolStripMenuItem();
             orderToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            buttonCloseTab = new ToolStripSplitButton();
-            allTabsToolStripMenuItem = new ToolStripMenuItem();
-            otherTabsToolStripMenuItem = new ToolStripMenuItem();
-            seperatorCloseTab = new ToolStripSeparator();
             buttonSave = new ToolStripSplitButton();
             saveAndNewToolStripMenuItem = new ToolStripMenuItem();
             saveAndExitToolStripMenuItem = new ToolStripMenuItem();
             seperatorSave = new ToolStripSeparator();
             buttonDelete = new ToolStripButton();
             seperatorDelete = new ToolStripSeparator();
+            buttonCloseTab = new ToolStripSplitButton();
+            allTabsToolStripMenuItem = new ToolStripMenuItem();
+            otherTabsToolStripMenuItem = new ToolStripMenuItem();
+            seperatorCloseTab = new ToolStripSeparator();
             mainContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             sidebarLayout = new TableLayoutPanel();
-            panelOrder = new TableLayoutPanel();
-            labelOrders = new Label();
-            pictureOrders = new PictureBox();
-            panelProduct = new TableLayoutPanel();
-            labelProduct = new Label();
-            pictureProduct = new PictureBox();
-            panelCustomer = new TableLayoutPanel();
-            labelCustomer = new Label();
-            pictureCustomer = new PictureBox();
+            sidebarButtonOrder = new OrderSystem.Win.Controls.SidebarButton();
+            sidebarButtonCustomer = new OrderSystem.Win.Controls.SidebarButton();
+            sidebarButtonProduct = new OrderSystem.Win.Controls.SidebarButton();
             mainTabControl = new TabControl();
             toolStrip2 = new ToolStrip();
             toggleSidebarButton = new ToolStripButton();
             labelStatus = new ToolStripLabel();
+            buttonRefresh = new ToolStripButton();
             mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainContainer).BeginInit();
             mainContainer.Panel1.SuspendLayout();
@@ -69,12 +67,6 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.SuspendLayout();
             sidebarLayout.SuspendLayout();
-            panelOrder.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureOrders).BeginInit();
-            panelProduct.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureProduct).BeginInit();
-            panelCustomer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureCustomer).BeginInit();
             toolStrip2.SuspendLayout();
             SuspendLayout();
             // 
@@ -83,9 +75,10 @@
             mainToolStrip.GripMargin = new Padding(0);
             mainToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             mainToolStrip.ImageScalingSize = new Size(32, 32);
-            mainToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator1, buttonCloseTab, seperatorCloseTab, buttonSave, seperatorSave, buttonDelete, seperatorDelete });
+            mainToolStrip.Items.AddRange(new ToolStripItem[] { buttonNewOrder, buttonNewCustomer, buttonNewProduct, buttonNewGeneric, toolStripSeparator1, buttonSave, seperatorSave, buttonDelete, seperatorDelete, buttonCloseTab, seperatorCloseTab, buttonRefresh });
             mainToolStrip.Location = new Point(0, 0);
             mainToolStrip.Margin = new Padding(5);
+            mainToolStrip.MinimumSize = new Size(0, 54);
             mainToolStrip.Name = "mainToolStrip";
             mainToolStrip.Padding = new Padding(5);
             mainToolStrip.Size = new Size(1235, 54);
@@ -93,16 +86,49 @@
             mainToolStrip.TabIndex = 0;
             mainToolStrip.Text = "mainToolStrip";
             // 
-            // toolStripDropDownButton1
+            // buttonNewOrder
             // 
-            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { productToolStripMenuItem, customerToolStripMenuItem, orderToolStripMenuItem });
-            toolStripDropDownButton1.Image = projectResources.newItem;
-            toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
-            toolStripDropDownButton1.Margin = new Padding(2);
-            toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            toolStripDropDownButton1.Padding = new Padding(2);
-            toolStripDropDownButton1.Size = new Size(83, 40);
-            toolStripDropDownButton1.Text = "New";
+            buttonNewOrder.Image = projectResources.newItem;
+            buttonNewOrder.ImageTransparentColor = Color.Magenta;
+            buttonNewOrder.Margin = new Padding(2);
+            buttonNewOrder.Name = "buttonNewOrder";
+            buttonNewOrder.Padding = new Padding(2);
+            buttonNewOrder.Size = new Size(113, 40);
+            buttonNewOrder.Text = "New Order";
+            buttonNewOrder.Click += orderToolStripMenuItem_Click;
+            // 
+            // buttonNewCustomer
+            // 
+            buttonNewCustomer.Image = projectResources.newItem;
+            buttonNewCustomer.ImageTransparentColor = Color.Magenta;
+            buttonNewCustomer.Margin = new Padding(2);
+            buttonNewCustomer.Name = "buttonNewCustomer";
+            buttonNewCustomer.Padding = new Padding(2);
+            buttonNewCustomer.Size = new Size(134, 40);
+            buttonNewCustomer.Text = "New Customer";
+            buttonNewCustomer.Click += customerToolStripMenuItem_Click;
+            // 
+            // buttonNewProduct
+            // 
+            buttonNewProduct.Image = projectResources.newItem;
+            buttonNewProduct.ImageTransparentColor = Color.Magenta;
+            buttonNewProduct.Margin = new Padding(2);
+            buttonNewProduct.Name = "buttonNewProduct";
+            buttonNewProduct.Padding = new Padding(2);
+            buttonNewProduct.Size = new Size(123, 40);
+            buttonNewProduct.Text = "New Product";
+            buttonNewProduct.Click += productToolStripMenuItem_Click;
+            // 
+            // buttonNewGeneric
+            // 
+            buttonNewGeneric.DropDownItems.AddRange(new ToolStripItem[] { productToolStripMenuItem, customerToolStripMenuItem, orderToolStripMenuItem });
+            buttonNewGeneric.Image = projectResources.newItem;
+            buttonNewGeneric.ImageTransparentColor = Color.Magenta;
+            buttonNewGeneric.Margin = new Padding(2);
+            buttonNewGeneric.Name = "buttonNewGeneric";
+            buttonNewGeneric.Padding = new Padding(2);
+            buttonNewGeneric.Size = new Size(83, 40);
+            buttonNewGeneric.Text = "New";
             // 
             // productToolStripMenuItem
             // 
@@ -132,39 +158,6 @@
             toolStripSeparator1.Padding = new Padding(2);
             toolStripSeparator1.Size = new Size(6, 40);
             // 
-            // buttonCloseTab
-            // 
-            buttonCloseTab.DropDownItems.AddRange(new ToolStripItem[] { allTabsToolStripMenuItem, otherTabsToolStripMenuItem });
-            buttonCloseTab.Image = projectResources.close;
-            buttonCloseTab.ImageTransparentColor = Color.Magenta;
-            buttonCloseTab.Margin = new Padding(2);
-            buttonCloseTab.Name = "buttonCloseTab";
-            buttonCloseTab.Padding = new Padding(2);
-            buttonCloseTab.Size = new Size(117, 40);
-            buttonCloseTab.Text = "Close Tab";
-            buttonCloseTab.ButtonClick += buttonCloseTab_Click;
-            // 
-            // allTabsToolStripMenuItem
-            // 
-            allTabsToolStripMenuItem.Name = "allTabsToolStripMenuItem";
-            allTabsToolStripMenuItem.Size = new Size(140, 22);
-            allTabsToolStripMenuItem.Text = "All Tabs";
-            allTabsToolStripMenuItem.Click += allTabsToolStripMenuItem_Click;
-            // 
-            // otherTabsToolStripMenuItem
-            // 
-            otherTabsToolStripMenuItem.Name = "otherTabsToolStripMenuItem";
-            otherTabsToolStripMenuItem.Size = new Size(140, 22);
-            otherTabsToolStripMenuItem.Text = "Other Tabs";
-            otherTabsToolStripMenuItem.Click += otherTabsToolStripMenuItem_Click;
-            // 
-            // seperatorCloseTab
-            // 
-            seperatorCloseTab.Margin = new Padding(2);
-            seperatorCloseTab.Name = "seperatorCloseTab";
-            seperatorCloseTab.Padding = new Padding(2);
-            seperatorCloseTab.Size = new Size(6, 40);
-            // 
             // buttonSave
             // 
             buttonSave.DropDownItems.AddRange(new ToolStripItem[] { saveAndNewToolStripMenuItem, saveAndExitToolStripMenuItem });
@@ -180,15 +173,15 @@
             // saveAndNewToolStripMenuItem
             // 
             saveAndNewToolStripMenuItem.Name = "saveAndNewToolStripMenuItem";
-            saveAndNewToolStripMenuItem.Size = new Size(159, 22);
+            saveAndNewToolStripMenuItem.Size = new Size(165, 22);
             saveAndNewToolStripMenuItem.Text = "Save and New";
             saveAndNewToolStripMenuItem.Click += saveAndNewToolStripMenuItem_Click;
             // 
             // saveAndExitToolStripMenuItem
             // 
             saveAndExitToolStripMenuItem.Name = "saveAndExitToolStripMenuItem";
-            saveAndExitToolStripMenuItem.Size = new Size(159, 22);
-            saveAndExitToolStripMenuItem.Text = "Save and Exit";
+            saveAndExitToolStripMenuItem.Size = new Size(165, 22);
+            saveAndExitToolStripMenuItem.Text = "Save and Close";
             saveAndExitToolStripMenuItem.Click += saveAndExitToolStripMenuItem_Click;
             // 
             // seperatorSave
@@ -215,6 +208,42 @@
             seperatorDelete.Name = "seperatorDelete";
             seperatorDelete.Padding = new Padding(2);
             seperatorDelete.Size = new Size(6, 40);
+            // 
+            // buttonCloseTab
+            // 
+            buttonCloseTab.Alignment = ToolStripItemAlignment.Right;
+            buttonCloseTab.DropDownItems.AddRange(new ToolStripItem[] { allTabsToolStripMenuItem, otherTabsToolStripMenuItem });
+            buttonCloseTab.Image = projectResources.close;
+            buttonCloseTab.ImageTransparentColor = Color.Magenta;
+            buttonCloseTab.Margin = new Padding(2);
+            buttonCloseTab.Name = "buttonCloseTab";
+            buttonCloseTab.Padding = new Padding(2);
+            buttonCloseTab.RightToLeft = RightToLeft.Yes;
+            buttonCloseTab.Size = new Size(117, 40);
+            buttonCloseTab.Text = "Close Tab";
+            buttonCloseTab.ButtonClick += buttonCloseTab_Click;
+            // 
+            // allTabsToolStripMenuItem
+            // 
+            allTabsToolStripMenuItem.Name = "allTabsToolStripMenuItem";
+            allTabsToolStripMenuItem.Size = new Size(180, 22);
+            allTabsToolStripMenuItem.Text = "All Tabs";
+            allTabsToolStripMenuItem.Click += allTabsToolStripMenuItem_Click;
+            // 
+            // otherTabsToolStripMenuItem
+            // 
+            otherTabsToolStripMenuItem.Name = "otherTabsToolStripMenuItem";
+            otherTabsToolStripMenuItem.Size = new Size(180, 22);
+            otherTabsToolStripMenuItem.Text = "Other Tabs";
+            otherTabsToolStripMenuItem.Click += otherTabsToolStripMenuItem_Click;
+            // 
+            // seperatorCloseTab
+            // 
+            seperatorCloseTab.Alignment = ToolStripItemAlignment.Right;
+            seperatorCloseTab.Margin = new Padding(2);
+            seperatorCloseTab.Name = "seperatorCloseTab";
+            seperatorCloseTab.Padding = new Padding(2);
+            seperatorCloseTab.Size = new Size(6, 40);
             // 
             // mainContainer
             // 
@@ -266,9 +295,9 @@
             sidebarLayout.CellBorderStyle = TableLayoutPanelCellBorderStyle.Inset;
             sidebarLayout.ColumnCount = 1;
             sidebarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            sidebarLayout.Controls.Add(panelOrder, 0, 2);
-            sidebarLayout.Controls.Add(panelProduct, 0, 0);
-            sidebarLayout.Controls.Add(panelCustomer, 0, 1);
+            sidebarLayout.Controls.Add(sidebarButtonOrder, 0, 2);
+            sidebarLayout.Controls.Add(sidebarButtonCustomer, 0, 1);
+            sidebarLayout.Controls.Add(sidebarButtonProduct, 0, 0);
             sidebarLayout.Dock = DockStyle.Fill;
             sidebarLayout.Location = new Point(0, 0);
             sidebarLayout.Name = "sidebarLayout";
@@ -279,145 +308,56 @@
             sidebarLayout.Size = new Size(237, 172);
             sidebarLayout.TabIndex = 0;
             // 
-            // panelOrder
+            // sidebarButtonOrder
             // 
-            panelOrder.ColumnCount = 2;
-            panelOrder.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 39.2491455F));
-            panelOrder.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60.7508545F));
-            panelOrder.Controls.Add(labelOrders, 1, 0);
-            panelOrder.Controls.Add(pictureOrders, 0, 0);
-            panelOrder.Dock = DockStyle.Fill;
-            panelOrder.Location = new Point(5, 117);
-            panelOrder.Name = "panelOrder";
-            panelOrder.RowCount = 1;
-            panelOrder.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            panelOrder.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            panelOrder.Size = new Size(227, 50);
-            panelOrder.TabIndex = 5;
-            panelOrder.Click += navOrders_Click;
-            panelOrder.MouseEnter += navOrder_MouseEnter;
-            panelOrder.MouseLeave += navOrder_MouseLeave;
+            sidebarButtonOrder.AutoSize = true;
+            sidebarButtonOrder.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            sidebarButtonOrder.DisplayText = "Orders";
+            sidebarButtonOrder.Dock = DockStyle.Fill;
+            sidebarButtonOrder.HighlightColor = Color.LightBlue;
+            sidebarButtonOrder.Image = projectResources.order;
+            sidebarButtonOrder.Location = new Point(6, 118);
+            sidebarButtonOrder.Margin = new Padding(4);
+            sidebarButtonOrder.MinimumSize = new Size(160, 32);
+            sidebarButtonOrder.Name = "sidebarButtonOrder";
+            sidebarButtonOrder.NormalColor = Color.White;
+            sidebarButtonOrder.Size = new Size(225, 48);
+            sidebarButtonOrder.TabIndex = 7;
+            sidebarButtonOrder.ButtonClicked += sidebarButtonOrder_Click;
             // 
-            // labelOrders
+            // sidebarButtonCustomer
             // 
-            labelOrders.AutoSize = true;
-            labelOrders.Dock = DockStyle.Fill;
-            labelOrders.Location = new Point(92, 0);
-            labelOrders.Name = "labelOrders";
-            labelOrders.Size = new Size(132, 50);
-            labelOrders.TabIndex = 1;
-            labelOrders.Text = "Orders";
-            labelOrders.TextAlign = ContentAlignment.MiddleCenter;
-            labelOrders.Click += navOrders_Click;
-            labelOrders.MouseEnter += navOrder_MouseEnter;
-            labelOrders.MouseLeave += navOrder_MouseLeave;
+            sidebarButtonCustomer.AutoSize = true;
+            sidebarButtonCustomer.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            sidebarButtonCustomer.DisplayText = "Customers";
+            sidebarButtonCustomer.Dock = DockStyle.Fill;
+            sidebarButtonCustomer.HighlightColor = Color.LightBlue;
+            sidebarButtonCustomer.Image = projectResources.customer;
+            sidebarButtonCustomer.Location = new Point(6, 62);
+            sidebarButtonCustomer.Margin = new Padding(4);
+            sidebarButtonCustomer.MinimumSize = new Size(160, 32);
+            sidebarButtonCustomer.Name = "sidebarButtonCustomer";
+            sidebarButtonCustomer.NormalColor = Color.White;
+            sidebarButtonCustomer.Size = new Size(225, 46);
+            sidebarButtonCustomer.TabIndex = 6;
+            sidebarButtonCustomer.ButtonClicked += sidebarButtonCustomer_Click;
             // 
-            // pictureOrders
+            // sidebarButtonProduct
             // 
-            pictureOrders.Dock = DockStyle.Fill;
-            pictureOrders.Image = projectResources.order;
-            pictureOrders.Location = new Point(3, 3);
-            pictureOrders.Name = "pictureOrders";
-            pictureOrders.Size = new Size(83, 44);
-            pictureOrders.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureOrders.TabIndex = 0;
-            pictureOrders.TabStop = false;
-            pictureOrders.Click += navOrders_Click;
-            pictureOrders.MouseEnter += navOrder_MouseEnter;
-            pictureOrders.MouseLeave += navOrder_MouseLeave;
-            // 
-            // panelProduct
-            // 
-            panelProduct.BackgroundImageLayout = ImageLayout.None;
-            panelProduct.ColumnCount = 2;
-            panelProduct.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 39.2491455F));
-            panelProduct.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60.7508545F));
-            panelProduct.Controls.Add(labelProduct, 1, 0);
-            panelProduct.Controls.Add(pictureProduct, 0, 0);
-            panelProduct.Dock = DockStyle.Fill;
-            panelProduct.Location = new Point(5, 5);
-            panelProduct.Name = "panelProduct";
-            panelProduct.RowCount = 1;
-            panelProduct.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            panelProduct.Size = new Size(227, 48);
-            panelProduct.TabIndex = 4;
-            panelProduct.Click += navProducts_Click;
-            panelProduct.MouseEnter += navProducts_MouseEnter;
-            panelProduct.MouseLeave += navProducts_MouseLeave;
-            // 
-            // labelProduct
-            // 
-            labelProduct.AutoSize = true;
-            labelProduct.Dock = DockStyle.Fill;
-            labelProduct.Location = new Point(92, 0);
-            labelProduct.Name = "labelProduct";
-            labelProduct.Size = new Size(132, 48);
-            labelProduct.TabIndex = 1;
-            labelProduct.Text = "Products";
-            labelProduct.TextAlign = ContentAlignment.MiddleCenter;
-            labelProduct.Click += navProducts_Click;
-            labelProduct.MouseEnter += navProducts_MouseEnter;
-            labelProduct.MouseLeave += navProducts_MouseLeave;
-            // 
-            // pictureProduct
-            // 
-            pictureProduct.Dock = DockStyle.Fill;
-            pictureProduct.Image = projectResources.product;
-            pictureProduct.Location = new Point(3, 3);
-            pictureProduct.Name = "pictureProduct";
-            pictureProduct.Size = new Size(83, 42);
-            pictureProduct.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureProduct.TabIndex = 0;
-            pictureProduct.TabStop = false;
-            pictureProduct.Click += navProducts_Click;
-            pictureProduct.MouseEnter += navProducts_MouseEnter;
-            pictureProduct.MouseLeave += navProducts_MouseLeave;
-            // 
-            // panelCustomer
-            // 
-            panelCustomer.ColumnCount = 2;
-            panelCustomer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 39.2491455F));
-            panelCustomer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60.7508545F));
-            panelCustomer.Controls.Add(labelCustomer, 1, 0);
-            panelCustomer.Controls.Add(pictureCustomer, 0, 0);
-            panelCustomer.Dock = DockStyle.Fill;
-            panelCustomer.Location = new Point(5, 61);
-            panelCustomer.Name = "panelCustomer";
-            panelCustomer.RowCount = 1;
-            panelCustomer.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            panelCustomer.Size = new Size(227, 48);
-            panelCustomer.TabIndex = 1;
-            panelCustomer.Click += navCustomers_Click;
-            panelCustomer.MouseEnter += navCustomer_MouseEnter;
-            panelCustomer.MouseLeave += navCustomer_MouseLeave;
-            // 
-            // labelCustomer
-            // 
-            labelCustomer.AutoSize = true;
-            labelCustomer.Dock = DockStyle.Fill;
-            labelCustomer.Location = new Point(92, 0);
-            labelCustomer.Name = "labelCustomer";
-            labelCustomer.Size = new Size(132, 48);
-            labelCustomer.TabIndex = 1;
-            labelCustomer.Text = "Customers";
-            labelCustomer.TextAlign = ContentAlignment.MiddleCenter;
-            labelCustomer.Click += navCustomers_Click;
-            labelCustomer.MouseEnter += navCustomer_MouseEnter;
-            labelCustomer.MouseLeave += navCustomer_MouseLeave;
-            // 
-            // pictureCustomer
-            // 
-            pictureCustomer.Dock = DockStyle.Fill;
-            pictureCustomer.Image = projectResources.customer;
-            pictureCustomer.Location = new Point(3, 3);
-            pictureCustomer.Name = "pictureCustomer";
-            pictureCustomer.Size = new Size(83, 42);
-            pictureCustomer.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureCustomer.TabIndex = 0;
-            pictureCustomer.TabStop = false;
-            pictureCustomer.Click += navCustomers_Click;
-            pictureCustomer.MouseEnter += navCustomer_MouseEnter;
-            pictureCustomer.MouseLeave += navCustomer_MouseLeave;
+            sidebarButtonProduct.AutoSize = true;
+            sidebarButtonProduct.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            sidebarButtonProduct.DisplayText = "Products";
+            sidebarButtonProduct.Dock = DockStyle.Fill;
+            sidebarButtonProduct.HighlightColor = Color.LightBlue;
+            sidebarButtonProduct.Image = projectResources.product;
+            sidebarButtonProduct.Location = new Point(6, 6);
+            sidebarButtonProduct.Margin = new Padding(4);
+            sidebarButtonProduct.MinimumSize = new Size(160, 32);
+            sidebarButtonProduct.Name = "sidebarButtonProduct";
+            sidebarButtonProduct.NormalColor = Color.White;
+            sidebarButtonProduct.Size = new Size(225, 46);
+            sidebarButtonProduct.TabIndex = 0;
+            sidebarButtonProduct.ButtonClicked += sidebarButtonProduct_Click;
             // 
             // mainTabControl
             // 
@@ -460,6 +400,17 @@
             labelStatus.Padding = new Padding(2);
             labelStatus.Size = new Size(4, 24);
             // 
+            // buttonRefresh
+            // 
+            buttonRefresh.Alignment = ToolStripItemAlignment.Right;
+            buttonRefresh.Image = projectResources.refresh;
+            buttonRefresh.ImageTransparentColor = Color.Magenta;
+            buttonRefresh.Name = "buttonRefresh";
+            buttonRefresh.RightToLeft = RightToLeft.Yes;
+            buttonRefresh.Size = new Size(88, 41);
+            buttonRefresh.Text = "Refresh";
+            buttonRefresh.Click += buttonRefresh_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -482,15 +433,7 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             sidebarLayout.ResumeLayout(false);
-            panelOrder.ResumeLayout(false);
-            panelOrder.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureOrders).EndInit();
-            panelProduct.ResumeLayout(false);
-            panelProduct.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureProduct).EndInit();
-            panelCustomer.ResumeLayout(false);
-            panelCustomer.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureCustomer).EndInit();
+            sidebarLayout.PerformLayout();
             toolStrip2.ResumeLayout(false);
             toolStrip2.PerformLayout();
             ResumeLayout(false);
@@ -500,25 +443,12 @@
         #endregion
 
         private ToolStrip mainToolStrip;
-        private ToolStripDropDownButton toolStripDropDownButton1;
-        private ToolStripMenuItem productToolStripMenuItem;
-        private ToolStripMenuItem customerToolStripMenuItem;
-        private ToolStripMenuItem orderToolStripMenuItem;
         public SplitContainer mainContainer;
         private SplitContainer splitContainer1;
         public TabControl mainTabControl;
         private ToolStrip toolStrip2;
         private ToolStripButton toggleSidebarButton;
         private TableLayoutPanel sidebarLayout;
-        private TableLayoutPanel panelOrder;
-        private Label labelOrders;
-        private PictureBox pictureOrders;
-        private TableLayoutPanel panelProduct;
-        private Label labelProduct;
-        private PictureBox pictureProduct;
-        private TableLayoutPanel panelCustomer;
-        private Label labelCustomer;
-        private PictureBox pictureCustomer;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripSeparator seperatorCloseTab;
         private ToolStripSplitButton buttonCloseTab;
@@ -531,5 +461,23 @@
         private ToolStripButton buttonDelete;
         private ToolStripSeparator seperatorDelete;
         private ToolStripLabel labelStatus;
+        private TabPage tabPage1;
+        private Controls.SidebarButton sidebarButtonProduct;
+        private Controls.SidebarButton sidebarButtonOrder;
+        private Controls.SidebarButton sidebarButtonCustomer;
+        private TableLayoutPanel panelOrder;
+        private Label labelOrders;
+        private PictureBox pictureOrders;
+        private TableLayoutPanel panelCustomer;
+        private Label labelCustomer;
+        private PictureBox pictureCustomer;
+        private ToolStripDropDownButton buttonNewGeneric;
+        private ToolStripMenuItem productToolStripMenuItem;
+        private ToolStripMenuItem customerToolStripMenuItem;
+        private ToolStripMenuItem orderToolStripMenuItem;
+        private ToolStripButton buttonNewProduct;
+        private ToolStripButton buttonNewCustomer;
+        private ToolStripButton buttonNewOrder;
+        private ToolStripButton buttonRefresh;
     }
 }

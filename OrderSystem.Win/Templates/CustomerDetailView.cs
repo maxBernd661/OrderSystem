@@ -1,4 +1,5 @@
 ﻿using OrderSystem.Core.Entities;
+using OrderSystem.Win.Controls;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Templates
@@ -9,6 +10,11 @@ namespace OrderSystem.Win.Templates
         public CustomerDetailViewDummy()
         {
             InitializeComponent();
+        }
+
+        public override Result Evaluate()
+        {
+            return base.Evaluate();
         }
     }
 }

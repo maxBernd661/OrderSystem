@@ -31,12 +31,16 @@ namespace OrderSystem.Win
                                             options.UseSqlite(context.Configuration.GetConnectionString("Default"));
                                         });
 
-                                        services.AddTransient<MainForm>();
+                                        services.AddSingleton<MainForm>();
+
                                         services.AddTransient(typeof(ListView<>));
                                         services.AddTransient(typeof(DetailView<>));
 
                                         services.AddSingleton<ViewFactory>();
+                                        services.AddSingleton<ViewManager>();
                                         services.AddSingleton<FilterRegistry>();
+
+                                        services.AddScoped(typeof(SavingService<>));
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();

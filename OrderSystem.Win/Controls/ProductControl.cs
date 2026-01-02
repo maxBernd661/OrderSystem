@@ -10,6 +10,13 @@ namespace OrderSystem.Win.Controls
             InitializeComponent();
         }
 
+        public event EventHandler<EventArgs>? Changed;
+
+        private void OnChanged()
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+
         public void LoadData(object entity)
         {
             LoadData((Product)entity);

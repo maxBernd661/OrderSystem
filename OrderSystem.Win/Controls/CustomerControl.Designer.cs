@@ -103,6 +103,7 @@
             checkBoxActive.Text = "Is Active";
             checkBoxActive.TextAlign = ContentAlignment.MiddleRight;
             checkBoxActive.UseVisualStyleBackColor = true;
+            checkBoxActive.CheckedChanged += (sender, args) => OnChanged(); 
             // 
             // textBoxName
             // 
@@ -114,6 +115,7 @@
             textBoxName.Name = "textBoxName";
             textBoxName.Size = new Size(200, 25);
             textBoxName.TabIndex = 4;
+            textBoxName.TextChanged += (sender, args) => OnChanged();
             // 
             // textBoxMail
             // 
@@ -125,6 +127,7 @@
             textBoxMail.Name = "textBoxMail";
             textBoxMail.Size = new Size(200, 25);
             textBoxMail.TabIndex = 5;
+            textBoxMail.TextChanged += (sender, args) => OnChanged();
             // 
             // CustomerControl
             // 

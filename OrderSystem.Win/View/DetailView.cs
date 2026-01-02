@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core.Entities;
+using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
 using OrderSystem.Win.Services;
 
@@ -7,8 +8,6 @@ namespace OrderSystem.Win.View
 {
     public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
-        private readonly IServiceProvider sp;
-
         public DetailViewDummy Template { get; }
 
         public override ViewKind Kind
@@ -16,13 +15,11 @@ namespace OrderSystem.Win.View
             get { return ViewKind.DetailView; }
         }
 
-        public DetailView(IServiceProvider sp, DetailViewDummy template)
+        public DetailView(IServiceProvider sp, DetailViewDummy template) : base(sp)
         {
-            this.sp = sp;
-
             InitializeCore<TEntity>();
             Template = template;
-
+            Template.Changed += (sender, args) => OnChanged();
             Dock = DockStyle.Fill;
             Control content = template.Root;
             content.Dock = DockStyle.Fill;
@@ -53,10 +50,10 @@ namespace OrderSystem.Win.View
             }
 
             int index = parent.Controls.GetChildIndex(dummy);
-            Type entityType = sp.GetRequiredService<ViewFactory>().GetTypeByName(dummy.EntityType);
+            Type entityType = ServiceProvider.GetRequiredService<ViewFactory>().GetTypeByName(dummy.EntityType);
             Type listType = typeof(ListView<>).MakeGenericType(entityType);
 
-            Control listView = (Control)ActivatorUtilities.CreateInstance(sp, listType);
+            Control listView = (Control)ActivatorUtilities.CreateInstance(ServiceProvider, listType);
 
             listView.Dock = dummy.Dock;
             listView.Margin = dummy.Margin;
@@ -84,6 +81,8 @@ namespace OrderSystem.Win.View
         void LoadData(object entity);
 
         object GetData();
+
+        event EventHandler<EventArgs> Changed;
     }
 
     public interface IDataControl<TEntity> : IDataControl
@@ -96,5 +95,7 @@ namespace OrderSystem.Win.View
     public interface IDetailView
     {
         public DetailViewDummy Template { get; }
+
+        public event EventHandler<EventArgs> Changed;
     }
 }

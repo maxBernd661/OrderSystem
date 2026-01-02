@@ -20,6 +20,8 @@ namespace OrderSystem.Win.Controls
             return savedItem;
         }
 
+        public event EventHandler<EventArgs>? Changed;
+
         public void LoadData(PersistentEntityBase entity)
         {
             savedItem = entity;

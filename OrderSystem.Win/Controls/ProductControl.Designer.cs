@@ -80,6 +80,7 @@
             numericUpDownWeight.Name = "numericUpDownWeight";
             numericUpDownWeight.Size = new Size(200, 25);
             numericUpDownWeight.TabIndex = 5;
+            numericUpDownWeight.ValueChanged += (sender, args) => OnChanged(); 
             // 
             // labelName
             // 
@@ -103,6 +104,7 @@
             textBoxName.Name = "textBoxName";
             textBoxName.Size = new Size(200, 25);
             textBoxName.TabIndex = 1;
+            textBoxName.TextChanged += (sender, args) => OnChanged();
             // 
             // labelUnitPrice
             // 
@@ -128,6 +130,7 @@
             numericUpDownPrice.Name = "numericUpDownPrice";
             numericUpDownPrice.Size = new Size(200, 25);
             numericUpDownPrice.TabIndex = 3;
+            numericUpDownPrice.ValueChanged += (sender, args) => OnChanged();
             // 
             // labelWeight
             // 
@@ -155,6 +158,7 @@
             checkBoxAvailable.Text = "Is Available";
             checkBoxAvailable.TextAlign = ContentAlignment.MiddleRight;
             checkBoxAvailable.UseVisualStyleBackColor = true;
+            checkBoxAvailable.CheckedChanged += (sender, args) => OnChanged(); 
             // 
             // ProductControl
             // 

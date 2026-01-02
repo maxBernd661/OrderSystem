@@ -10,6 +10,9 @@
     <Compile Update="Controls\ProductControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\SidebarButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Controls\ViewHolder.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -22,13 +25,13 @@
     <Compile Update="View\DetailView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="View\DetailViewDummy.cs">
+    <Compile Update="Controls\DetailViewDummy.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="View\ListView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="View\ListViewDummy.cs">
+    <Compile Update="Controls\ListViewDummy.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Templates\ProductDetailView.cs">

@@ -62,6 +62,7 @@
             productControl1.Padding = new Padding(4);
             productControl1.Size = new Size(528, 123);
             productControl1.TabIndex = 0;
+            productControl1.Changed += (sender, args) => OnChanged(); 
             // 
             // persistentEntityBaseControl1
             // 

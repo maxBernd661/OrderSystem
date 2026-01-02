@@ -28,7 +28,7 @@
         private readonly List<OrderItem> items = [];
 
         [HideInListView]
-        [Required]
+        [AtLeastOne]
         public IReadOnlyCollection<OrderItem> Items
         {
             get { return items; }

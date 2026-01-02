@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Win.View;
+using OrderSystem.Win.Controls;
 
 namespace OrderSystem.Win.Services
 {

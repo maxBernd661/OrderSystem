@@ -1,4 +1,5 @@
 ﻿using OrderSystem.Core.Entities;
+using OrderSystem.Win.Controls;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Templates
@@ -14,7 +15,7 @@ namespace OrderSystem.Win.Templates
         public override Result Evaluate()
         {
             Product currentData = (Product)ReadData();
-            return base.Evaluate();
+            return currentData.SoftValidate();
         }
 
         public override object ReadData()

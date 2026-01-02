@@ -29,14 +29,28 @@ namespace OrderSystem.Core
 
         public override int SaveChanges()
         {
+            ValidatePending();
             UpdateTimestamp();
             return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
+            ValidatePending();
             UpdateTimestamp();
             return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ValidatePending()
+        {
+            IEnumerable<PersistentEntityBase> entities = ChangeTracker.Entries<PersistentEntityBase>()
+                                                                      .Where(x => x.State is EntityState.Added or EntityState.Modified)
+                                                                      .Select(x => x.Entity);
+
+            foreach (PersistentEntityBase entity in entities)
+            {
+                entity.ValidateOrThrow();
+            }
         }
 
         private void UpdateTimestamp()
@@ -64,5 +78,13 @@ namespace OrderSystem.Core
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Thrown when <see cref="PersistentEntityBase.ValidateOrThrow"/> finds one or more problems during Validation
+    /// </summary>
+    public class ValidationException<TEntity>(TEntity entity, string error) : Exception(error) where TEntity : PersistentEntityBase
+    {
+        public TEntity Entity { get; } = entity;
     }
 }

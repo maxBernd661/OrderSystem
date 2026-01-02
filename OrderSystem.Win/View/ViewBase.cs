@@ -9,7 +9,10 @@ namespace OrderSystem.Win.View
 {
     public class ViewBase : UserControl
     {
-        protected IContainer components = null;
+        protected IContainer? components = null;
+        private ViewHolder? holder;
+
+        public event EventHandler<EventArgs>? Changed;
 
         protected override void Dispose(bool disposing)
         {
@@ -20,42 +23,32 @@ namespace OrderSystem.Win.View
             base.Dispose(disposing);
         }
 
-        protected ViewHolder holder;
-        protected readonly IServiceProvider sp;
-
-        protected ViewBase()
+        protected void OnChanged()
         {
+            Changed?.Invoke(this, EventArgs.Empty);
         }
+
+        protected IServiceProvider ServiceProvider { get; }
 
         [ActivatorUtilitiesConstructor]
-        protected ViewBase(IServiceProvider sp)
+        protected ViewBase(IServiceProvider serviceProvider)
         {
-            this.sp = sp;
+            ServiceProvider = serviceProvider;
         }
 
-        public ViewHolder Holder
+        protected ViewHolder? Holder
         {
             get { return holder; }
         }
 
-        public void SetHolder(ViewHolder holder)
+        public void SetHolder(ViewHolder viewHolder)
         {
-            this.holder = holder;
+            holder = viewHolder;
         }
 
         public virtual ViewKind Kind
         {
             get { return ViewKind.ListView; }
-        }
-
-        public virtual Task LoadData(Guid? id = null)
-        {
-            return Task.CompletedTask;
-        }
-
-        public virtual Task SaveData()
-        {
-            return Task.CompletedTask;
         }
 
         protected void InitializeCore<T>()
@@ -64,6 +57,16 @@ namespace OrderSystem.Win.View
         }
 
         public Type EntityType { get; private set; } = typeof(PersistentEntityBase);
+
+        public virtual Result QueryCanClose()
+        {
+            return Result.Fail("No reason given");
+        }
+
+        public virtual void Close()
+        {
+            throw new InvalidOperationException();
+        }
     }
 
     public enum SortingDirection

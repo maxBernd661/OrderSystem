@@ -1,35 +1,47 @@
-﻿using System.ComponentModel;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
+using OrderSystem.Win.Services;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace OrderSystem.Win.View
 {
-    public class ListView<T> : ViewBase where T : PersistentEntityBase
+    public class ListView<T> : ViewBase, IListView where T : PersistentEntityBase
     {
-        public ListView(IServiceProvider sp) : base(sp)
+        private readonly ViewManager viewManager;
+
+        public ListView(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            viewManager = serviceProvider.GetRequiredService<ViewManager>();
             InitializeCore<T>();
             InitializeListView();
             Load += async (_, _) => { await LoadSourceData(); };
         }
 
-        public ListView(IServiceProvider sp, Func<T, bool> filter) : this(sp)
+        public ListView(IServiceProvider serviceProvider, Func<T, bool> filter) : this(serviceProvider)
         {
-            this.filter = filter;
+            this.Filter = filter;
         }
 
-        private readonly Func<T, bool>? filter;
+        public Func<T, bool>? Filter { get; private set; }
 
-        public DataGridView Grid { get; set; }
+        public DataGridView? Grid { get; set; }
 
-        public BindingSource Source { get; set; }
+        public BindingSource? Source { get; set; }
 
-        private List<T> unorderedData;
+        public bool HasData
+        {
+            get
+            {
+                return unorderedData?.Count > 0;
+            }
+        }
 
-        private ListViewColumn idColumn;
+        private List<T>? unorderedData;
+
+        private ListViewColumn? idColumn;
 
         private void InitializeListView()
         {
@@ -64,25 +76,27 @@ namespace OrderSystem.Win.View
 
             Controls.Add(Grid);
 
-            Grid.ColumnHeaderMouseClick += (sender, args) =>
+            Grid.SelectionChanged += (sender, args) => OnChanged();
+
+            Grid.ColumnHeaderMouseClick += (_, args) =>
             {
                 ListViewColumn? column = (ListViewColumn)Grid.Columns[args.ColumnIndex];
                 OrderByColumn(column);
             };
 
-            Grid.CellDoubleClick += (sender, args) =>
+            Grid.CellDoubleClick += (_, args) =>
             {
                 Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
-                Holder.MainForm.AddDetailView<T>(selectedItem);
+                viewManager.AddDetailView<T>(selectedItem);
             };
         }
 
         private async Task LoadSourceData()
         {
-            List<T> dbData = await sp.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
-            if (filter != null)
+            List<T> dbData = await ServiceProvider.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+            if (Filter != null)
             {
-                List<T> filtered = dbData.Where(filter).ToList();
+                List<T> filtered = dbData.Where(Filter).ToList();
                 dbData = filtered;
             }
 
@@ -150,5 +164,10 @@ namespace OrderSystem.Win.View
 
             Source.DataSource = curList;
         }
+    }
+
+    public interface IListView
+    {
+        public bool HasData { get; }
     }
 }

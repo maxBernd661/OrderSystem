@@ -1,4 +1,4 @@
-﻿using OrderSystem.Win.View;
+﻿using OrderSystem.Win.Controls;
 
 namespace OrderSystem.Win.Templates
 {
@@ -60,6 +60,7 @@ namespace OrderSystem.Win.Templates
             customerControl.Name = "customerControl";
             customerControl.Size = new Size(430, 119);
             customerControl.TabIndex = 0;
+            customerControl.Changed += (sender, args) => OnChanged(); 
             // 
             // tableLayoutPanel1
             // 
