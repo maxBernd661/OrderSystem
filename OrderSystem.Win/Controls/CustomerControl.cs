@@ -17,24 +17,34 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void LoadData(object entity)
+        public void LoadData(object? entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public Customer GetData()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LoadData(Customer entity)
-        {
-            LoadData(entity);
+            LoadData((Customer)entity!);
         }
 
         object IDataControl.GetData()
         {
             return GetData();
+        }
+
+        public Customer GetData()
+        {
+            return new Customer()
+            {
+                Name = textBoxName.Text,
+                Email = textBoxMail.Text,
+                IsActive = checkBoxActive.Checked
+            };
+        }
+
+        public void LoadData(Customer? entity)
+        {
+            if (entity != null)
+            {
+                textBoxName.Text = entity.Name;
+                textBoxMail.Text = entity.Email;
+                checkBoxActive.Checked = entity.IsActive;
+            }
         }
     }
 }

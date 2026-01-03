@@ -19,10 +19,11 @@
         [Required]
         public Customer Customer { get; private set; } = null!;
 
-        [ColumnName("Customer")]
-        public string CustomerName
+        [ColumnName("Identifier")]
+        [Identifier]
+        public string DisplayName
         {
-            get { return Customer.Name; }
+            get { return $"{Customer.Name} : {Status}"; }
         }
 
         private readonly List<OrderItem> items = [];

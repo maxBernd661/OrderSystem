@@ -6,6 +6,7 @@ using OrderSystem.Core.Entities;
 using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
 using OrderSystem.Win.View;
+using OrderSystem.Win.ViewControllers;
 
 namespace OrderSystem.Win.Services
 {
@@ -27,6 +28,7 @@ namespace OrderSystem.Win.Services
         {
             IServiceScope viewScope = scopeFactory.CreateScope();
             ListView<TEntity> listview = viewScope.ServiceProvider.GetRequiredService<ListView<TEntity>>();
+            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(listview);
 
             ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview);
             ManagedView<TEntity> managedView = new()
@@ -34,7 +36,8 @@ namespace OrderSystem.Win.Services
                 EntityType = typeof(TEntity),
                 Holder = holder,
                 Kind = ViewKind.ListView,
-                Scope = viewScope
+                Scope = viewScope,
+                Controllers = controllers
             };
 
             AddView(managedView);
@@ -46,6 +49,7 @@ namespace OrderSystem.Win.Services
             OrderContext context = viewScope.ServiceProvider.GetRequiredService<OrderContext>();
 
             DetailView<TEntity> view = factory.CreateDetailView<TEntity>();
+            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(view);
 
             TEntity? existingItem = null;
             string viewName = $"New {typeof(TEntity).Name}";
@@ -62,7 +66,11 @@ namespace OrderSystem.Win.Services
                     viewName = identvalue is string s ? s : string.Empty;
                 }
 
-                view.Template.LoadData(existingItem);
+                view.Template.LoadData(existingItem, viewScope.ServiceProvider);
+            }
+            else
+            {
+                view.Template.LoadData<TEntity>(null, viewScope.ServiceProvider);
             }
 
             ViewHolder holder = new(viewName, view);
@@ -74,7 +82,8 @@ namespace OrderSystem.Win.Services
                 EntityType = typeof(TEntity),
                 Entity = existingItem,
                 Kind = ViewKind.DetailView,
-                Scope = viewScope
+                Scope = viewScope,
+                Controllers = controllers
             };
 
             AddView(managedView);
@@ -123,6 +132,11 @@ namespace OrderSystem.Win.Services
             IManagedView? view = views.FirstOrDefault(x => x.Holder == holder);
             if (view != null)
             {
+                foreach (IControllerBase controller in view.Controllers)
+                {
+                    controller.Dispose();
+                }
+
                 view.Holder.ViewChanged -= ViewChanged;
                 view.Scope.Dispose();
                 views.Remove(view);
@@ -138,6 +152,18 @@ namespace OrderSystem.Win.Services
             form.ToggleButtons();
         }
 
+        public async Task<Result> DeleteAsync(ViewHolder holder)
+        {
+            IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
+            if (managedView is null)
+            {
+                return Result.Fail("No managed View found");
+            }
+
+            IDataManipulationService service = GetDataService(managedView);
+            return await service.DeleteAsync(managedView);
+        }
+
         public async Task SaveAsync(ViewHolder holder)
         {
             IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
@@ -146,8 +172,7 @@ namespace OrderSystem.Win.Services
                 return;
             }
 
-            Type serviceType = typeof(SavingService<>).MakeGenericType(managedView.EntityType);
-            ISavingService service = (ISavingService)managedView.Scope.ServiceProvider.GetRequiredService(serviceType);
+            IDataManipulationService service = GetDataService(managedView);
             PersistentEntityBase savedItem = await service.SaveAsync(managedView);
 
             if (holder.View is IDetailView dv)
@@ -170,17 +195,23 @@ namespace OrderSystem.Win.Services
                 IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
                 if (managedView is { ManagedEntity: { } managedEntity })
                 {
-                    dv.Template.LoadData(managedEntity);
+                    dv.Template.LoadData(managedEntity, managedView.Scope.ServiceProvider);
                 }
                 else
                 {
                     object? entity = Activator.CreateInstance(holder.View.EntityType);
                     if (entity is PersistentEntityBase baseEntity)
                     {
-                        dv.Template.LoadData(baseEntity);
+                        dv.Template.LoadData(baseEntity, managedView.Scope.ServiceProvider);
                     }
                 }
             }
+        }
+
+        private IDataManipulationService GetDataService(IManagedView managedView)
+        {
+            Type serviceType = typeof(DataManipulationService<>).MakeGenericType(managedView.EntityType);
+            return (IDataManipulationService)managedView.Scope.ServiceProvider.GetRequiredService(serviceType);
         }
     }
 
@@ -195,6 +226,8 @@ namespace OrderSystem.Win.Services
         Type EntityType { get; set; }
 
         PersistentEntityBase? ManagedEntity { get; set; }
+
+        List<IControllerBase> Controllers { get; set; }
     }
 
     public class ManagedView<TEntity> : IManagedView where TEntity : PersistentEntityBase
@@ -214,5 +247,7 @@ namespace OrderSystem.Win.Services
         public TEntity? Entity { get; set; }
 
         public IServiceScope Scope { get; set; }
+
+        public List<IControllerBase> Controllers { get; set; }
     }
 }

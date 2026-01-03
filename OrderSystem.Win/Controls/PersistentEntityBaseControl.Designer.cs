@@ -61,13 +61,14 @@
             mainLayout.RowStyles.Add(new RowStyle());
             mainLayout.RowStyles.Add(new RowStyle());
             mainLayout.RowStyles.Add(new RowStyle());
-            mainLayout.Size = new Size(430, 115);
+            mainLayout.Size = new Size(432, 115);
             mainLayout.TabIndex = 0;
             // 
             // textBoxUpdated
             // 
             textBoxUpdated.Dock = DockStyle.Fill;
-            textBoxUpdated.Location = new Point(219, 79);
+            textBoxUpdated.Location = new Point(220, 80);
+            textBoxUpdated.Margin = new Padding(4);
             textBoxUpdated.MinimumSize = new Size(200, 25);
             textBoxUpdated.Name = "textBoxUpdated";
             textBoxUpdated.ReadOnly = true;
@@ -78,7 +79,8 @@
             // textBoxCreated
             // 
             textBoxCreated.Dock = DockStyle.Fill;
-            textBoxCreated.Location = new Point(219, 44);
+            textBoxCreated.Location = new Point(220, 45);
+            textBoxCreated.Margin = new Padding(4);
             textBoxCreated.MinimumSize = new Size(200, 25);
             textBoxCreated.Name = "textBoxCreated";
             textBoxCreated.ReadOnly = true;
@@ -101,7 +103,8 @@
             // textBoxId
             // 
             textBoxId.Dock = DockStyle.Fill;
-            textBoxId.Location = new Point(219, 9);
+            textBoxId.Location = new Point(220, 10);
+            textBoxId.Margin = new Padding(4);
             textBoxId.MinimumSize = new Size(200, 25);
             textBoxId.Name = "textBoxId";
             textBoxId.ReadOnly = true;
@@ -142,7 +145,7 @@
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Controls.Add(mainLayout);
             Name = "PersistentEntityBaseControl";
-            Size = new Size(430, 115);
+            Size = new Size(432, 115);
             mainLayout.ResumeLayout(false);
             mainLayout.PerformLayout();
             ResumeLayout(false);

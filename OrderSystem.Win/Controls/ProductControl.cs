@@ -17,9 +17,14 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void LoadData(object entity)
+        public void LoadData(object? entity)
         {
-            LoadData((Product)entity);
+            LoadData((Product)entity!);
+        }
+
+        object IDataControl.GetData()
+        {
+            return GetData();
         }
 
         public Product GetData()
@@ -33,17 +38,15 @@ namespace OrderSystem.Win.Controls
             };
         }
 
-        public void LoadData(Product entity)
+        public void LoadData(Product? entity)
         {
-            textBoxName.Text = entity.Name;
-            numericUpDownPrice.Value = entity.UnitPrice;
-            numericUpDownWeight.Value = (decimal)entity.Weight;
-            checkBoxAvailable.Checked = entity.IsAvailable;
-        }
-
-        object IDataControl.GetData()
-        {
-            return GetData();
+            if (entity != null)
+            {
+                textBoxName.Text = entity.Name;
+                numericUpDownPrice.Value = entity.UnitPrice;
+                numericUpDownWeight.Value = (decimal)entity.Weight;
+                checkBoxAvailable.Checked = entity.IsAvailable;
+            }
         }
     }
 }

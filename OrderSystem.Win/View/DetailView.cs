@@ -83,7 +83,7 @@ namespace OrderSystem.Win.View
 
     public interface IDataControl
     {
-        void LoadData(object entity);
+        void LoadData(object? entity);
 
         object GetData();
 
@@ -92,9 +92,19 @@ namespace OrderSystem.Win.View
 
     public interface IDataControl<TEntity> : IDataControl
     {
-        void LoadData(TEntity entity);
+        void LoadData(TEntity? entity);
 
         new TEntity GetData();
+    }
+
+    public interface IComplexDataControl : IDataControl
+    {
+        void LoadData(object? entity, IServiceProvider serviceProvider);
+    }
+
+    public interface IComplexDataControl<in TEntity> : IComplexDataControl
+    {
+        void LoadData(TEntity? entity, IServiceProvider serviceProvider);
     }
 
     public interface IDetailView

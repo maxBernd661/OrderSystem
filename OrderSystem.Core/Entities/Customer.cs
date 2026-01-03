@@ -7,6 +7,7 @@
     {
         [Required]
         [ClampLength(5, 50)]
+        [Identifier]
         public string Name { get; set; }
 
         [ClampLength(5, 50)]
@@ -27,6 +28,11 @@
         public int OpenOrders
         {
             get { return Orders.Count(x => x.Status != OrderStatus.Shipped); }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

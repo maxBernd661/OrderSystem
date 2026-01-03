@@ -40,7 +40,7 @@ namespace OrderSystem.Win
                                         services.AddSingleton<ViewManager>();
                                         services.AddSingleton<FilterRegistry>();
 
-                                        services.AddScoped(typeof(SavingService<>));
+                                        services.AddScoped(typeof(DataManipulationService<>));
                                     }).Build();
 
             using IServiceScope scope = host.Services.CreateScope();

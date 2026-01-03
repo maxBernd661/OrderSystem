@@ -10,9 +10,9 @@ namespace OrderSystem.Win.Controls
             InitializeComponent();
         }
 
-        public void LoadData(object entity)
+        public void LoadData(object? entity)
         {
-            LoadData((PersistentEntityBase)entity);
+            LoadData((PersistentEntityBase)entity!);
         }
 
         public PersistentEntityBase GetData()
@@ -22,15 +22,18 @@ namespace OrderSystem.Win.Controls
 
         public event EventHandler<EventArgs>? Changed;
 
-        public void LoadData(PersistentEntityBase entity)
+        public void LoadData(PersistentEntityBase? entity)
         {
-            savedItem = entity;
-            textBoxId.Text = entity.Id.ToString();
-            textBoxCreated.Text = entity.CreatedAt.ToString("dd.MM.yyyy : HH:mm");
-            textBoxUpdated.Text = entity.UpdatedAt.ToString("dd.MM.yyyy : HH:mm");
+            if (entity != null)
+            {
+                savedItem = entity;
+                textBoxId.Text = entity.Id.ToString();
+                textBoxCreated.Text = entity.CreatedAt.ToString("dd.MM.yyyy : HH:mm");
+                textBoxUpdated.Text = entity.UpdatedAt.ToString("dd.MM.yyyy : HH:mm");
+            }
         }
 
-        private PersistentEntityBase savedItem;
+        private PersistentEntityBase? savedItem;
 
         object IDataControl.GetData()
         {

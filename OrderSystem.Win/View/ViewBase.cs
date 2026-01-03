@@ -56,17 +56,25 @@ namespace OrderSystem.Win.View
             EntityType = typeof(T);
         }
 
+        public List<Control> GetControls()
+        {
+            return GetControlsRoot(this);
+        }
+
+        private List<Control> GetControlsRoot(Control root, List<Control>? items = null)
+        {
+            items ??= [];
+
+            foreach (Control nested in root.Controls)
+            {
+                items.Add(nested);
+                items = GetControlsRoot(nested, items);
+            }
+
+            return items;
+        }
+
         public Type EntityType { get; private set; } = typeof(PersistentEntityBase);
-
-        public virtual Result QueryCanClose()
-        {
-            return Result.Fail("No reason given");
-        }
-
-        public virtual void Close()
-        {
-            throw new InvalidOperationException();
-        }
     }
 
     public enum SortingDirection

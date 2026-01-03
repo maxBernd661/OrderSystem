@@ -171,16 +171,27 @@ namespace OrderSystem.Win.Forms
             }
         }
 
-        private void buttonDelete_Click(object sender, EventArgs e)
+        private async void buttonDelete_Click(object sender, EventArgs e)
         {
             if (mainTabControl.SelectedTab is ViewHolder holder)
             {
-                if (holder.View.Kind == ViewKind.ListView)
+                if (MessageBox.Show(@$"Really delete this {holder.View.EntityType.Name}", @"Delete Entity", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.No)
                 {
-                    CloseView(holder);
+                    return;
                 }
-                else
+
+                Result deleteResult = await viewManager.DeleteAsync(holder);
+                if (deleteResult.IsSuccess)
                 {
+                    if (holder.View.Kind == ViewKind.DetailView)
+                    {
+                        CloseView(holder);
+                    }
+                    else
+                    {
+                        await viewManager.ReloadView(holder);
+                    }
                 }
             }
         }

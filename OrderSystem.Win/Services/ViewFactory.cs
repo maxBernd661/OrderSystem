@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Win.View;
 using OrderSystem.Win.Controls;
+using OrderSystem.Win.ViewControllers;
 
 namespace OrderSystem.Win.Services
 {
@@ -13,6 +14,7 @@ namespace OrderSystem.Win.Services
         private readonly Dictionary<Type, Type> detailViewMapping;
         private readonly Dictionary<string, Type> entityMapping;
         private readonly Dictionary<Type, PropertyInfo> identifierMapping;
+        private readonly Dictionary<Type, List<Type>> controllerMapping;
 
         public ViewFactory(IServiceProvider sp)
         {
@@ -23,7 +25,31 @@ namespace OrderSystem.Win.Services
                                         .ToList();
 
             List<Type> entities = types
-                                 .Where(x => x.IsAssignableTo(typeof(PersistentEntityBase))).ToList();
+                                 .Where(x => x.IsAssignableTo(typeof(PersistentEntityBase)))
+                                 .ToList();
+
+            List<Type> controllers = types
+                                    .Where(x => x.IsAssignableTo(typeof(IControllerBase)) &&
+                                                x is { IsAbstract: false, IsInterface: false })
+                                    .ToList();
+
+            controllerMapping = [];
+            foreach (Type controller in controllers)
+            {
+                Type? entityType = TryGetEntityTypeFromController(controller);
+                if (entityType is null)
+                {
+                    continue;
+                }
+
+                if (!controllerMapping.TryGetValue(entityType, out List<Type>? list))
+                {
+                    list = [];
+                    controllerMapping[entityType] = list;
+                }
+
+                list.Add(controller);
+            }
 
             identifierMapping = entities.Select(x =>
             {
@@ -94,6 +120,43 @@ namespace OrderSystem.Win.Services
             }
 
             return ActivatorUtilities.CreateInstance<DetailView<TEntity>>(sp, dummy);
+        }
+
+        public List<IControllerBase> MakeControllers<TEntity>(ViewBase viewBase) where TEntity : PersistentEntityBase
+        {
+            Type entityType = typeof(TEntity);
+
+            if (!controllerMapping.Keys.Contains(entityType))
+            {
+                throw new InvalidOperationException($"Unknown Type {entityType.Name}");
+            }
+
+            List<IControllerBase> output = [];
+            foreach (Type controllerType in controllerMapping[entityType])
+            {
+                object? createdInstance = ActivatorUtilities.CreateInstance(sp, controllerType, viewBase);
+                if (createdInstance is IControllerBase controller)
+                {
+                    output.Add(controller);
+                }
+            }
+
+            return output;
+        }
+
+        private static Type? TryGetEntityTypeFromController(Type controllerType)
+        {
+            Type? bt = controllerType.BaseType;
+            while (bt != null)
+            {
+                if (bt.IsGenericType && bt.GetGenericTypeDefinition() == typeof(ViewController<>))
+                {
+                    Type arg = bt.GetGenericArguments()[0];
+                    return arg;
+                }
+                bt = bt.BaseType;
+            }
+            return null;
         }
     }
 }

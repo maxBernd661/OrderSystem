@@ -17,12 +17,19 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public virtual void LoadData<TEntity>(TEntity entity)
+        public void LoadData<TEntity>(TEntity? entity, IServiceProvider sp)
         {
             List<IDataControl> toLoad = GetControls(Root);
             foreach (IDataControl control in toLoad)
             {
-                control.LoadData(entity);
+                if (control is IComplexDataControl complex)
+                {
+                    complex.LoadData(entity, sp);
+                }
+                else
+                {
+                    control.LoadData(entity);
+                }
             }
         }
 
@@ -36,7 +43,7 @@ namespace OrderSystem.Win.Controls
             return string.Empty;
         }
 
-        protected List<IDataControl> GetControls(Control root, List<IDataControl>? items = null)
+        private List<IDataControl> GetControls(Control root, List<IDataControl>? items = null)
         {
             items ??= [];
 

@@ -4,6 +4,9 @@
     <Compile Update="Controls\CustomerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\OrderControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Controls\PersistentEntityBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -16,11 +19,14 @@
     <Compile Update="Controls\ViewHolder.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Templates\CustomerDetailView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Forms\MainForm.cs">
-      <SubType>Form</SubType>
+    <Compile Update="Templates\OrderDetailView.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="View\DetailView.cs">
       <SubType>UserControl</SubType>

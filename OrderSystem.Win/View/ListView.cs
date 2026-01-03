@@ -27,9 +27,9 @@ namespace OrderSystem.Win.View
 
         public Func<T, bool>? Filter { get; private set; }
 
-        public DataGridView? Grid { get; set; }
+        public DataGridView Grid { get; set; }
 
-        public BindingSource? Source { get; set; }
+        public BindingSource Source { get; set; }
 
         public bool HasData
         {
@@ -46,6 +46,7 @@ namespace OrderSystem.Win.View
         private void InitializeListView()
         {
             components = new Container();
+
             Source = new BindingSource(components);
 
             Grid = new DataGridView()
@@ -86,6 +87,11 @@ namespace OrderSystem.Win.View
 
             Grid.CellDoubleClick += (_, args) =>
             {
+                if (args.RowIndex < 0 || args.ColumnIndex < 0)
+                {
+                    return;
+                }
+
                 Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
                 viewManager.AddDetailView<T>(selectedItem);
             };
@@ -137,6 +143,26 @@ namespace OrderSystem.Win.View
             }
         }
 
+        public void AddControl(Control control)
+        {
+            Controls.Add(control);
+        }
+
+        public Guid? GetData()
+        {
+            if (idColumn is null)
+            {
+                return null;
+            }
+
+            if (Grid is null)
+            {
+                return null;
+            }
+
+            return (Guid)Grid.SelectedRows[0].Cells[idColumn.Index].Value;
+        }
+
         private void OrderByColumn(ListViewColumn column)
         {
             foreach (ListViewColumn existingColumn in Grid.Columns.OfType<ListViewColumn>())
@@ -170,6 +196,12 @@ namespace OrderSystem.Win.View
 
     public interface IListView
     {
+        public void AddControl(Control control);
+
+        public Guid? GetData();
+
+        public DataGridView Grid { get; }
+
         public bool HasData { get; }
 
         public Task LoadSourceData();

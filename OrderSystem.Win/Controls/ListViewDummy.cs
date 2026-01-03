@@ -13,5 +13,12 @@ namespace OrderSystem.Win.Controls
         public string FilterKey { get; set; }
 
         public bool OnlyRelevantData { get; set; }
+        private ToolStrip toolStrip1;
+        private ToolStripButton toolStripButton1;
+
+        private void InitializeComponent()
+        {
+
+        }
     }
 }
