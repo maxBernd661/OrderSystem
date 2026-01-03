@@ -8,6 +8,11 @@ namespace OrderSystem.Core.Entities
     /// </summary>
     public abstract class PersistentEntityBase
     {
+        public override string ToString()
+        {
+            return $"{GetType().Name}_{Id.ToString()}";
+        }
+
         public Guid Id { get; set; }
 
         [ColumnName("Created At")]
@@ -136,6 +141,21 @@ namespace OrderSystem.Core.Entities
             }
 
             return output;
+        }
+
+        public string GetIdentifier()
+        {
+            PropertyInfo? identProp = GetType()
+                                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                     .FirstOrDefault(x => x.GetCustomAttribute<IdentifierAttribute>() != null);
+
+            object? identValue = identProp?.GetValue(this);
+            if (identValue is string s && !string.IsNullOrEmpty(s))
+            {
+                return s;
+            }
+
+            return ToString();
         }
     }
 

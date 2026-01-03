@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.Controls;
 using OrderSystem.Win.Services;
@@ -126,31 +127,48 @@ namespace OrderSystem.Win.Forms
             }
         }
 
-        private void buttonRefresh_Click(object sender, EventArgs e)
+        private async void buttonRefresh_Click(object sender, EventArgs e)
         {
+            if (mainTabControl.SelectedTab is ViewHolder holder)
+            {
+                await viewManager.ReloadView(holder);
+            }
         }
 
         private async void buttonSave_ButtonClick(object sender, EventArgs e)
         {
-            if (mainTabControl.SelectedTab is ViewHolder { View: IDetailView dv } holder)
-            {
-                Result evalResult = dv.Template.Evaluate();
-                if (!evalResult.IsSuccess)
-                {
-                    labelStatus.Text = @$"Could not Save Object: {evalResult.Error}";
-                    return;
-                }
+            await TrySave();
+        }
 
-                await viewManager.SaveAsync(holder);
+        private async void saveAndNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Result saveSuccess = await TrySave();
+            if (saveSuccess.IsSuccess)
+            {
+                if (mainTabControl.SelectedTab is ViewHolder holder)
+                {
+                    CloseView(holder);
+                    MethodInfo? addMethod = typeof(ViewManager).GetMethod(nameof(ViewManager.AddDetailView))?
+                                                              .MakeGenericMethod(holder.View.EntityType);
+
+                    if (addMethod != null)
+                    {
+                        addMethod.Invoke(viewManager, [null]);
+                    }
+                }
             }
         }
 
-        private void saveAndNewToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveAndExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-        }
-
-        private void saveAndExitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+            Result saveSuccess = await TrySave();
+            if (saveSuccess.IsSuccess)
+            {
+                if (mainTabControl.SelectedTab is ViewHolder holder)
+                {
+                    CloseView(holder);
+                }
+            }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
@@ -165,6 +183,24 @@ namespace OrderSystem.Win.Forms
                 {
                 }
             }
+        }
+
+        private async Task<Result> TrySave()
+        {
+            if (mainTabControl.SelectedTab is ViewHolder { View: IDetailView dv } holder)
+            {
+                Result evalResult = dv.Template.Evaluate();
+                if (!evalResult.IsSuccess)
+                {
+                    labelStatus.Text = @$"Could not Save Object: {evalResult.Error}";
+                    return evalResult;
+                }
+
+                await viewManager.SaveAsync(holder);
+                return Result.Ok();
+            }
+
+            return Result.Fail(string.Empty);
         }
 
         #endregion Buttons

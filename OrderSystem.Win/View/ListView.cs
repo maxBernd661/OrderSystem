@@ -91,8 +91,10 @@ namespace OrderSystem.Win.View
             };
         }
 
-        private async Task LoadSourceData()
+        public async Task LoadSourceData()
         {
+            Grid?.Columns.Clear();
+
             List<T> dbData = await ServiceProvider.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
             if (Filter != null)
             {
@@ -169,5 +171,7 @@ namespace OrderSystem.Win.View
     public interface IListView
     {
         public bool HasData { get; }
+
+        public Task LoadSourceData();
     }
 }

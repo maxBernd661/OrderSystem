@@ -20,7 +20,15 @@ namespace OrderSystem.Win.Templates
 
         public override object ReadData()
         {
-            return productControl1.GetData();
+            Product output = productControl1.GetData();
+            PersistentEntityBase baseData = persistentEntityBaseControl1.GetData();
+            
+            output.Id = baseData.Id;
+            output.CreatedAt = baseData.CreatedAt;
+            output.UpdatedAt = baseData.UpdatedAt;
+            output.IsDeleted = baseData.IsDeleted;
+
+            return output;
         }
     }
 }

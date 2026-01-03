@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OrderSystem.Core.Entities;
 
@@ -34,6 +35,15 @@ namespace OrderSystem.Core
             return base.SaveChanges();
         }
 
+        public async Task<DateTime> SaveData(CancellationToken cancellationToken = new())
+        {
+            ValidatePending();
+            DateTime updateTime = UpdateTimestamp();
+            await base.SaveChangesAsync(cancellationToken);
+
+            return updateTime;
+        }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             ValidatePending();
@@ -53,7 +63,7 @@ namespace OrderSystem.Core
             }
         }
 
-        private void UpdateTimestamp()
+        private DateTime UpdateTimestamp()
         {
             DateTime now = DateTime.UtcNow;
 
@@ -77,6 +87,8 @@ namespace OrderSystem.Core
                         break;
                 }
             }
+
+            return now;
         }
     }
 

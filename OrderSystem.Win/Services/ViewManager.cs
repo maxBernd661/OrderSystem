@@ -148,7 +148,39 @@ namespace OrderSystem.Win.Services
 
             Type serviceType = typeof(SavingService<>).MakeGenericType(managedView.EntityType);
             ISavingService service = (ISavingService)managedView.Scope.ServiceProvider.GetRequiredService(serviceType);
-            await service.SaveAsync(managedView);
+            PersistentEntityBase savedItem = await service.SaveAsync(managedView);
+
+            if (holder.View is IDetailView dv)
+            {
+                managedView.ManagedEntity = savedItem;
+                holder.Text = dv.ReadData().GetIdentifier();
+            }
+
+            await ReloadView(holder);
+        }
+
+        public async Task ReloadView(ViewHolder holder)
+        {
+            if (holder.View is IListView lv)
+            {
+                await lv.LoadSourceData();
+            }
+            else if (holder.View is IDetailView dv)
+            {
+                IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
+                if (managedView is { ManagedEntity: { } managedEntity })
+                {
+                    dv.Template.LoadData(managedEntity);
+                }
+                else
+                {
+                    object? entity = Activator.CreateInstance(holder.View.EntityType);
+                    if (entity is PersistentEntityBase baseEntity)
+                    {
+                        dv.Template.LoadData(baseEntity);
+                    }
+                }
+            }
         }
     }
 
@@ -162,7 +194,7 @@ namespace OrderSystem.Win.Services
 
         Type EntityType { get; set; }
 
-        PersistentEntityBase? ManagedEntity { get; }
+        PersistentEntityBase? ManagedEntity { get; set; }
     }
 
     public class ManagedView<TEntity> : IManagedView where TEntity : PersistentEntityBase
@@ -176,6 +208,7 @@ namespace OrderSystem.Win.Services
         public PersistentEntityBase? ManagedEntity
         {
             get { return Entity; }
+            set { Entity = (TEntity)value; }
         }
 
         public TEntity? Entity { get; set; }

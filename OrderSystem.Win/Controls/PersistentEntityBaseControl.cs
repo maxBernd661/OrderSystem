@@ -17,7 +17,7 @@ namespace OrderSystem.Win.Controls
 
         public PersistentEntityBase GetData()
         {
-            return savedItem;
+            return savedItem ?? new Product();
         }
 
         public event EventHandler<EventArgs>? Changed;

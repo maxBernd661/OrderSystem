@@ -8,6 +8,11 @@ namespace OrderSystem.Win.View
 {
     public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
+        public PersistentEntityBase ReadData()
+        {
+            return (PersistentEntityBase)Template.ReadData();
+        }
+
         public DetailViewDummy Template { get; }
 
         public override ViewKind Kind
@@ -94,6 +99,8 @@ namespace OrderSystem.Win.View
 
     public interface IDetailView
     {
+        public PersistentEntityBase ReadData();
+
         public DetailViewDummy Template { get; }
 
         public event EventHandler<EventArgs> Changed;

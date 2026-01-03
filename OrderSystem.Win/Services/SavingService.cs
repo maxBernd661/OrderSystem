@@ -8,30 +8,33 @@ namespace OrderSystem.Win.Services
     public class SavingService<TEntity>(OrderContext context) : ISavingService
         where TEntity : PersistentEntityBase
     {
-        public async Task SaveAsync(IManagedView managedView, CancellationToken ct = default)
+        public async Task<PersistentEntityBase> SaveAsync(IManagedView managedView, CancellationToken ct = default)
         {
             if (managedView.Holder.View is not IDetailView dv)
             {
-                return;
+                return new Product();
             }
+
+            TEntity savingEntity;
 
             DbSet<TEntity> set = context.Set<TEntity>();
 
             if (managedView.ManagedEntity is null)
             {
-                TEntity newItem = (TEntity)dv.Template.ReadData();
-                set.Add(newItem);
+                savingEntity = (TEntity)dv.Template.ReadData();
+                set.Add(savingEntity);
             }
             else
             {
-                TEntity newItem = (TEntity)dv.Template.ReadData();
+                savingEntity = (TEntity)dv.Template.ReadData();
                 TEntity existingItem = await set.SingleAsync(x => x.Id == managedView.ManagedEntity.Id, ct);
-                newItem = SetBaseValues(newItem, existingItem);
+                savingEntity = SetBaseValues(savingEntity, existingItem);
 
-                context.Entry(existingItem).CurrentValues.SetValues(newItem);
+                context.Entry(existingItem).CurrentValues.SetValues(savingEntity);
             }
 
-            await context.SaveChangesAsync(ct);
+            await context.SaveData(ct);
+            return savingEntity;
         }
 
         private TEntity SetBaseValues(TEntity entity, TEntity existingEntity)
@@ -46,6 +49,6 @@ namespace OrderSystem.Win.Services
 
     public interface ISavingService
     {
-        Task SaveAsync(IManagedView managedView, CancellationToken ct = default);
+        Task<PersistentEntityBase> SaveAsync(IManagedView managedView, CancellationToken ct = default);
     }
 }
