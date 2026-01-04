@@ -122,19 +122,18 @@ namespace OrderSystem.Win.Services
             return ActivatorUtilities.CreateInstance<DetailView<TEntity>>(sp, dummy);
         }
 
-        public List<IControllerBase> MakeControllers<TEntity>(ViewBase viewBase) where TEntity : PersistentEntityBase
+        public List<IControllerBase> MakeControllers<TEntity>(IServiceProvider provider,ViewBase viewBase) where TEntity : PersistentEntityBase
         {
             Type entityType = typeof(TEntity);
-
+            List<IControllerBase> output = [];
             if (!controllerMapping.Keys.Contains(entityType))
             {
-                throw new InvalidOperationException($"Unknown Type {entityType.Name}");
+                return output;
             }
 
-            List<IControllerBase> output = [];
             foreach (Type controllerType in controllerMapping[entityType])
             {
-                object? createdInstance = ActivatorUtilities.CreateInstance(sp, controllerType, viewBase);
+                object? createdInstance = ActivatorUtilities.CreateInstance(provider, controllerType, viewBase);
                 if (createdInstance is IControllerBase controller)
                 {
                     output.Add(controller);

@@ -2,13 +2,16 @@
 
 namespace OrderSystem.Win.Controls
 {
-    public class ViewHolder : TabPage
+    public class ViewHolder : UserControl
     {
-        public event EventHandler<EventArgs> ViewChanged;
+        public event EventHandler<EventArgs>? ViewChanged;
 
-        public ViewHolder(string name, ViewBase view) : base(name)
+        public string Name { get; }
+
+        public ViewHolder(string name, ViewBase view)
         {
             View = view;
+            Name = name;
 
             View.Dock = DockStyle.Fill;
             View.SetHolder(this);
@@ -30,5 +33,17 @@ namespace OrderSystem.Win.Controls
         }
 
         public bool ViewIsChanged { get; private set; }
+    }
+
+    public class TabPageHost : TabPage
+    {
+        public ViewHolder Holder { get; }
+
+        public TabPageHost(string title, ViewHolder holder) : base(title)
+        {
+            Holder = holder;
+            Holder.Dock = DockStyle.Fill;
+            Controls.Add(Holder);
+        }
     }
 }

@@ -5,9 +5,10 @@
     /// </summary>
     public class Order : PersistentEntityBase
     {
-        //für EF
-        private Order()
+        public Order()
         {
+            Status = OrderStatus.Draft;
+            history.Add(OrderStatusHistory.Created(this));
         }
 
         #region Properties

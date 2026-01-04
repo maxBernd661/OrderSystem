@@ -32,6 +32,7 @@ namespace OrderSystem.Win
                                         });
 
                                         services.AddSingleton<MainForm>();
+                                        services.AddTransient<PopupView>();
 
                                         services.AddTransient(typeof(ListView<>));
                                         services.AddTransient(typeof(DetailView<>));

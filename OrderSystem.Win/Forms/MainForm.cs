@@ -30,51 +30,66 @@ namespace OrderSystem.Win.Forms
 
         private void productToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            viewManager.AddDetailView<Product>();
+            ViewHolder view = viewManager.AddDetailView<Product>();
+            ShowView(view);
         }
 
         private void sidebarButtonProduct_Click(object sender, EventArgs e)
         {
-            viewManager.AddListView<Product>();
+            ViewHolder view = viewManager.AddListView<Product>();
+            ShowView(view);
         }
 
         private void customerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            viewManager.AddDetailView<Customer>();
+            ViewHolder view = viewManager.AddDetailView<Customer>();
+            ShowView(view);
         }
 
         private void sidebarButtonCustomer_Click(object sender, EventArgs e)
         {
-            viewManager.AddListView<Customer>();
+            ViewHolder view = viewManager.AddListView<Customer>();
+            ShowView(view);
         }
 
         private void orderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            viewManager.AddDetailView<Order>();
+            ViewHolder view = viewManager.AddDetailView<Order>();
+            ShowView(view);
         }
 
         private void sidebarButtonOrder_Click(object sender, EventArgs e)
         {
-            viewManager.AddListView<Order>();
+            ViewHolder view = viewManager.AddListView<Order>();
+            ShowView(view);
         }
 
         public void ShowView(ViewHolder holder)
         {
-            if (!mainTabControl.TabPages.Contains(holder))
+            TabPageHost? host = FindHost(holder);
+            if (host is null)
             {
-                mainTabControl.TabPages.Add(holder);
+                host = new TabPageHost(holder.Name, holder);
+                mainTabControl.TabPages.Add(host);
             }
 
-            mainTabControl.SelectedTab = holder;
+            mainTabControl.SelectedTab = host;
 
             ToggleButtons();
         }
 
         private void CloseView(ViewHolder holder)
         {
-            if (mainTabControl.TabPages.Contains(holder) && viewManager.DisposeView(holder))
+            TabPageHost? host = FindHost(holder);
+            if (host is null)
             {
-                mainTabControl.TabPages.Remove(holder);
+                return;
+            }
+
+            if (viewManager.DisposeView(holder))
+            {
+                mainTabControl.TabPages.Remove(host);
+                host.Dispose();
             }
 
             ToggleButtons();
@@ -110,18 +125,17 @@ namespace OrderSystem.Win.Forms
         {
             TabPage? selected = mainTabControl.SelectedTab;
 
-            for (int i = 0; i < mainTabControl.TabPages.Count; i++)
+            foreach (TabPageHost host in mainTabControl.TabPages.OfType<TabPageHost>().ToList())
             {
-                if (mainTabControl.TabPages[i] != selected && mainTabControl.TabPages[i] is ViewHolder holder)
-                {
-                    CloseView(holder);
-                }
+                if (!ReferenceEquals(host, selected))
+                    CloseView(host.Holder);
             }
         }
 
         private void buttonCloseTab_Click(object sender, EventArgs e)
         {
-            if (mainTabControl.SelectedTab is ViewHolder holder)
+            ViewHolder? holder = GetCurrentHolder();
+            if (holder is not null)
             {
                 CloseView(holder);
             }
@@ -129,7 +143,8 @@ namespace OrderSystem.Win.Forms
 
         private async void buttonRefresh_Click(object sender, EventArgs e)
         {
-            if (mainTabControl.SelectedTab is ViewHolder holder)
+            ViewHolder? holder = GetCurrentHolder();
+            if (holder is not null)
             {
                 await viewManager.ReloadView(holder);
             }
@@ -145,10 +160,11 @@ namespace OrderSystem.Win.Forms
             Result saveSuccess = await TrySave();
             if (saveSuccess.IsSuccess)
             {
-                if (mainTabControl.SelectedTab is ViewHolder holder)
+                ViewHolder? holder = GetCurrentHolder();
+                if (holder is not null)
                 {
                     CloseView(holder);
-                    MethodInfo? addMethod = typeof(ViewManager).GetMethod(nameof(ViewManager.AddDetailView))?
+                    MethodInfo? addMethod = typeof(ViewManager).GetMethod(nameof(ViewManager.AddAndShowDetailView))?
                                                               .MakeGenericMethod(holder.View.EntityType);
 
                     if (addMethod != null)
@@ -164,7 +180,8 @@ namespace OrderSystem.Win.Forms
             Result saveSuccess = await TrySave();
             if (saveSuccess.IsSuccess)
             {
-                if (mainTabControl.SelectedTab is ViewHolder holder)
+                ViewHolder? holder = GetCurrentHolder();
+                if (holder is not null)
                 {
                     CloseView(holder);
                 }
@@ -173,7 +190,8 @@ namespace OrderSystem.Win.Forms
 
         private async void buttonDelete_Click(object sender, EventArgs e)
         {
-            if (mainTabControl.SelectedTab is ViewHolder holder)
+            ViewHolder? holder = GetCurrentHolder();
+            if (holder is not null)
             {
                 if (MessageBox.Show(@$"Really delete this {holder.View.EntityType.Name}", @"Delete Entity", MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.No)
@@ -198,7 +216,8 @@ namespace OrderSystem.Win.Forms
 
         private async Task<Result> TrySave()
         {
-            if (mainTabControl.SelectedTab is ViewHolder { View: IDetailView dv } holder)
+            ViewHolder? holder = GetCurrentHolder();
+            if (holder is { View: IDetailView dv })
             {
                 Result evalResult = dv.Template.Evaluate();
                 if (!evalResult.IsSuccess)
@@ -267,7 +286,8 @@ namespace OrderSystem.Win.Forms
                 return;
             }
 
-            if (mainTabControl.SelectedTab is not ViewHolder holder)
+            ViewHolder? holder = GetCurrentHolder();
+            if (holder is null)
             {
                 return;
             }
@@ -298,6 +318,16 @@ namespace OrderSystem.Win.Forms
         }
 
         #endregion Toolstrip
+
+        private ViewHolder? GetCurrentHolder()
+        {
+            return (mainTabControl.SelectedTab as TabPageHost)?.Holder;
+        }
+
+        private TabPageHost? FindHost(ViewHolder holder)
+        {
+            return mainTabControl.TabPages.OfType<TabPageHost>().FirstOrDefault(x => ReferenceEquals(x.Holder, holder));
+        }
     }
 
     public enum ViewKind

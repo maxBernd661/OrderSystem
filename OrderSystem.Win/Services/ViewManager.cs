@@ -24,13 +24,14 @@ namespace OrderSystem.Win.Services
         private readonly ViewFactory factory;
         private readonly List<IManagedView> views = [];
 
-        public void AddListView<TEntity>() where TEntity : PersistentEntityBase
+        public ViewHolder AddListView<TEntity>() where TEntity : PersistentEntityBase
         {
             IServiceScope viewScope = scopeFactory.CreateScope();
             ListView<TEntity> listview = viewScope.ServiceProvider.GetRequiredService<ListView<TEntity>>();
-            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(listview);
+            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(viewScope.ServiceProvider, listview);
 
             ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview);
+            holder.Disposed += (sender, args) => DisposeView(holder);
             ManagedView<TEntity> managedView = new()
             {
                 EntityType = typeof(TEntity),
@@ -40,16 +41,16 @@ namespace OrderSystem.Win.Services
                 Controllers = controllers
             };
 
-            AddView(managedView);
+            return AddView(managedView);
         }
 
-        public void AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
+        public ViewHolder AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
         {
             IServiceScope viewScope = scopeFactory.CreateScope();
             OrderContext context = viewScope.ServiceProvider.GetRequiredService<OrderContext>();
 
             DetailView<TEntity> view = factory.CreateDetailView<TEntity>();
-            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(view);
+            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(viewScope.ServiceProvider, view);
 
             TEntity? existingItem = null;
             string viewName = $"New {typeof(TEntity).Name}";
@@ -75,6 +76,7 @@ namespace OrderSystem.Win.Services
 
             ViewHolder holder = new(viewName, view);
             holder.ViewChanged += ViewChanged;
+            holder.Disposed += (sender, args) => DisposeView(holder);
 
             ManagedView<TEntity> managedView = new()
             {
@@ -86,21 +88,26 @@ namespace OrderSystem.Win.Services
                 Controllers = controllers
             };
 
-            AddView(managedView);
+            return AddView(managedView);
         }
 
-        private void AddView<TEntity>(ManagedView<TEntity> managedView) where TEntity : PersistentEntityBase
+        public void AddAndShowDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
         {
-            MainForm form = sp.GetRequiredService<MainForm>();
+            ViewHolder view = AddDetailView<TEntity>(id);
+            sp.GetRequiredService<MainForm>().ShowView(view);
+        }
 
-            //dont open the same unfiltered listview twice
+        /// <summary>
+        /// Adds the Managed view or returns an existing view
+        /// </summary>
+        private ViewHolder AddView<TEntity>(ManagedView<TEntity> managedView) where TEntity : PersistentEntityBase
+        {
             if (managedView.Kind == ViewKind.ListView)
             {
                 IManagedView? openListView = views.FirstOrDefault(x => x.EntityType == typeof(TEntity));
                 if (openListView != null)
                 {
-                    form.ShowView(openListView.Holder);
-                    return;
+                    return openListView.Holder;
                 }
             }
 
@@ -109,13 +116,13 @@ namespace OrderSystem.Win.Services
                 IManagedView? openDetailView = views.FirstOrDefault(x => x.Kind == ViewKind.DetailView && x.ManagedEntity?.Id == managedView.Entity.Id);
                 if (openDetailView != null)
                 {
-                    form.ShowView(openDetailView.Holder);
-                    return;
+                    return openDetailView.Holder;
                 }
             }
 
             views.Add(managedView);
-            form.ShowView(managedView.Holder);
+
+            return managedView.Holder;
         }
 
         public void Dispose()

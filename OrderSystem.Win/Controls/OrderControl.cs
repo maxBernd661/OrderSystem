@@ -34,7 +34,7 @@ namespace OrderSystem.Win.Controls
                 textBoxStatus.Text = entity.Status.ToString();
                 currentCustomer = entity.Customer;
             }
-
+            comboBoxCustomer.Items.Clear();
             DbSet<Customer> customers = serviceProvider.GetRequiredService<OrderContext>().Set<Customer>();
             currentCustomer ??= customers.FirstOrDefault();
 

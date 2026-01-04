@@ -1,14 +1,19 @@
-﻿using OrderSystem.Core.Entities;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core.Entities;
+using OrderSystem.Win.Controls;
+using OrderSystem.Win.Forms;
+using OrderSystem.Win.Services;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.ViewControllers
 {
-    public class OrderViewController(ViewBase view) : ViewController<Order>(view)
+    public class OrderViewController(IServiceScopeFactory scopeFactory, ViewBase view) : ViewController<Order>(view)
     {
         private ToolStrip? toolStrip;
         private IListView? listView;
         private ToolStripButton? addItemButton;
         private ToolStripButton? deleteItemButton;
+        private readonly IServiceScopeFactory scopeFactory = scopeFactory;
 
         protected override void ViewOnLoad(object? sender, EventArgs e)
         {
@@ -34,6 +39,8 @@ namespace OrderSystem.Win.ViewControllers
                         Text = @"Add Item",
                         DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
                     };
+                    addItemButton.Click += AddItemButtonOnClick;
+
                     toolStrip.Items.Add(addItemButton);
 
                     deleteItemButton = new ToolStripButton()
@@ -42,6 +49,7 @@ namespace OrderSystem.Win.ViewControllers
                         Text = @"Delete Item",
                         DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
                     };
+                    deleteItemButton.Click += DeleteItemButtonOnClick;
                     toolStrip.Items.Add(deleteItemButton);
 
                     toolStrip.GripStyle = ToolStripGripStyle.Hidden;
@@ -51,6 +59,18 @@ namespace OrderSystem.Win.ViewControllers
                     listView.AddControl(toolStrip);
                 }
             }
+        }
+
+        private void AddItemButtonOnClick(object? sender, EventArgs e)
+        {
+            using IServiceScope scope = scopeFactory.CreateScope();
+            PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
+            ViewHolder view = scope.ServiceProvider.GetRequiredService<ViewManager>().AddListView<OrderItem>();
+            popup.ShowView(view);
+        }
+
+        private void DeleteItemButtonOnClick(object? sender, EventArgs e)
+        {
         }
 
         private void GridOnSelectionChanged(object? sender, EventArgs e)
@@ -64,8 +84,17 @@ namespace OrderSystem.Win.ViewControllers
                 listView.Grid.SelectionChanged -= GridOnSelectionChanged;
             }
 
-            addItemButton?.Dispose();
-            deleteItemButton?.Dispose();
+            if (addItemButton != null)
+            {
+                addItemButton.Click -= AddItemButtonOnClick;
+                addItemButton.Dispose();
+            }
+
+            if (deleteItemButton != null)
+            {
+                deleteItemButton.Click -= DeleteItemButtonOnClick;
+                deleteItemButton.Dispose();
+            }
 
             base.Dispose();
         }

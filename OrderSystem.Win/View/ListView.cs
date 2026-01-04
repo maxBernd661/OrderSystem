@@ -5,6 +5,8 @@ using OrderSystem.Core.Entities;
 using OrderSystem.Win.Services;
 using System.ComponentModel;
 using System.Reflection;
+using OrderSystem.Win.Controls;
+using OrderSystem.Win.Forms;
 
 namespace OrderSystem.Win.View
 {
@@ -93,7 +95,8 @@ namespace OrderSystem.Win.View
                 }
 
                 Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
-                viewManager.AddDetailView<T>(selectedItem);
+                ViewHolder holder = viewManager.AddDetailView<T>(selectedItem);
+                ServiceProvider.GetRequiredService<MainForm>().ShowView(holder);
             };
         }
 
