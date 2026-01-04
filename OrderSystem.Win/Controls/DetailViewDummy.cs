@@ -19,16 +19,20 @@ namespace OrderSystem.Win.Controls
 
         public void LoadData<TEntity>(TEntity? entity, IServiceProvider sp)
         {
-            List<IDataControl> toLoad = GetControls(Root);
-            foreach (IDataControl control in toLoad)
+            List<Control> toLoad = GetControls(Root);
+            foreach (Control control in toLoad)
             {
                 if (control is IComplexDataControl complex)
                 {
                     complex.LoadData(entity, sp);
                 }
-                else
+                else if (control is IDataControl dataControl)
                 {
-                    control.LoadData(entity);
+                    dataControl.LoadData(entity);
+                }
+                else if (control is IListView listView)
+                {
+                    listView.LoadSourceData(entity);
                 }
             }
         }
@@ -43,17 +47,13 @@ namespace OrderSystem.Win.Controls
             return string.Empty;
         }
 
-        private List<IDataControl> GetControls(Control root, List<IDataControl>? items = null)
+        private List<Control> GetControls(Control root, List<Control>? items = null)
         {
             items ??= [];
 
             foreach (Control nested in root.Controls)
             {
-                if (nested is IDataControl load)
-                {
-                    items.Add(load);
-                }
-
+                items.Add(nested);
                 items = GetControls(nested, items);
             }
 

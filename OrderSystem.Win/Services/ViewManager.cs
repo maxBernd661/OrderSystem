@@ -10,90 +10,85 @@ using OrderSystem.Win.ViewControllers;
 
 namespace OrderSystem.Win.Services
 {
-    public sealed class ViewManager : IDisposable
+    public sealed class ViewManager(IServiceProvider sp) : IDisposable
     {
-        public ViewManager(IServiceProvider sp)
-        {
-            this.sp = sp;
-            scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-            factory = sp.GetRequiredService<ViewFactory>();
-        }
-
-        private readonly IServiceProvider sp;
-        private readonly IServiceScopeFactory scopeFactory;
-        private readonly ViewFactory factory;
+        private readonly IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+        private readonly ViewFactory factory = sp.GetRequiredService<ViewFactory>();
         private readonly List<IManagedView> views = [];
 
-        public ViewHolder AddListView<TEntity>() where TEntity : PersistentEntityBase
+        private ManagedView<TEntity> BuildManagedView<TEntity>(ViewKind kind) where TEntity : PersistentEntityBase
         {
             IServiceScope viewScope = scopeFactory.CreateScope();
-            ListView<TEntity> listview = viewScope.ServiceProvider.GetRequiredService<ListView<TEntity>>();
-            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(viewScope.ServiceProvider, listview);
-
-            ViewHolder holder = new($"All {typeof(TEntity).Name}s", listview);
-            holder.Disposed += (sender, args) => DisposeView(holder);
-            ManagedView<TEntity> managedView = new()
+            ViewBase? viewBase;
+            if (kind is ViewKind.ListView)
             {
-                EntityType = typeof(TEntity),
-                Holder = holder,
-                Kind = ViewKind.ListView,
-                Scope = viewScope,
-                Controllers = controllers
-            };
-
-            return AddView(managedView);
-        }
-
-        public ViewHolder AddDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
-        {
-            IServiceScope viewScope = scopeFactory.CreateScope();
-            OrderContext context = viewScope.ServiceProvider.GetRequiredService<OrderContext>();
-
-            DetailView<TEntity> view = factory.CreateDetailView<TEntity>();
-            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(viewScope.ServiceProvider, view);
-
-            TEntity? existingItem = null;
-            string viewName = $"New {typeof(TEntity).Name}";
-            if (id != null)
-            {
-                existingItem = context.Set<TEntity>()
-                                      .AsNoTracking()
-                                      .Single(x => x.Id == id);
-
-                PropertyInfo? identProp = factory.GetIdentifier(typeof(TEntity));
-                if (identProp != null)
-                {
-                    object? identvalue = identProp.GetValue(existingItem);
-                    viewName = identvalue is string s ? s : string.Empty;
-                }
-
-                view.Template.LoadData(existingItem, viewScope.ServiceProvider);
+                viewBase = viewScope.ServiceProvider.GetRequiredService<ListView<TEntity>>();
             }
             else
             {
-                view.Template.LoadData<TEntity>(null, viewScope.ServiceProvider);
+                viewBase = factory.CreateDetailView<TEntity>();
             }
 
-            ViewHolder holder = new(viewName, view);
-            holder.ViewChanged += ViewChanged;
-            holder.Disposed += (sender, args) => DisposeView(holder);
-
-            ManagedView<TEntity> managedView = new()
+            ViewHolder holder = new(string.Empty, viewBase);
+            holder.Disposed += (_, _) => DisposeView(holder);
+            List<IControllerBase> controllers = factory.MakeControllers<TEntity>(viewScope.ServiceProvider, viewBase);
+            return new ManagedView<TEntity>()
             {
-                Holder = holder,
-                EntityType = typeof(TEntity),
-                Entity = existingItem,
-                Kind = ViewKind.DetailView,
+                Controllers = controllers,
+                Kind = kind,
                 Scope = viewScope,
-                Controllers = controllers
+                EntityType = typeof(TEntity),
+                Holder = holder
             };
+        }
+
+        public ViewHolder AddListView<TEntity>() where TEntity : PersistentEntityBase
+        {
+            ManagedView<TEntity> managedView = BuildManagedView<TEntity>(ViewKind.ListView);
+            managedView.Holder.Name = $"All {typeof(TEntity).Name}s";
+            return AddView(managedView);
+        }
+
+        public ViewHolder AddDetailView<TEntity>(Guid id) where TEntity : PersistentEntityBase
+        {
+            using IServiceScope scope = scopeFactory.CreateScope();
+            OrderContext context = scope.ServiceProvider.GetRequiredService<OrderContext>();
+
+            TEntity? existingItem = context.Set<TEntity>()
+                                            .AsNoTracking()
+                                            .FirstOrDefault(x => x.Id == id);
+
+            return AddDetailView(existingItem);
+        }
+
+        public ViewHolder AddDetailView<TEntity>(TEntity? entity = null) where TEntity : PersistentEntityBase
+        {
+            ManagedView<TEntity> managedView = BuildManagedView<TEntity>(ViewKind.DetailView);
+            managedView.Holder.ViewChanged += ViewChanged;
+            managedView.Holder.Name = $"New {typeof(TEntity).Name}";
+
+            if (entity != null)
+            {
+                PropertyInfo? identProp = factory.GetIdentifier(typeof(TEntity));
+                if (identProp != null)
+                {
+                    object? identvalue = identProp.GetValue(entity);
+                    managedView.Holder.Name = identvalue as string ?? string.Empty;
+                }
+
+                ((IDetailView)managedView.Holder.View).Template.LoadData(entity, managedView.Scope.ServiceProvider);
+            }
+            else
+            {
+                ((IDetailView)managedView.Holder.View).Template.LoadData<TEntity>(null, managedView.Scope.ServiceProvider);
+            }
 
             return AddView(managedView);
         }
 
-        public void AddAndShowDetailView<TEntity>(Guid? id = null) where TEntity : PersistentEntityBase
+        public void AddAndShowDetailView<TEntity>() where TEntity : PersistentEntityBase
         {
-            ViewHolder view = AddDetailView<TEntity>(id);
+            ViewHolder view = AddDetailView<TEntity>();
             sp.GetRequiredService<MainForm>().ShowView(view);
         }
 
@@ -200,7 +195,7 @@ namespace OrderSystem.Win.Services
             else if (holder.View is IDetailView dv)
             {
                 IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
-                if (managedView is { ManagedEntity: { } managedEntity })
+                if (managedView is { ManagedEntity: { } managedEntity } && managedEntity.CreatedAt != default)
                 {
                     dv.Template.LoadData(managedEntity, managedView.Scope.ServiceProvider);
                 }

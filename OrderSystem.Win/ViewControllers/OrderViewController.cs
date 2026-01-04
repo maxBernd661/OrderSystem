@@ -10,7 +10,7 @@ namespace OrderSystem.Win.ViewControllers
     public class OrderViewController(IServiceScopeFactory scopeFactory, ViewBase view) : ViewController<Order>(view)
     {
         private ToolStrip? toolStrip;
-        private IListView? listView;
+        private ListView<OrderItem>? listView;
         private ToolStripButton? addItemButton;
         private ToolStripButton? deleteItemButton;
         private readonly IServiceScopeFactory scopeFactory = scopeFactory;
@@ -26,6 +26,7 @@ namespace OrderSystem.Win.ViewControllers
                 }
 
                 listView.Grid.SelectionChanged += GridOnSelectionChanged;
+                listView.OnCustomOpenDetailView += ListViewOnOnCustomOpenDetailView;
 
                 if (toolStrip is null)
                 {
@@ -61,14 +62,27 @@ namespace OrderSystem.Win.ViewControllers
             }
         }
 
-        private void AddItemButtonOnClick(object? sender, EventArgs e)
+        private void ListViewOnOnCustomOpenDetailView(object? sender, CustomOpenEventArgs e)
         {
-            using IServiceScope scope = scopeFactory.CreateScope();
-            PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
-            ViewHolder view = scope.ServiceProvider.GetRequiredService<ViewManager>().AddDetailView<OrderItem>();
+        }
 
-            if (popup.ShowView(view))
+        private async void AddItemButtonOnClick(object? sender, EventArgs e)
+        {
+            if (View.Holder is null)
             {
+                return;
+            }
+
+            using IServiceScope scope = scopeFactory.CreateScope();
+            ViewManager viewManager = scope.ServiceProvider.GetRequiredService<ViewManager>();
+            PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
+            ViewHolder holder = viewManager.AddDetailView<OrderItem>();
+
+            if (popup.ShowView(holder) && popup.ReturnedItem is OrderItem orderItem)
+            {
+                Order order = (Order)((IDetailView)View).ReadData();
+                order.AddItem(orderItem);
+                ((IDetailView)View).LoadData(order, scope.ServiceProvider);
             }
         }
 

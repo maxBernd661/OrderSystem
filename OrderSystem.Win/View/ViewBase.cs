@@ -10,7 +10,6 @@ namespace OrderSystem.Win.View
     public class ViewBase : UserControl
     {
         protected IContainer? components = null;
-        private ViewHolder? holder;
 
         public event EventHandler<EventArgs>? Changed;
 
@@ -36,14 +35,11 @@ namespace OrderSystem.Win.View
             ServiceProvider = serviceProvider;
         }
 
-        protected ViewHolder? Holder
-        {
-            get { return holder; }
-        }
+        public ViewHolder? Holder { get; private set; }
 
         public void SetHolder(ViewHolder viewHolder)
         {
-            holder = viewHolder;
+            Holder = viewHolder;
         }
 
         public virtual ViewKind Kind

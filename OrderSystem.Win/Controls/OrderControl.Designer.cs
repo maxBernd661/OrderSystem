@@ -108,7 +108,7 @@
             comboBoxCustomer.Name = "comboBoxCustomer";
             comboBoxCustomer.Size = new Size(202, 25);
             comboBoxCustomer.TabIndex = 0;
-            comboBoxCustomer.SelectedIndexChanged += (sender, args) => OnChanged(); 
+            comboBoxCustomer.SelectionChangeCommitted += (sender, args) => OnChanged(); 
             // 
             // OrderControl
             // 

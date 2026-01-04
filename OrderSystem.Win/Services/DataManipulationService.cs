@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.View;
@@ -22,7 +23,7 @@ namespace OrderSystem.Win.Services
             if (managedView.ManagedEntity is null)
             {
                 savingEntity = (TEntity)dv.Template.ReadData();
-                set.Add(savingEntity);
+                TrackGraphForInsert(savingEntity);
             }
             else
             {
@@ -35,6 +36,14 @@ namespace OrderSystem.Win.Services
 
             await context.SaveChangesAsync(ct);
             return savingEntity;
+        }
+
+        private void TrackGraphForInsert(TEntity rootEntity)
+        {
+            context.ChangeTracker.TrackGraph(rootEntity, node =>
+            {
+                node.Entry.State = node.Entry.IsKeySet ? EntityState.Unchanged : EntityState.Added;
+            });
         }
 
         private TEntity SetBaseValues(TEntity entity, TEntity existingEntity)

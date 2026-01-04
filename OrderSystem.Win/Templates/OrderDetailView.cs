@@ -14,12 +14,21 @@ namespace OrderSystem.Win.Templates
 
         public override object ReadData()
         {
-            return base.ReadData();
+            Order output = orderControl1.GetData();
+            PersistentEntityBase baseData = persistentEntityBaseControl1.GetData();
+
+            output.Id = baseData.Id;
+            output.CreatedAt = baseData.CreatedAt;
+            output.UpdatedAt = baseData.UpdatedAt;
+            output.IsDeleted = baseData.IsDeleted;
+
+            return output;
         }
 
         public override Result Evaluate()
         {
-            return base.Evaluate();
+            Order currentData = (Order)ReadData();
+            return currentData.SoftValidate();
         }
     }
 }

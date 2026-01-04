@@ -24,27 +24,35 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
+        private List<OrderItem> orderItems;
+        private Order? savedOrder;
+
         public void LoadData(Order? entity, IServiceProvider serviceProvider)
         {
-            Customer? currentCustomer = null;
-
             if (entity != null)
             {
+                savedOrder = entity;
+                orderItems = entity.Items.ToList();
                 textBoxStatus.Text = entity.Status.ToString();
-                currentCustomer = entity.Customer;
             }
+            else
+            {
+                savedOrder = null;
+                orderItems = [];
+                textBoxStatus.Text = nameof(OrderStatus.Draft);
+            }
+
             comboBoxCustomer.Items.Clear();
             IQueryable<Customer> customers = serviceProvider.GetRequiredService<OrderContext>().Set<Customer>().Where(x => x.IsActive);
-            currentCustomer ??= customers.FirstOrDefault();
 
             foreach (Customer customer in customers)
             {
                 comboBoxCustomer.Items.Add(customer);
-            }
 
-            if (currentCustomer != null)
-            {
-                comboBoxCustomer.SelectedItem = currentCustomer;
+                if (entity?.CustomerId == customer.Id)
+                {
+                    comboBoxCustomer.SelectedItem = customer;
+                }
             }
         }
 
@@ -65,12 +73,21 @@ namespace OrderSystem.Win.Controls
 
         public Order GetData()
         {
+            if (savedOrder != null)
+            {
+                return savedOrder;
+            }
             Customer? currentCustomer = new();
             if (comboBoxCustomer.SelectedItem is Customer c)
             {
                 currentCustomer = c;
             }
             Order order = Order.Create(currentCustomer);
+            foreach (OrderItem item in orderItems)
+            {
+                order.AddItem(item);
+            }
+
             return order;
         }
     }

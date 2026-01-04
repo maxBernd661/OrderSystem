@@ -8,6 +8,11 @@ namespace OrderSystem.Win.View
 {
     public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
+        public void LoadData(object? entity, IServiceProvider sp)
+        {
+            Template.LoadData(entity, sp);
+        }
+
         public PersistentEntityBase ReadData()
         {
             return (PersistentEntityBase)Template.ReadData();
@@ -109,6 +114,8 @@ namespace OrderSystem.Win.View
 
     public interface IDetailView
     {
+        public void LoadData(object? entity, IServiceProvider sp);
+
         public PersistentEntityBase ReadData();
 
         public DetailViewDummy Template { get; }

@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
+using OrderSystem.Win.Controls;
+using OrderSystem.Win.Forms;
 using OrderSystem.Win.Services;
 using System.ComponentModel;
 using System.Reflection;
-using OrderSystem.Win.Controls;
-using OrderSystem.Win.Forms;
 
 namespace OrderSystem.Win.View
 {
@@ -19,7 +19,7 @@ namespace OrderSystem.Win.View
             viewManager = serviceProvider.GetRequiredService<ViewManager>();
             InitializeCore<T>();
             InitializeListView();
-            Load += async (_, _) => { await LoadSourceData(); };
+            Load += async (_, _) => { await LoadSourceData(null); };
         }
 
         public ListView(IServiceProvider serviceProvider, Func<T, bool> filter) : this(serviceProvider)
@@ -32,6 +32,8 @@ namespace OrderSystem.Win.View
         public DataGridView Grid { get; set; }
 
         public BindingSource Source { get; set; }
+
+        public event EventHandler<CustomOpenEventArgs>? OnCustomOpenDetailView;
 
         public bool HasData
         {
@@ -89,8 +91,20 @@ namespace OrderSystem.Win.View
 
             Grid.CellDoubleClick += (_, args) =>
             {
-                if (args.RowIndex < 0 || args.ColumnIndex < 0)
+                if (args.RowIndex < 0 || args.ColumnIndex < 0 || idColumn is null)
                 {
+                    return;
+                }
+
+                if (OnCustomOpenDetailView != null)
+                {
+                    List<(object value, PropertyInfo property)> list = [];
+                    for (int i = 0; i < Grid.Columns.Count; i++)
+                    {
+                        PropertyInfo column = (Grid.Columns[i] as ListViewColumn).BackingProperty;
+                        list.Add((Grid.Rows[args.RowIndex].Cells[i].Value, column));
+                    }
+                    OnCustomOpenDetailView.Invoke(this, new CustomOpenEventArgs(list));
                     return;
                 }
 
@@ -100,11 +114,20 @@ namespace OrderSystem.Win.View
             };
         }
 
-        public async Task LoadSourceData()
+        public async Task LoadSourceData(object? data = null)
         {
             Grid?.Columns.Clear();
 
-            List<T> dbData = await ServiceProvider.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+            List<T>? dbData;
+            if (data is null)
+            {
+                dbData = await ServiceProvider.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+            }
+            else
+            {
+                dbData = TryGetListData(data).ToList();
+            }
+
             if (Filter != null)
             {
                 List<T> filtered = dbData.Where(Filter).ToList();
@@ -144,6 +167,43 @@ namespace OrderSystem.Win.View
 
                 Grid.Columns.Add(propColumn);
             }
+        }
+
+        private IEnumerable<T> TryGetListData(object data)
+        {
+            Type targetType = typeof(T);
+            Type objectType = data.GetType();
+
+            PropertyInfo? listProp = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(x =>
+            {
+                Type propType = x.PropertyType;
+
+                if (propType == typeof(string))
+                {
+                    return false;
+                }
+
+                if (propType.IsGenericType &&
+                    propType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return propType.GetGenericArguments()[0] == targetType;
+                }
+
+                Type? enumerableInterface = propType
+                                           .GetInterfaces()
+                                           .FirstOrDefault(i =>
+                                                i.IsGenericType &&
+                                                i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+                return enumerableInterface?.GetGenericArguments()[0] == targetType;
+            });
+
+            if (listProp is null)
+            {
+                return [];
+            }
+
+            return listProp.GetValue(data) as IEnumerable<T> ?? [];
         }
 
         public void AddControl(Control control)
@@ -197,6 +257,11 @@ namespace OrderSystem.Win.View
         }
     }
 
+    public class CustomOpenEventArgs(List<(object, PropertyInfo)> data) : EventArgs
+    {
+        public List<(object value, PropertyInfo property)> Object { get; set; } = data;
+    }
+
     public interface IListView
     {
         public void AddControl(Control control);
@@ -207,6 +272,6 @@ namespace OrderSystem.Win.View
 
         public bool HasData { get; }
 
-        public Task LoadSourceData();
+        public Task LoadSourceData(object? data = null);
     }
 }

@@ -6,7 +6,7 @@ namespace OrderSystem.Win.Controls
     {
         public event EventHandler<EventArgs>? ViewChanged;
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         public ViewHolder(string name, ViewBase view)
         {

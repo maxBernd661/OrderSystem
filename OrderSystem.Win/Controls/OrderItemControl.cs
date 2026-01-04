@@ -24,26 +24,18 @@ namespace OrderSystem.Win.Controls
         public void LoadData(OrderItem? entity, IServiceProvider serviceProvider)
         {
             order = entity?.Order;
-            Product? currentProduct = null;
 
             if (entity != null)
             {
                 numericUpDownQuantity.Value = entity.Quantity;
-                currentProduct = entity.Product;
             }
 
             comboBoxProduct.Items.Clear();
             IQueryable<Product> products = serviceProvider.GetRequiredService<OrderContext>().Set<Product>().Where(x => x.IsAvailable);
-            currentProduct ??= products.FirstOrDefault();
 
             foreach (Product product in products)
             {
                 comboBoxProduct.Items.Add(product);
-            }
-
-            if (currentProduct != null)
-            {
-                comboBoxProduct.SelectedItem = currentProduct;
             }
         }
 

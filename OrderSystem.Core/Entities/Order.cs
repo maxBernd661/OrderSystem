@@ -24,7 +24,7 @@
         [Identifier]
         public string DisplayName
         {
-            get { return $"{Customer.Name} : {Status}"; }
+            get { return $"{(Customer != null ? Customer.Name : string.Empty)} : {Status}"; }
         }
 
         private readonly List<OrderItem> items = [];
@@ -57,7 +57,6 @@
                 CustomerId = customer.Id
             };
 
-            order.history.Add(OrderStatusHistory.Created(order));
             return order;
         }
 
@@ -132,6 +131,17 @@
                 Quantity = quantity
             });
 
+            return Result.Ok();
+        }
+
+        public Result AddItem(OrderItem item)
+        {
+            if (Status > OrderStatus.Draft)
+            {
+                return Result.Fail("Can only add items to drafted orders.");
+            }
+
+            items.Add(item);
             return Result.Ok();
         }
     }

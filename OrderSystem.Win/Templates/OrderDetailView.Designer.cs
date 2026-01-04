@@ -77,6 +77,7 @@
             orderControl1.Name = "orderControl1";
             orderControl1.Size = new Size(432, 72);
             orderControl1.TabIndex = 3;
+            orderControl1.Changed += (sender, args) => OnChanged(); 
             // 
             // persistentEntityBaseControl1
             // 
