@@ -9,6 +9,7 @@
         public Guid OrderId { get; set; }
 
         [HideInListView]
+        
         public Order Order { get; set; }
 
         [HideInListView]
@@ -24,8 +25,10 @@
             }
         }
 
+        [Required]
         public Product Product { get; set; }
 
+        [ClampValue(1, 9999)]
         public int Quantity { get; set; }
     }
 }

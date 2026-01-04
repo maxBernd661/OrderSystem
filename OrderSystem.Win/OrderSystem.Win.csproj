@@ -68,6 +68,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>projectResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Templates\OrderItemDetailView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

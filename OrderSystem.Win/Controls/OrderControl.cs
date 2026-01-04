@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.View;
@@ -13,16 +12,16 @@ namespace OrderSystem.Win.Controls
             InitializeComponent();
         }
 
+        object IDataControl.GetData()
+        {
+            return GetData();
+        }
+
         public event EventHandler<EventArgs>? Changed;
 
         private void OnChanged()
         {
             Changed?.Invoke(this, EventArgs.Empty);
-        }
-
-        public object GetData()
-        {
-            throw new NotImplementedException();
         }
 
         public void LoadData(Order? entity, IServiceProvider serviceProvider)
@@ -35,7 +34,7 @@ namespace OrderSystem.Win.Controls
                 currentCustomer = entity.Customer;
             }
             comboBoxCustomer.Items.Clear();
-            DbSet<Customer> customers = serviceProvider.GetRequiredService<OrderContext>().Set<Customer>();
+            IQueryable<Customer> customers = serviceProvider.GetRequiredService<OrderContext>().Set<Customer>().Where(x => x.IsActive);
             currentCustomer ??= customers.FirstOrDefault();
 
             foreach (Customer customer in customers)
@@ -49,6 +48,11 @@ namespace OrderSystem.Win.Controls
             }
         }
 
+        public void LoadData(Order? entity)
+        {
+            LoadData(entity, null);
+        }
+
         public void LoadData(object entity)
         {
             LoadData((Order)entity, null);
@@ -57,6 +61,17 @@ namespace OrderSystem.Win.Controls
         public void LoadData(object entity, IServiceProvider serviceProvider)
         {
             LoadData((Order)entity, serviceProvider);
+        }
+
+        public Order GetData()
+        {
+            Customer? currentCustomer = new();
+            if (comboBoxCustomer.SelectedItem is Customer c)
+            {
+                currentCustomer = c;
+            }
+            Order order = Order.Create(currentCustomer);
+            return order;
         }
     }
 }

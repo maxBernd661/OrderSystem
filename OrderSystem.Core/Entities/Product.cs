@@ -18,5 +18,10 @@
 
         [ColumnName("Is Available")]
         public bool IsAvailable { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

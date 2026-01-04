@@ -29,42 +29,82 @@
         private void InitializeComponent()
         {
             toolStrip = new ToolStrip();
-            toolStripButton1 = new ToolStripButton();
+            buttonSave = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            buttonClose = new ToolStripButton();
             panel = new Panel();
+            toolStrip1 = new ToolStrip();
+            labelValidation = new ToolStripLabel();
             toolStrip.SuspendLayout();
+            panel.SuspendLayout();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip
             // 
             toolStrip.GripStyle = ToolStripGripStyle.Hidden;
             toolStrip.ImageScalingSize = new Size(32, 32);
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton1 });
+            toolStrip.Items.AddRange(new ToolStripItem[] { buttonSave, toolStripSeparator1, buttonClose });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Margin = new Padding(4);
             toolStrip.Name = "toolStrip";
             toolStrip.Padding = new Padding(4);
-            toolStrip.Size = new Size(784, 52);
+            toolStrip.Size = new Size(794, 52);
             toolStrip.Stretch = true;
             toolStrip.TabIndex = 0;
             // 
-            // toolStripButton1
+            // buttonSave
             // 
-            toolStripButton1.Image = projectResources.save;
-            toolStripButton1.ImageTransparentColor = Color.Magenta;
-            toolStripButton1.Margin = new Padding(4);
-            toolStripButton1.Name = "toolStripButton1";
-            toolStripButton1.Size = new Size(121, 36);
-            toolStripButton1.Text = "Save and Exit";
+            buttonSave.Image = projectResources.save;
+            buttonSave.ImageTransparentColor = Color.Magenta;
+            buttonSave.Margin = new Padding(4);
+            buttonSave.Name = "buttonSave";
+            buttonSave.Size = new Size(121, 36);
+            buttonSave.Text = "Save and Exit";
+            buttonSave.Click += buttonSave_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Margin = new Padding(4);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 36);
+            // 
+            // buttonClose
+            // 
+            buttonClose.Image = projectResources.close;
+            buttonClose.ImageTransparentColor = Color.Magenta;
+            buttonClose.Name = "buttonClose";
+            buttonClose.Size = new Size(64, 41);
+            buttonClose.Text = "Exit";
+            buttonClose.Click += buttonClose_Click;
             // 
             // panel
             // 
             panel.AutoSize = true;
             panel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            panel.Controls.Add(toolStrip1);
             panel.Dock = DockStyle.Fill;
             panel.Location = new Point(0, 52);
             panel.Name = "panel";
-            panel.Size = new Size(784, 409);
+            panel.Size = new Size(794, 442);
             panel.TabIndex = 1;
+            // 
+            // toolStrip1
+            // 
+            toolStrip1.Dock = DockStyle.Bottom;
+            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { labelValidation });
+            toolStrip1.Location = new Point(0, 417);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(794, 25);
+            toolStrip1.TabIndex = 0;
+            toolStrip1.Text = "toolStrip1";
+            // 
+            // labelValidation
+            // 
+            labelValidation.Margin = new Padding(4);
+            labelValidation.Name = "labelValidation";
+            labelValidation.Size = new Size(0, 17);
             // 
             // PopupView
             // 
@@ -72,7 +112,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(784, 461);
+            ClientSize = new Size(794, 494);
+            ControlBox = false;
             Controls.Add(panel);
             Controls.Add(toolStrip);
             DoubleBuffered = true;
@@ -88,6 +129,10 @@
             TopMost = true;
             toolStrip.ResumeLayout(false);
             toolStrip.PerformLayout();
+            panel.ResumeLayout(false);
+            panel.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -95,7 +140,11 @@
         #endregion
 
         private ToolStrip toolStrip;
-        private ToolStripButton toolStripButton1;
+        private ToolStripButton buttonSave;
         private Panel panel;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton buttonClose;
+        private ToolStrip toolStrip1;
+        private ToolStripLabel labelValidation;
     }
 }

@@ -65,8 +65,11 @@ namespace OrderSystem.Win.ViewControllers
         {
             using IServiceScope scope = scopeFactory.CreateScope();
             PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
-            ViewHolder view = scope.ServiceProvider.GetRequiredService<ViewManager>().AddListView<OrderItem>();
-            popup.ShowView(view);
+            ViewHolder view = scope.ServiceProvider.GetRequiredService<ViewManager>().AddDetailView<OrderItem>();
+
+            if (popup.ShowView(view))
+            {
+            }
         }
 
         private void DeleteItemButtonOnClick(object? sender, EventArgs e)

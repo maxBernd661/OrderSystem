@@ -10,6 +10,11 @@ namespace OrderSystem.Win.Controls
             InitializeComponent();
         }
 
+        object IDataControl.GetData()
+        {
+            return GetData();
+        }
+
         public event EventHandler<EventArgs>? Changed;
 
         private void OnChanged()
@@ -20,11 +25,6 @@ namespace OrderSystem.Win.Controls
         public void LoadData(object? entity)
         {
             LoadData((Customer)entity!);
-        }
-
-        object IDataControl.GetData()
-        {
-            return GetData();
         }
 
         public Customer GetData()

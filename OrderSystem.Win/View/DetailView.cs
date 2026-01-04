@@ -102,7 +102,7 @@ namespace OrderSystem.Win.View
         void LoadData(object? entity, IServiceProvider serviceProvider);
     }
 
-    public interface IComplexDataControl<in TEntity> : IComplexDataControl
+    public interface IComplexDataControl<TEntity> : IComplexDataControl, IDataControl<TEntity>
     {
         void LoadData(TEntity? entity, IServiceProvider serviceProvider);
     }

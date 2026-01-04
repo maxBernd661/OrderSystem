@@ -7,6 +7,9 @@
     <Compile Update="Controls\OrderControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\OrderItemControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Controls\PersistentEntityBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
