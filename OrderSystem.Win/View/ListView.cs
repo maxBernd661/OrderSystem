@@ -89,7 +89,7 @@ namespace OrderSystem.Win.View
                 OrderByColumn(column);
             };
 
-            Grid.CellDoubleClick += (_, args) =>
+            Grid.CellDoubleClick += async (_, args) =>
             {
                 if (args.RowIndex < 0 || args.ColumnIndex < 0 || idColumn is null)
                 {
@@ -109,7 +109,7 @@ namespace OrderSystem.Win.View
                 }
 
                 Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
-                ViewHolder holder = viewManager.AddDetailView<T>(selectedItem);
+                ViewHolder holder = await viewManager.AddDetailView<T>(selectedItem);
                 ServiceProvider.GetRequiredService<MainForm>().ShowView(holder);
             };
         }

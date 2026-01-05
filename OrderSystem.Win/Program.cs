@@ -31,11 +31,19 @@ namespace OrderSystem.Win
                                             options.UseSqlite(context.Configuration.GetConnectionString("Default"));
                                         });
 
+                                        services.AddDbContextFactory<OrderContext>(options =>
+                                        {
+                                            options.UseSqlite(context.Configuration.GetConnectionString("Default"));
+                                        });
+
                                         services.AddSingleton<MainForm>();
                                         services.AddTransient<PopupView>();
 
                                         services.AddTransient(typeof(ListView<>));
                                         services.AddTransient(typeof(DetailView<>));
+
+                                        services.AddTransient<IProductLookupProvider, ProductLookupProvider>();
+                                        services.AddTransient<ICustomerLookupProvider, CustomerLookupProvider>();
 
                                         services.AddSingleton<ViewFactory>();
                                         services.AddSingleton<ViewManager>();

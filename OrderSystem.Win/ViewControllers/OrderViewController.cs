@@ -28,37 +28,36 @@ namespace OrderSystem.Win.ViewControllers
                 listView.Grid.SelectionChanged += GridOnSelectionChanged;
                 listView.OnCustomOpenDetailView += ListViewOnOnCustomOpenDetailView;
 
-                if (toolStrip is null)
+                if (toolStrip is not null)
                 {
-                    toolStrip = new ToolStrip();
-
-                    toolStrip.Dock = DockStyle.Top;
-
-                    addItemButton = new ToolStripButton()
-                    {
-                        Image = projectResources.newItem,
-                        Text = @"Add Item",
-                        DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
-                    };
-                    addItemButton.Click += AddItemButtonOnClick;
-
-                    toolStrip.Items.Add(addItemButton);
-
-                    deleteItemButton = new ToolStripButton()
-                    {
-                        Image = projectResources.delete,
-                        Text = @"Delete Item",
-                        DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
-                    };
-                    deleteItemButton.Click += DeleteItemButtonOnClick;
-                    toolStrip.Items.Add(deleteItemButton);
-
-                    toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-                    toolStrip.Stretch = true;
-                    toolStrip.ImageScalingSize = new Size(16, 16);
-
-                    listView.AddControl(toolStrip);
+                    return;
                 }
+
+                toolStrip = new ToolStrip();
+                toolStrip.Dock = DockStyle.Top;
+                toolStrip.GripStyle = ToolStripGripStyle.Hidden;
+                toolStrip.Stretch = true;
+                toolStrip.ImageScalingSize = new Size(16, 16);
+
+                addItemButton = new ToolStripButton()
+                {
+                    Image = projectResources.newItem,
+                    Text = @"Add Item",
+                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
+                };
+                addItemButton.Click += AddItemButtonOnClick;
+                toolStrip.Items.Add(addItemButton);
+
+                deleteItemButton = new ToolStripButton()
+                {
+                    Image = projectResources.delete,
+                    Text = @"Delete Item",
+                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
+                };
+                deleteItemButton.Click += DeleteItemButtonOnClick;
+                toolStrip.Items.Add(deleteItemButton);
+
+                listView.AddControl(toolStrip);
             }
         }
 
@@ -76,13 +75,13 @@ namespace OrderSystem.Win.ViewControllers
             using IServiceScope scope = scopeFactory.CreateScope();
             ViewManager viewManager = scope.ServiceProvider.GetRequiredService<ViewManager>();
             PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
-            ViewHolder holder = viewManager.AddDetailView<OrderItem>();
+            ViewHolder holder = await viewManager.AddDetailView<OrderItem>();
 
             if (popup.ShowView(holder) && popup.ReturnedItem is OrderItem orderItem)
             {
                 Order order = (Order)((IDetailView)View).ReadData();
-                order.AddItem(orderItem);
-                ((IDetailView)View).LoadData(order, scope.ServiceProvider);
+                order.AddItem(orderItem.Product, orderItem.Quantity);
+                await ((IDetailView)View).LoadData(order, scope.ServiceProvider);
             }
         }
 

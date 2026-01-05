@@ -24,7 +24,13 @@ namespace OrderSystem.Win.Controls
 
         public void LoadData(PersistentEntityBase? entity)
         {
-            if (entity != null)
+            if (entity == null)
+            {
+                textBoxId.Text = Guid.Empty.ToString();
+                textBoxCreated.Text = DateTime.MinValue.ToString("dd.MM.yyyy : HH:mm");
+                textBoxUpdated.Text = DateTime.MinValue.ToString("dd.MM.yyyy : HH:mm");
+            }
+            else
             {
                 savedItem = entity;
                 textBoxId.Text = entity.Id.ToString();

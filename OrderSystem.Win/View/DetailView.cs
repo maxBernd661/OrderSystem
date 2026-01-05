@@ -8,9 +8,44 @@ namespace OrderSystem.Win.View
 {
     public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
-        public void LoadData(object? entity, IServiceProvider sp)
+        public async Task LoadData(object? entity, IServiceProvider sp, CancellationToken ct = default)
         {
+            IProviderBase? provider = null;
+
+            if (typeof(TEntity) == typeof(Order))
+            {
+                provider = sp.GetRequiredService<ICustomerLookupProvider>();
+            }
+            else if (typeof(TEntity) == typeof(OrderItem))
+            {
+                provider = sp.GetRequiredService<IProductLookupProvider>();
+            }
+
+            if (provider != null)
+            {
+                IEntityLookup lookups = await provider.GetLookups(ct);
+                ApplyLookups(Template.Root, lookups);
+            }
+
             Template.LoadData(entity, sp);
+        }
+
+        private static void ApplyLookups<TLookup>(Control root, TLookup lookup) where TLookup : IEntityLookup
+        {
+            Visit(root, lookup);
+        }
+
+        private static void Visit<TLookup>(Control control, TLookup lookup) where TLookup : IEntityLookup
+        {
+            if (control is IRequireLookup<TLookup> needsLookup)
+            {
+                needsLookup.SetLookup(lookup);
+            }
+
+            foreach (Control child in control.Controls)
+            {
+                Visit(child, lookup);
+            }
         }
 
         public PersistentEntityBase ReadData()
@@ -114,7 +149,7 @@ namespace OrderSystem.Win.View
 
     public interface IDetailView
     {
-        public void LoadData(object? entity, IServiceProvider sp);
+        public Task LoadData(object? entity, IServiceProvider sp, CancellationToken ct = default);
 
         public PersistentEntityBase ReadData();
 

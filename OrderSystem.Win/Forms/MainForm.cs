@@ -28,9 +28,9 @@ namespace OrderSystem.Win.Forms
 
         #region Views
 
-        private void productToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void productToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ViewHolder view = viewManager.AddDetailView<Product>();
+            ViewHolder view = await viewManager.AddDetailView<Product>();
             ShowView(view);
         }
 
@@ -40,9 +40,9 @@ namespace OrderSystem.Win.Forms
             ShowView(view);
         }
 
-        private void customerToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void customerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ViewHolder view = viewManager.AddDetailView<Customer>();
+            ViewHolder view = await viewManager.AddDetailView<Customer>();
             ShowView(view);
         }
 
@@ -52,9 +52,9 @@ namespace OrderSystem.Win.Forms
             ShowView(view);
         }
 
-        private void orderToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void orderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ViewHolder view = viewManager.AddDetailView<Order>();
+            ViewHolder view = await viewManager.AddDetailView<Order>();
             ShowView(view);
         }
 

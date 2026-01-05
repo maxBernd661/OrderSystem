@@ -128,20 +128,11 @@
             {
                 Product = product,
                 ProductId = product.Id,
-                Quantity = quantity
+                Quantity = quantity,
+                Order = this,
+                OrderId = Id
             });
 
-            return Result.Ok();
-        }
-
-        public Result AddItem(OrderItem item)
-        {
-            if (Status > OrderStatus.Draft)
-            {
-                return Result.Fail("Can only add items to drafted orders.");
-            }
-
-            items.Add(item);
             return Result.Ok();
         }
     }

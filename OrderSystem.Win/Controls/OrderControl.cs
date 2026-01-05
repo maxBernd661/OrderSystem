@@ -5,11 +5,33 @@ using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Controls
 {
-    public partial class OrderControl : UserControl, IComplexDataControl<Order>
+    public partial class OrderControl : UserControl, IComplexDataControl<Order>, IRequireLookup<CustomerLookups>
     {
         public OrderControl()
         {
             InitializeComponent();
+        }
+
+        private List<CustomerLookup> customers = [];
+
+        public void SetLookup(CustomerLookups lookup)
+        {
+            customers = lookup.Lookups;
+            comboBoxCustomer.BeginUpdate();
+            try
+            {
+                comboBoxCustomer.Items.Clear();
+                foreach (CustomerLookup customer in customers)
+                {
+                    comboBoxCustomer.Items.Add(customer);
+                }
+
+                comboBoxCustomer.DisplayMember = nameof(CustomerLookup.Name);
+            }
+            finally
+            {
+                comboBoxCustomer.EndUpdate();
+            }
         }
 
         object IDataControl.GetData()
@@ -34,25 +56,18 @@ namespace OrderSystem.Win.Controls
                 savedOrder = entity;
                 orderItems = entity.Items.ToList();
                 textBoxStatus.Text = entity.Status.ToString();
+
+                CustomerLookup? selectedCustomer = customers.FirstOrDefault(x => x.Id == entity.CustomerId);
+                if (selectedCustomer != null)
+                {
+                    comboBoxCustomer.SelectedItem = selectedCustomer;
+                }
             }
             else
             {
                 savedOrder = null;
                 orderItems = [];
                 textBoxStatus.Text = nameof(OrderStatus.Draft);
-            }
-
-            comboBoxCustomer.Items.Clear();
-            IQueryable<Customer> customers = serviceProvider.GetRequiredService<OrderContext>().Set<Customer>().Where(x => x.IsActive);
-
-            foreach (Customer customer in customers)
-            {
-                comboBoxCustomer.Items.Add(customer);
-
-                if (entity?.CustomerId == customer.Id)
-                {
-                    comboBoxCustomer.SelectedItem = customer;
-                }
             }
         }
 
@@ -85,7 +100,7 @@ namespace OrderSystem.Win.Controls
             Order order = Order.Create(currentCustomer);
             foreach (OrderItem item in orderItems)
             {
-                order.AddItem(item);
+                order.AddItem(item.Product, item.Quantity);
             }
 
             return order;

@@ -49,7 +49,7 @@ namespace OrderSystem.Win.Services
             return AddView(managedView);
         }
 
-        public ViewHolder AddDetailView<TEntity>(Guid id) where TEntity : PersistentEntityBase
+        public async Task<ViewHolder> AddDetailView<TEntity>(Guid id) where TEntity : PersistentEntityBase
         {
             using IServiceScope scope = scopeFactory.CreateScope();
             OrderContext context = scope.ServiceProvider.GetRequiredService<OrderContext>();
@@ -58,10 +58,10 @@ namespace OrderSystem.Win.Services
                                             .AsNoTracking()
                                             .FirstOrDefault(x => x.Id == id);
 
-            return AddDetailView(existingItem);
+            return await AddDetailView(existingItem);
         }
 
-        public ViewHolder AddDetailView<TEntity>(TEntity? entity = null) where TEntity : PersistentEntityBase
+        public async Task<ViewHolder> AddDetailView<TEntity>(TEntity? entity = null) where TEntity : PersistentEntityBase
         {
             ManagedView<TEntity> managedView = BuildManagedView<TEntity>(ViewKind.DetailView);
             managedView.Holder.ViewChanged += ViewChanged;
@@ -76,19 +76,19 @@ namespace OrderSystem.Win.Services
                     managedView.Holder.Name = identvalue as string ?? string.Empty;
                 }
 
-                ((IDetailView)managedView.Holder.View).Template.LoadData(entity, managedView.Scope.ServiceProvider);
+                await ((IDetailView)managedView.Holder.View).LoadData(entity, managedView.Scope.ServiceProvider);
             }
             else
             {
-                ((IDetailView)managedView.Holder.View).Template.LoadData<TEntity>(null, managedView.Scope.ServiceProvider);
+                await ((IDetailView)managedView.Holder.View).LoadData(null, managedView.Scope.ServiceProvider);
             }
 
             return AddView(managedView);
         }
 
-        public void AddAndShowDetailView<TEntity>() where TEntity : PersistentEntityBase
+        public async Task AddAndShowDetailView<TEntity>() where TEntity : PersistentEntityBase
         {
-            ViewHolder view = AddDetailView<TEntity>();
+            ViewHolder view = await AddDetailView<TEntity>();
             sp.GetRequiredService<MainForm>().ShowView(view);
         }
 
@@ -197,14 +197,14 @@ namespace OrderSystem.Win.Services
                 IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
                 if (managedView is { ManagedEntity: { } managedEntity } && managedEntity.CreatedAt != default)
                 {
-                    dv.Template.LoadData(managedEntity, managedView.Scope.ServiceProvider);
+                    await dv.LoadData(managedEntity, managedView.Scope.ServiceProvider);
                 }
                 else
                 {
                     object? entity = Activator.CreateInstance(holder.View.EntityType);
                     if (entity is PersistentEntityBase baseEntity)
                     {
-                        dv.Template.LoadData(baseEntity, managedView.Scope.ServiceProvider);
+                        await dv.LoadData(baseEntity, managedView.Scope.ServiceProvider);
                     }
                 }
             }
