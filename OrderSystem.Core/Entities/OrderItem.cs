@@ -1,4 +1,6 @@
-﻿namespace OrderSystem.Core.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace OrderSystem.Core.Entities
 {
     /// <summary>
     /// Bestellungsposition
@@ -30,5 +32,13 @@
 
         [ClampValue(1, 9999)]
         public int Quantity { get; set; }
+    }
+
+    public class OrderItemQueryProfile : IQueryProfile<OrderItem>
+    {
+        public IQueryable<OrderItem> Apply(IQueryable<OrderItem> query)
+        {
+            return query.Include(x => x.Product);
+        }
     }
 }

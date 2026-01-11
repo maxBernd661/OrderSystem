@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderSystem.Core.Entities
 {
@@ -15,14 +16,11 @@ namespace OrderSystem.Core.Entities
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [ColumnName("Created At")]
-        public DateTime CreatedAt { get; set; }
+        [ColumnName("Created At")] public DateTime CreatedAt { get; set; }
 
-        [ColumnName("Updated At")]
-        public DateTime UpdatedAt { get; set; }
+        [ColumnName("Updated At")] public DateTime UpdatedAt { get; set; }
 
-        [HideInListView]
-        public bool IsDeleted { get; set; }
+        [HideInListView] public bool IsDeleted { get; set; }
 
         public void Delete()
         {
@@ -58,7 +56,8 @@ namespace OrderSystem.Core.Entities
             List<string> output = [];
 
             Type type = GetType();
-            PropertyInfo[] propsToCheck = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            PropertyInfo[] propsToCheck =
+                type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
             foreach (PropertyInfo prop in propsToCheck)
             {
@@ -68,12 +67,14 @@ namespace OrderSystem.Core.Entities
                 {
                     IEnumerator enumerator = enumerable.GetEnumerator();
 
-                    AtLeastOneAttribute? atLeastOne = prop.GetCustomAttribute<AtLeastOneAttribute>();
+                    AtLeastOneAttribute? atLeastOne =
+                        prop.GetCustomAttribute<AtLeastOneAttribute>();
                     if (atLeastOne != null)
                     {
                         if (!enumerator.MoveNext())
                         {
-                            output.Add($"{type.Name}.{prop.Name} must contain at least one valid element.");
+                            output.Add(
+                                $"{type.Name}.{prop.Name} must contain at least one valid element.");
                         }
                     }
 
@@ -125,7 +126,8 @@ namespace OrderSystem.Core.Entities
                     }
                 }
 
-                ClampDecimalValueAttribute? clampDec = prop.GetCustomAttribute<ClampDecimalValueAttribute>();
+                ClampDecimalValueAttribute? clampDec =
+                    prop.GetCustomAttribute<ClampDecimalValueAttribute>();
                 if (clampDec is not null && value is decimal dec)
                 {
                     if (clampDec.Min != 0 && dec < (decimal)clampDec.Min)
@@ -147,7 +149,8 @@ namespace OrderSystem.Core.Entities
         {
             PropertyInfo? identProp = GetType()
                                      .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                     .FirstOrDefault(x => x.GetCustomAttribute<IdentifierAttribute>() != null);
+                                     .FirstOrDefault(x =>
+                                          x.GetCustomAttribute<IdentifierAttribute>() != null);
 
             object? identValue = identProp?.GetValue(this);
             if (identValue is string s && !string.IsNullOrEmpty(s))
@@ -157,6 +160,11 @@ namespace OrderSystem.Core.Entities
 
             return ToString();
         }
+    }
+
+    public interface IQueryProfile<TEntity> where TEntity : PersistentEntityBase
+    {
+        IQueryable<TEntity> Apply(IQueryable<TEntity> query);
     }
 
     #region Attributes

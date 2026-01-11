@@ -23,6 +23,7 @@ namespace OrderSystem.Win.Services
                 managedView.ManagedEntity.CreatedAt == DateTime.MinValue)
             {
                 savingEntity = (TEntity)dv.Template.ReadData();
+                savingEntity = await SetNavigations(savingEntity, ct);
                 TrackGraphForInsert(savingEntity);
             }
             else
@@ -35,6 +36,20 @@ namespace OrderSystem.Win.Services
             }
 
             await context.SaveChangesAsync(ct);
+            return savingEntity;
+        }
+
+        private async Task<TEntity> SetNavigations(TEntity savingEntity, CancellationToken ct = default)
+        {
+            if (savingEntity is Order order)
+            {
+                Customer? customer = await context.Set<Customer>().FirstOrDefaultAsync(x => x.Id == order.CustomerId, ct);
+                if (customer != null)
+                {
+                    order.SetCustomer(customer);
+                }
+            }
+
             return savingEntity;
         }
 

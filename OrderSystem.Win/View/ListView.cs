@@ -166,7 +166,18 @@ namespace OrderSystem.Win.View
             List<T>? dbData;
             if (data is null)
             {
-                dbData = await ServiceProvider.GetRequiredService<OrderContext>().Set<T>().AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+                OrderContext context = ServiceProvider.GetRequiredService<OrderContext>();
+                IQueryable<T> query = context.Set<T>()
+                                         .AsNoTracking()
+                                         .Where(x => !x.IsDeleted);
+
+                IQueryProfile<T>? profile = ServiceProvider.GetService<IQueryProfile<T>>();
+                if (profile != null)
+                {
+                    query = profile.Apply(query);
+                }
+
+                dbData = await query.ToListAsync();
             }
             else
             {

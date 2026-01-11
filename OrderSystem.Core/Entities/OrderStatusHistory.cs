@@ -35,4 +35,12 @@
             };
         }
     }
+
+    public sealed class OrderStatusHistoryQueryProfile : IQueryProfile<OrderStatusHistory>
+    {
+        public IQueryable<OrderStatusHistory> Apply(IQueryable<OrderStatusHistory> query)
+        {
+            return query;
+        }
+    }
 }

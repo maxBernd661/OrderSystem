@@ -1,4 +1,6 @@
-﻿namespace OrderSystem.Core.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace OrderSystem.Core.Entities
 {
     /// <summary>
     /// Bestellung
@@ -20,11 +22,11 @@
         [HideInListView]
         public Customer Customer { get; private set; } = null!;
 
-        [ColumnName("Identifier")]
+        [ColumnName("Displayname")]
         [Identifier]
         public string DisplayName
         {
-            get { return $"{(Customer != null ? Customer.Name : string.Empty)} : {Status}"; }
+            get { return $"{(Customer != null ? Customer.Name : "Unknown Customer")} : {Status}, {CreatedAt:D}"; }
         }
 
         private readonly List<OrderItem> items = [];
@@ -142,6 +144,19 @@
 
             return Result.Ok();
         }
+
+        public Result SetCustomer(Customer customer)
+        {
+            if (Status > OrderStatus.Draft)
+            {
+                return Result.Fail("Can only change customer while order is drafted");
+            }
+
+            Customer = customer;
+            CustomerId = customer.Id;
+
+            return Result.Ok();
+        }
     }
 
     public enum OrderStatus
@@ -157,5 +172,13 @@
     {
         public static Result Ok() => new(true, null);
         public static Result Fail(string error) => new(false, error);
+    }
+
+    public sealed class OrderQueryProfile : IQueryProfile<Order>
+    {
+        public IQueryable<Order> Apply(IQueryable<Order> query)
+        {
+            return query.Include(x => x.Customer).Include(x => x.Items).AsSplitQuery();
+        }
     }
 }

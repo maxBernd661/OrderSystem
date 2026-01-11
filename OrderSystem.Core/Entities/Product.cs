@@ -24,4 +24,12 @@
             return Name;
         }
     }
+
+    public sealed class ProductQueryProfile : IQueryProfile<Product>
+    {
+        public IQueryable<Product> Apply(IQueryable<Product> query)
+        {
+            return query;
+        }
+    }
 }

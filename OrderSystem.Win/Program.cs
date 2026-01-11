@@ -49,6 +49,11 @@ namespace OrderSystem.Win
                                         services.AddSingleton<ViewManager>();
                                         services.AddSingleton<FilterRegistry>();
 
+                                        services.AddTransient<IQueryProfile<Product>, ProductQueryProfile>();
+                                        services.AddTransient<IQueryProfile<Customer>, CustomerQueryProfile>();
+                                        services.AddTransient<IQueryProfile<Order>, OrderQueryProfile>();
+                                        services.AddTransient<IQueryProfile<OrderItem>, OrderItemQueryProfile>();
+
                                         services.AddScoped(typeof(DataManipulationService<>));
                                     }).Build();
 

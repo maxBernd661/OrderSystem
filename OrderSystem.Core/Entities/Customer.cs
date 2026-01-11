@@ -1,4 +1,6 @@
-﻿namespace OrderSystem.Core.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace OrderSystem.Core.Entities
 {
     /// <summary>
     /// Kunde
@@ -33,6 +35,15 @@
         public override string ToString()
         {
             return Name;
+        }
+    }
+
+    public sealed class CustomerQueryProfile : IQueryProfile<Customer>
+    {
+        public IQueryable<Customer> Apply(IQueryable<Customer> query)
+        {
+            //potentially too much
+            return query.Include(x => x.Orders).AsSplitQuery();
         }
     }
 }

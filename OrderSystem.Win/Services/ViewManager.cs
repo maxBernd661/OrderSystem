@@ -177,11 +177,12 @@ namespace OrderSystem.Win.Services
 
             IDataManipulationService service = GetDataService(managedView);
             PersistentEntityBase savedItem = await service.SaveAsync(managedView);
+            managedView.ManagedEntity = savedItem;
 
             if (holder.View is IDetailView dv)
             {
-                managedView.ManagedEntity = savedItem;
-                holder.Text = dv.ReadData().GetIdentifier();
+
+                holder.Name = dv.ReadData().GetIdentifier();
             }
 
             await ReloadView(holder);
