@@ -178,7 +178,7 @@ namespace OrderSystem.Core.Entities
     {
         public IQueryable<Order> Apply(IQueryable<Order> query)
         {
-            return query.Include(x => x.Customer).Include(x => x.Items).AsSplitQuery();
+            return query.Include(x => x.Customer).Include(x => x.Items).ThenInclude(x => x.Product).AsSplitQuery();
         }
     }
 }
