@@ -169,7 +169,7 @@ namespace OrderSystem.Win.Forms
 
                     if (addMethod != null)
                     {
-                        addMethod.Invoke(viewManager, [null]);
+                        addMethod.Invoke(viewManager, new object?[1]);
                     }
                 }
             }

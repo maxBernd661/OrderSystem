@@ -5,7 +5,7 @@ using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Controls
 {
-    public partial class OrderItemControl : UserControl, IComplexDataControl<OrderItem>
+    public partial class OrderItemControl : UserControl, IDataControl<OrderItem>, IRequireLookup<ProductLookups>
     {
         public OrderItemControl()
         {
@@ -13,6 +13,7 @@ namespace OrderSystem.Win.Controls
         }
 
         private Order? order;
+        private List<ProductLookup> products = [];
 
         public event EventHandler<EventArgs>? Changed;
 
@@ -21,51 +22,60 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void LoadData(OrderItem? entity, IServiceProvider serviceProvider)
+        public void SetLookup(ProductLookups lookup)
         {
-            order = entity?.Order;
-
-            if (entity != null)
+            products = lookup.Lookups;
+            comboBoxProduct.BeginUpdate();
+            try
             {
-                numericUpDownQuantity.Value = entity.Quantity;
+                comboBoxProduct.Items.Clear();
+                foreach (ProductLookup product in products)
+                {
+                    comboBoxProduct.Items.Add(product);
+                }
+
+                comboBoxProduct.DisplayMember = nameof(ProductLookup.Name);
             }
-
-            comboBoxProduct.Items.Clear();
-            IQueryable<Product> products = serviceProvider.GetRequiredService<OrderContext>().Set<Product>().Where(x => x.IsAvailable);
-
-            foreach (Product product in products)
+            finally
             {
-                comboBoxProduct.Items.Add(product);
+                comboBoxProduct.EndUpdate();
             }
-        }
-
-        public void LoadData(object? entity, IServiceProvider serviceProvider)
-        {
-            LoadData((OrderItem)entity, serviceProvider);
         }
 
         public void LoadData(OrderItem? entity)
         {
-            LoadData(entity, null);
+            order = entity?.Order;
+
+            if (entity == null)
+            {
+                return;
+            }
+
+            ProductLookup? selectedProduct = products.FirstOrDefault(x => x.Id == entity.ProductId);
+            if (selectedProduct != null)
+            {
+                comboBoxProduct.SelectedItem = selectedProduct;
+            }
+            numericUpDownQuantity.Value = entity.Quantity;
         }
 
         public void LoadData(object? entity)
         {
-            LoadData((OrderItem)entity, null);
+            LoadData((OrderItem)entity);
         }
 
         public OrderItem GetData()
         {
-            Product currentProduct = null;
-            if (comboBoxProduct.SelectedItem is Product p)
+            Guid id = Guid.Empty;
+            if (comboBoxProduct.SelectedItem is ProductLookup p)
             {
-                currentProduct = p;
+                id = p.Id;
             }
 
             return new OrderItem()
             {
                 Quantity = (int)numericUpDownQuantity.Value,
-                Product = currentProduct,
+                ProductId = id,
                 Order = order
             };
         }

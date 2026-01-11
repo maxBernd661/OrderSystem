@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
@@ -7,6 +6,8 @@ using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
 using OrderSystem.Win.View;
 using OrderSystem.Win.ViewControllers;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrderSystem.Win.Services
 {
@@ -67,7 +68,11 @@ namespace OrderSystem.Win.Services
             managedView.Holder.ViewChanged += ViewChanged;
             managedView.Holder.Name = $"New {typeof(TEntity).Name}";
 
-            if (entity != null)
+            if (entity == null)
+            {
+                entity = (TEntity)Activator.CreateInstance(typeof(TEntity))!;
+            }
+            else
             {
                 PropertyInfo? identProp = factory.GetIdentifier(typeof(TEntity));
                 if (identProp != null)
@@ -75,13 +80,10 @@ namespace OrderSystem.Win.Services
                     object? identvalue = identProp.GetValue(entity);
                     managedView.Holder.Name = identvalue as string ?? string.Empty;
                 }
+            }
 
-                await ((IDetailView)managedView.Holder.View).LoadData(entity, managedView.Scope.ServiceProvider);
-            }
-            else
-            {
-                await ((IDetailView)managedView.Holder.View).LoadData(null, managedView.Scope.ServiceProvider);
-            }
+            managedView.ManagedEntity = entity;
+            await ((IDetailView)managedView.Holder.View).LoadData(entity, managedView.Scope.ServiceProvider);
 
             return AddView(managedView);
         }

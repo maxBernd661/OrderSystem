@@ -22,11 +22,7 @@ namespace OrderSystem.Win.Controls
             List<Control> toLoad = GetControls(Root);
             foreach (Control control in toLoad)
             {
-                if (control is IComplexDataControl complex)
-                {
-                    complex.LoadData(entity, sp);
-                }
-                else if (control is IDataControl dataControl)
+                if (control is IDataControl dataControl)
                 {
                     dataControl.LoadData(entity);
                 }
@@ -58,6 +54,12 @@ namespace OrderSystem.Win.Controls
             }
 
             return items;
+        }
+
+        protected IListView? GetListView(Guid ident)
+        {
+            List<IListView> toCheck = GetControls(this).OfType<IListView>().ToList();
+            return toCheck.FirstOrDefault(x => x.Ident == ident);
         }
     }
 }

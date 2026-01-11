@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OrderSystem.Core;
-using OrderSystem.Core.Entities;
+﻿using OrderSystem.Core.Entities;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Controls
 {
-    public partial class OrderControl : UserControl, IComplexDataControl<Order>, IRequireLookup<CustomerLookups>
+    public partial class OrderControl : UserControl, IDataControl<Order>, IRequireLookup<CustomerLookups>
     {
         public OrderControl()
         {
@@ -46,15 +44,10 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        private List<OrderItem> orderItems;
-        private Order? savedOrder;
-
-        public void LoadData(Order? entity, IServiceProvider serviceProvider)
+        public void LoadData(Order? entity)
         {
             if (entity != null)
             {
-                savedOrder = entity;
-                orderItems = entity.Items.ToList();
                 textBoxStatus.Text = entity.Status.ToString();
 
                 CustomerLookup? selectedCustomer = customers.FirstOrDefault(x => x.Id == entity.CustomerId);
@@ -65,44 +58,24 @@ namespace OrderSystem.Win.Controls
             }
             else
             {
-                savedOrder = null;
-                orderItems = [];
                 textBoxStatus.Text = nameof(OrderStatus.Draft);
             }
         }
 
-        public void LoadData(Order? entity)
-        {
-            LoadData(entity, null);
-        }
-
         public void LoadData(object entity)
         {
-            LoadData((Order)entity, null);
-        }
-
-        public void LoadData(object entity, IServiceProvider serviceProvider)
-        {
-            LoadData((Order)entity, serviceProvider);
+            LoadData((Order)entity);
         }
 
         public Order GetData()
         {
-            if (savedOrder != null)
+            Guid id = Guid.Empty;
+            if (comboBoxCustomer.SelectedItem is CustomerLookup c)
             {
-                return savedOrder;
-            }
-            Customer? currentCustomer = new();
-            if (comboBoxCustomer.SelectedItem is Customer c)
-            {
-                currentCustomer = c;
-            }
-            Order order = Order.Create(currentCustomer);
-            foreach (OrderItem item in orderItems)
-            {
-                order.AddItem(item.Product, item.Quantity);
+                id = c.Id;
             }
 
+            Order order = Order.Create(id);
             return order;
         }
     }

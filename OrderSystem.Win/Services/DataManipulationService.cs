@@ -61,10 +61,9 @@ namespace OrderSystem.Win.Services
             {
                 entity.Delete();
             }
-            else if (managedView.Holder.View is IListView lv && lv.GetData() is { } id)
+            else if (managedView.Holder.View is IListView lv && lv.GetSelectedItem() is TEntity selectedEntity)
             {
-                TEntity? foundItem = await context.Set<TEntity>().SingleOrDefaultAsync(x => x.Id == id, cancellationToken: ct);
-                foundItem?.Delete();
+                selectedEntity.Delete();
             }
             else
             {

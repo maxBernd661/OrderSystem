@@ -8,34 +8,37 @@ namespace OrderSystem.Win.View
 {
     public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
+        public DetailViewDummy Template { get; }
+
+        public override ViewKind Kind
+        {
+            get { return ViewKind.DetailView; }
+        }
+
         public async Task LoadData(object? entity, IServiceProvider sp, CancellationToken ct = default)
         {
-            IProviderBase? provider = null;
-
             if (typeof(TEntity) == typeof(Order))
             {
-                provider = sp.GetRequiredService<ICustomerLookupProvider>();
+                ICustomerLookupProvider provider = sp.GetRequiredService<ICustomerLookupProvider>();
+                CustomerLookups lookups = await provider.GetLookups(ct);
+                ApplyLookups(this, lookups);
             }
             else if (typeof(TEntity) == typeof(OrderItem))
             {
-                provider = sp.GetRequiredService<IProductLookupProvider>();
-            }
-
-            if (provider != null)
-            {
-                IEntityLookup lookups = await provider.GetLookups(ct);
-                ApplyLookups(Template.Root, lookups);
+                IProductLookupProvider provider = sp.GetRequiredService<IProductLookupProvider>();
+                ProductLookups lookups = await provider.GetLookups(ct);
+                ApplyLookups(this, lookups);
             }
 
             Template.LoadData(entity, sp);
         }
 
-        private static void ApplyLookups<TLookup>(Control root, TLookup lookup) where TLookup : IEntityLookup
+        private void ApplyLookups<TLookup>(Control root, TLookup lookup) where TLookup : IEntityLookup
         {
             Visit(root, lookup);
         }
 
-        private static void Visit<TLookup>(Control control, TLookup lookup) where TLookup : IEntityLookup
+        private void Visit<TLookup>(Control control, TLookup lookup) where TLookup : IEntityLookup
         {
             if (control is IRequireLookup<TLookup> needsLookup)
             {
@@ -51,13 +54,6 @@ namespace OrderSystem.Win.View
         public PersistentEntityBase ReadData()
         {
             return (PersistentEntityBase)Template.ReadData();
-        }
-
-        public DetailViewDummy Template { get; }
-
-        public override ViewKind Kind
-        {
-            get { return ViewKind.DetailView; }
         }
 
         public DetailView(IServiceProvider sp, DetailViewDummy template) : base(sp)
@@ -110,6 +106,7 @@ namespace OrderSystem.Win.View
             listView.MaximumSize = dummy.MaximumSize;
             listView.Visible = dummy.Visible;
             listView.Enabled = dummy.Enabled;
+            ((IListView)listView).SetIdent(dummy.Ident);
 
             parent.SuspendLayout();
             parent.Controls.Remove(dummy);
@@ -135,16 +132,6 @@ namespace OrderSystem.Win.View
         void LoadData(TEntity? entity);
 
         new TEntity GetData();
-    }
-
-    public interface IComplexDataControl : IDataControl
-    {
-        void LoadData(object? entity, IServiceProvider serviceProvider);
-    }
-
-    public interface IComplexDataControl<TEntity> : IComplexDataControl, IDataControl<TEntity>
-    {
-        void LoadData(TEntity? entity, IServiceProvider serviceProvider);
     }
 
     public interface IDetailView

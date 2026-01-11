@@ -7,6 +7,7 @@ using OrderSystem.Win.Forms;
 using OrderSystem.Win.Services;
 using System.ComponentModel;
 using System.Reflection;
+using System.Security.Principal;
 
 namespace OrderSystem.Win.View
 {
@@ -19,7 +20,7 @@ namespace OrderSystem.Win.View
             viewManager = serviceProvider.GetRequiredService<ViewManager>();
             InitializeCore<T>();
             InitializeListView();
-            Load += async (_, _) => { await LoadSourceData(null); };
+            Load += async (_, _) => { await LoadSourceData(); };
         }
 
         public ListView(IServiceProvider serviceProvider, Func<T, bool> filter) : this(serviceProvider)
@@ -29,23 +30,52 @@ namespace OrderSystem.Win.View
 
         public Func<T, bool>? Filter { get; private set; }
 
+        public void RefreshItem(PersistentEntityBase item)
+        {
+            if (item is not T converted)
+            {
+                return;
+            }
+
+            if (Source.DataSource is not IList<T> list)
+            {
+                return;
+            }
+
+            int index = -1;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Id == converted.Id)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index < 0)
+            {
+                return;
+            }
+
+            list[index] = converted;
+            Source.ResetItem(index);
+        }
+
         public DataGridView Grid { get; set; }
 
         public BindingSource Source { get; set; }
 
-        public event EventHandler<CustomOpenEventArgs>? OnCustomOpenDetailView;
+        public event EventHandler<CustomOpenEventArgs<T>>? OnCustomOpenDetailView;
 
         public bool HasData
         {
             get
             {
-                return unorderedData?.Count > 0;
+                return unorderedData.Count > 0;
             }
         }
 
-        private List<T>? unorderedData;
-
-        private ListViewColumn? idColumn;
+        private List<T> unorderedData;
 
         private void InitializeListView()
         {
@@ -91,32 +121,35 @@ namespace OrderSystem.Win.View
 
             Grid.CellDoubleClick += async (_, args) =>
             {
-                if (args.RowIndex < 0 || args.ColumnIndex < 0 || idColumn is null)
+                if (args.RowIndex < 0 || args.ColumnIndex < 0)
+                {
+                    return;
+                }
+
+                if (Grid.Rows[args.RowIndex].DataBoundItem is not T entity)
                 {
                     return;
                 }
 
                 if (OnCustomOpenDetailView != null)
                 {
-                    List<(object value, PropertyInfo property)> list = [];
-                    for (int i = 0; i < Grid.Columns.Count; i++)
-                    {
-                        PropertyInfo column = (Grid.Columns[i] as ListViewColumn).BackingProperty;
-                        list.Add((Grid.Rows[args.RowIndex].Cells[i].Value, column));
-                    }
-                    OnCustomOpenDetailView.Invoke(this, new CustomOpenEventArgs(list));
+                    OnCustomOpenDetailView(this, new CustomOpenEventArgs<T>(entity));
                     return;
                 }
 
-                Guid selectedItem = (Guid)Grid.Rows[args.RowIndex].Cells[idColumn.Index].Value;
-                ViewHolder holder = await viewManager.AddDetailView<T>(selectedItem);
+                ViewHolder holder = await viewManager.AddDetailView(entity);
                 ServiceProvider.GetRequiredService<MainForm>().ShowView(holder);
             };
         }
 
+        public List<PersistentEntityBase> GetData()
+        {
+            return unorderedData.OfType<PersistentEntityBase>().ToList();
+        }
+
         public async Task LoadSourceData(object? data = null)
         {
-            Grid?.Columns.Clear();
+            Grid.Columns.Clear();
 
             List<T>? dbData;
             if (data is null)
@@ -160,11 +193,6 @@ namespace OrderSystem.Win.View
                     Visible = !basePropNames.Contains(prop.Key.Name)
                 };
 
-                if (propColumn.DataPropertyName == "Id")
-                {
-                    idColumn = propColumn;
-                }
-
                 Grid.Columns.Add(propColumn);
             }
         }
@@ -206,24 +234,26 @@ namespace OrderSystem.Win.View
             return listProp.GetValue(data) as IEnumerable<T> ?? [];
         }
 
+        public Guid Ident { get; private set; }
+
+        public void SetIdent(Guid id)
+        {
+            Ident = id;
+        }
+
         public void AddControl(Control control)
         {
             Controls.Add(control);
         }
 
-        public Guid? GetData()
+        public PersistentEntityBase? GetSelectedItem()
         {
-            if (idColumn is null)
+            if (Grid.SelectedRows.Count == 0)
             {
                 return null;
             }
 
-            if (Grid is null)
-            {
-                return null;
-            }
-
-            return (Guid)Grid.SelectedRows[0].Cells[idColumn.Index].Value;
+            return Grid.SelectedRows[0].DataBoundItem as PersistentEntityBase;
         }
 
         private void OrderByColumn(ListViewColumn column)
@@ -257,20 +287,28 @@ namespace OrderSystem.Win.View
         }
     }
 
-    public class CustomOpenEventArgs(List<(object, PropertyInfo)> data) : EventArgs
+    public class CustomOpenEventArgs<T>(T data) : EventArgs where T : PersistentEntityBase
     {
-        public List<(object value, PropertyInfo property)> Object { get; set; } = data;
+        public T Data { get; } = data;
     }
 
     public interface IListView
     {
+        public Guid Ident { get; }
+
+        public void SetIdent(Guid ident);
+
         public void AddControl(Control control);
 
-        public Guid? GetData();
+        public PersistentEntityBase? GetSelectedItem();
+
+        public void RefreshItem(PersistentEntityBase item);
 
         public DataGridView Grid { get; }
 
         public bool HasData { get; }
+
+        public List<PersistentEntityBase> GetData();
 
         public Task LoadSourceData(object? data = null);
     }

@@ -44,7 +44,7 @@ namespace OrderSystem.Win.View
             await using OrderContext db = await dbFactory.CreateDbContextAsync(ct);
 
             List<ProductLookup> products = await db.Set<Product>()
-                                                    .Where(x => !x.IsDeleted)
+                                                    .Where(x => x.IsAvailable)
                                                     .OrderBy(x => x.Name)
                                                     .Select(x => new ProductLookup(x.Id, x.Name, x.UnitPrice, x.Weight, x.IsAvailable))
                                                     .AsNoTracking()
@@ -73,7 +73,7 @@ namespace OrderSystem.Win.View
             await using OrderContext db = await dbFactory.CreateDbContextAsync(ct);
 
             List<CustomerLookup> customers = await db.Set<Customer>()
-                                                     .Where(x => x.IsDeleted)
+                                                     .Where(x => x.IsActive)
                                                      .OrderBy(x => x.Name)
                                                      .Select(x => new CustomerLookup(x.Id, x.Name))
                                                      .AsNoTracking()

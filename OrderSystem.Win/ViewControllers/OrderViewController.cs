@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.Controls;
 using OrderSystem.Win.Forms;
@@ -61,8 +63,10 @@ namespace OrderSystem.Win.ViewControllers
             }
         }
 
-        private void ListViewOnOnCustomOpenDetailView(object? sender, CustomOpenEventArgs e)
+        private async void ListViewOnOnCustomOpenDetailView(object? sender, CustomOpenEventArgs<OrderItem> e)
         {
+            OrderItem toOpen = e.Data;
+            await AddOrUpdate(toOpen);
         }
 
         private async void AddItemButtonOnClick(object? sender, EventArgs e)
@@ -72,15 +76,36 @@ namespace OrderSystem.Win.ViewControllers
                 return;
             }
 
+            await AddOrUpdate();
+        }
+
+        private async Task AddOrUpdate(OrderItem? item = null)
+        {
             using IServiceScope scope = scopeFactory.CreateScope();
             ViewManager viewManager = scope.ServiceProvider.GetRequiredService<ViewManager>();
             PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
-            ViewHolder holder = await viewManager.AddDetailView<OrderItem>();
+            ViewHolder holder = await viewManager.AddDetailView(item);
 
             if (popup.ShowView(holder) && popup.ReturnedItem is OrderItem orderItem)
             {
                 Order order = (Order)((IDetailView)View).ReadData();
-                order.AddItem(orderItem.Product, orderItem.Quantity);
+                Product? product = await scope.ServiceProvider.GetRequiredService<OrderContext>()
+                                              .Set<Product>()
+                                              .FirstOrDefaultAsync(x => x.Id == orderItem.ProductId);
+
+                if (product == null)
+                {
+                    return;
+                }
+
+                orderItem.Product = product;
+
+                if (item != null)
+                {
+                    order.DeleteItem(item.Id);
+                }
+
+                order.AddItem(orderItem);
                 await ((IDetailView)View).LoadData(order, scope.ServiceProvider);
             }
         }

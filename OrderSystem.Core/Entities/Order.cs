@@ -14,10 +14,10 @@
         #region Properties
 
         [HideInListView]
+        [Required]
         public Guid CustomerId { get; private set; }
 
         [HideInListView]
-        [Required]
         public Customer Customer { get; private set; } = null!;
 
         [ColumnName("Identifier")]
@@ -48,13 +48,12 @@
 
         #endregion Properties
 
-        public static Order Create(Customer customer)
+        public static Order Create(Guid customerId)
         {
             Order order = new()
             {
                 Status = OrderStatus.Draft,
-                Customer = customer,
-                CustomerId = customer.Id
+                CustomerId = customerId
             };
 
             return order;
@@ -117,21 +116,29 @@
             return Result.Ok();
         }
 
-        public Result AddItem(Product product, int quantity)
+        public Result AddItem(OrderItem item)
         {
             if (Status > OrderStatus.Draft)
             {
                 return Result.Fail("Can only add items to drafted orders.");
             }
 
-            items.Add(new OrderItem
+            items.Add(item);
+
+            return Result.Ok();
+        }
+
+        public Result DeleteItem(Guid itemId)
+        {
+            if (Status > OrderStatus.Draft)
             {
-                Product = product,
-                ProductId = product.Id,
-                Quantity = quantity,
-                Order = this,
-                OrderId = Id
-            });
+                return Result.Fail("Can only remove items from drafted orders");
+            }
+
+            if (items.FirstOrDefault(x => x.Id == itemId) is { } item)
+            {
+                items.Remove(item);
+            }
 
             return Result.Ok();
         }

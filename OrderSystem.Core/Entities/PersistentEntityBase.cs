@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace OrderSystem.Core.Entities
 {
@@ -13,7 +15,7 @@ namespace OrderSystem.Core.Entities
             return $"{GetType().Name}_{Id.ToString()}";
         }
 
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [ColumnName("Created At")]
         public DateTime CreatedAt { get; set; }

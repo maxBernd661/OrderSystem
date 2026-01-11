@@ -16,9 +16,10 @@ namespace OrderSystem.Win.Controls
         private ToolStrip toolStrip1;
         private ToolStripButton toolStripButton1;
 
+        public Guid Ident { get; } = Guid.NewGuid();
+
         private void InitializeComponent()
         {
-
         }
     }
 }

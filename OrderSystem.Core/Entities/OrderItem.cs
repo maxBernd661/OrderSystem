@@ -5,13 +5,14 @@
     /// </summary>
     public class OrderItem : PersistentEntityBase
     {
+        [Required]
         [HideInListView]
         public Guid OrderId { get; set; }
 
         [HideInListView]
-        
         public Order Order { get; set; }
 
+        [Required]
         [HideInListView]
         public Guid ProductId { get; set; }
 
@@ -25,7 +26,6 @@
             }
         }
 
-        [Required]
         public Product Product { get; set; }
 
         [ClampValue(1, 9999)]
