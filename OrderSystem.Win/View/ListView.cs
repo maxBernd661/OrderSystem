@@ -7,20 +7,27 @@ using OrderSystem.Win.Forms;
 using OrderSystem.Win.Services;
 using System.ComponentModel;
 using System.Reflection;
-using System.Security.Principal;
 
 namespace OrderSystem.Win.View
 {
     public class ListView<T> : ViewBase, IListView where T : PersistentEntityBase
     {
         private readonly ViewManager viewManager;
+        private bool suppressInitialLoad;
 
         public ListView(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             viewManager = serviceProvider.GetRequiredService<ViewManager>();
             InitializeCore<T>();
             InitializeListView();
-            Load += async (_, _) => { await LoadSourceData(); };
+            Load += async (_, _) =>
+            {
+                if (suppressInitialLoad)
+                {
+                    return;
+                }
+                await LoadSourceData();
+            };
         }
 
         public ListView(IServiceProvider serviceProvider, Func<T, bool> filter) : this(serviceProvider)
@@ -149,6 +156,11 @@ namespace OrderSystem.Win.View
 
         public async Task LoadSourceData(object? data = null)
         {
+            if (data != null)
+            {
+                suppressInitialLoad = true;
+            }
+
             Grid.Columns.Clear();
 
             List<T>? dbData;

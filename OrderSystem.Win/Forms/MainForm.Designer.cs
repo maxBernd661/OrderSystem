@@ -47,6 +47,7 @@
             allTabsToolStripMenuItem = new ToolStripMenuItem();
             otherTabsToolStripMenuItem = new ToolStripMenuItem();
             seperatorCloseTab = new ToolStripSeparator();
+            buttonRefresh = new ToolStripButton();
             mainContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             sidebarLayout = new TableLayoutPanel();
@@ -57,7 +58,6 @@
             toolStrip2 = new ToolStrip();
             toggleSidebarButton = new ToolStripButton();
             labelStatus = new ToolStripLabel();
-            buttonRefresh = new ToolStripButton();
             mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainContainer).BeginInit();
             mainContainer.Panel1.SuspendLayout();
@@ -226,14 +226,14 @@
             // allTabsToolStripMenuItem
             // 
             allTabsToolStripMenuItem.Name = "allTabsToolStripMenuItem";
-            allTabsToolStripMenuItem.Size = new Size(180, 22);
+            allTabsToolStripMenuItem.Size = new Size(140, 22);
             allTabsToolStripMenuItem.Text = "All Tabs";
             allTabsToolStripMenuItem.Click += allTabsToolStripMenuItem_Click;
             // 
             // otherTabsToolStripMenuItem
             // 
             otherTabsToolStripMenuItem.Name = "otherTabsToolStripMenuItem";
-            otherTabsToolStripMenuItem.Size = new Size(180, 22);
+            otherTabsToolStripMenuItem.Size = new Size(140, 22);
             otherTabsToolStripMenuItem.Text = "Other Tabs";
             otherTabsToolStripMenuItem.Click += otherTabsToolStripMenuItem_Click;
             // 
@@ -244,6 +244,17 @@
             seperatorCloseTab.Name = "seperatorCloseTab";
             seperatorCloseTab.Padding = new Padding(2);
             seperatorCloseTab.Size = new Size(6, 40);
+            // 
+            // buttonRefresh
+            // 
+            buttonRefresh.Alignment = ToolStripItemAlignment.Right;
+            buttonRefresh.Image = projectResources.refresh;
+            buttonRefresh.ImageTransparentColor = Color.Magenta;
+            buttonRefresh.Name = "buttonRefresh";
+            buttonRefresh.RightToLeft = RightToLeft.Yes;
+            buttonRefresh.Size = new Size(88, 41);
+            buttonRefresh.Text = "Refresh";
+            buttonRefresh.Click += buttonRefresh_Click;
             // 
             // mainContainer
             // 
@@ -400,17 +411,6 @@
             labelStatus.Padding = new Padding(2);
             labelStatus.Size = new Size(4, 24);
             // 
-            // buttonRefresh
-            // 
-            buttonRefresh.Alignment = ToolStripItemAlignment.Right;
-            buttonRefresh.Image = projectResources.refresh;
-            buttonRefresh.ImageTransparentColor = Color.Magenta;
-            buttonRefresh.Name = "buttonRefresh";
-            buttonRefresh.RightToLeft = RightToLeft.Yes;
-            buttonRefresh.Size = new Size(88, 41);
-            buttonRefresh.Text = "Refresh";
-            buttonRefresh.Click += buttonRefresh_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -421,7 +421,7 @@
             DoubleBuffered = true;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "MainForm";
+            Text = "OrderSystem";
             mainToolStrip.ResumeLayout(false);
             mainToolStrip.PerformLayout();
             mainContainer.Panel1.ResumeLayout(false);

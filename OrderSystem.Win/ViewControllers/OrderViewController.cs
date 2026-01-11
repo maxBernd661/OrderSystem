@@ -15,7 +15,6 @@ namespace OrderSystem.Win.ViewControllers
         private ListView<OrderItem>? listView;
         private ToolStripButton? addItemButton;
         private ToolStripButton? deleteItemButton;
-        private readonly IServiceScopeFactory scopeFactory = scopeFactory;
 
         protected override void ViewOnLoad(object? sender, EventArgs e)
         {
@@ -27,7 +26,6 @@ namespace OrderSystem.Win.ViewControllers
                     return;
                 }
 
-                listView.Grid.SelectionChanged += GridOnSelectionChanged;
                 listView.OnCustomOpenDetailView += ListViewOnOnCustomOpenDetailView;
 
                 if (toolStrip is not null)
@@ -110,21 +108,22 @@ namespace OrderSystem.Win.ViewControllers
             }
         }
 
-        private void DeleteItemButtonOnClick(object? sender, EventArgs e)
+        private async void DeleteItemButtonOnClick(object? sender, EventArgs e)
         {
-        }
+            if (listView?.HasData == false)
+            {
+                return;
+            }
 
-        private void GridOnSelectionChanged(object? sender, EventArgs e)
-        {
+            Order order = (Order)((IDetailView)View).ReadData();
+            OrderItem item = (OrderItem)listView!.GetSelectedItem()!;
+            using IServiceScope scope = scopeFactory.CreateScope();
+            order.DeleteItem(item.Id);
+            await ((IDetailView)View).LoadData(order, scope.ServiceProvider);
         }
 
         public override void Dispose()
         {
-            if (listView != null)
-            {
-                listView.Grid.SelectionChanged -= GridOnSelectionChanged;
-            }
-
             if (addItemButton != null)
             {
                 addItemButton.Click -= AddItemButtonOnClick;

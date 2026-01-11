@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using OrderSystem.Core;
 
 namespace OrderSystem.API

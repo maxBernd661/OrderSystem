@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OrderSystem.Core;
-using OrderSystem.Core.Entities;
+﻿using OrderSystem.Core.Entities;
 using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Controls

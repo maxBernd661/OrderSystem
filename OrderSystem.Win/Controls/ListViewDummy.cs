@@ -1,6 +1,4 @@
-﻿using OrderSystem.Core.Entities;
-
-namespace OrderSystem.Win.Controls
+﻿namespace OrderSystem.Win.Controls
 {
     public class ListViewDummy : UserControl
     {

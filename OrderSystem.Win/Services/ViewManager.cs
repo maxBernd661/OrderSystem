@@ -7,7 +7,6 @@ using OrderSystem.Win.Forms;
 using OrderSystem.Win.View;
 using OrderSystem.Win.ViewControllers;
 using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrderSystem.Win.Services
 {

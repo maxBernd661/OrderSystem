@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.View;
@@ -20,7 +19,8 @@ namespace OrderSystem.Win.Services
 
             DbSet<TEntity> set = context.Set<TEntity>();
 
-            if (managedView.ManagedEntity is null)
+            if (managedView.ManagedEntity is null ||
+                managedView.ManagedEntity.CreatedAt == DateTime.MinValue)
             {
                 savingEntity = (TEntity)dv.Template.ReadData();
                 TrackGraphForInsert(savingEntity);
@@ -42,7 +42,8 @@ namespace OrderSystem.Win.Services
         {
             context.ChangeTracker.TrackGraph(rootEntity, node =>
             {
-                node.Entry.State = node.Entry.IsKeySet ? EntityState.Unchanged : EntityState.Added;
+                PersistentEntityBase entity = (PersistentEntityBase)node.Entry.Entity;
+                node.Entry.State = entity.CreatedAt == DateTime.MinValue ? EntityState.Added : EntityState.Unchanged;
             });
         }
 
@@ -57,19 +58,29 @@ namespace OrderSystem.Win.Services
 
         public async Task<Result> DeleteAsync(IManagedView managedView, CancellationToken ct = default)
         {
-            if (managedView.ManagedEntity is TEntity entity)
+            TEntity? entity = null;
+
+            if (managedView.ManagedEntity is TEntity dvEntity)
             {
-                entity.Delete();
+                entity = dvEntity;
             }
             else if (managedView.Holder.View is IListView lv && lv.GetSelectedItem() is TEntity selectedEntity)
             {
-                selectedEntity.Delete();
+                entity = selectedEntity;
             }
-            else
+
+            if (entity is null)
             {
                 return Result.Fail("Nothing to delete");
             }
 
+            TEntity? trackedEntity = await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == entity.Id, ct);
+            if (trackedEntity is null)
+            {
+                return Result.Fail("Entity not saved");
+            }
+
+            context.Remove(trackedEntity);
             await context.SaveChangesAsync(ct);
             return Result.Ok();
         }
