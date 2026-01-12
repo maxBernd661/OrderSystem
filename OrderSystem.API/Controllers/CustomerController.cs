@@ -49,7 +49,7 @@ namespace OrderSystem.API.Controllers
             };
 
             context.Customers.Add(customer);
-            await context.SaveData(ct);
+            await context.SaveChangesAsync(ct);
 
             return Ok();
         }

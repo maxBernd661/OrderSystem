@@ -4,11 +4,17 @@ using OrderSystem.Core.Entities;
 
 namespace OrderSystem.Win.View
 {
+    /// <summary>
+    /// Marker contract for UI controls that require externally prepared lookup data (DTOs) to function.
+    /// </summary>
     public interface IRequireLookup<in TLookup> where TLookup : IEntityLookup
     {
         void SetLookup(TLookup lookup);
     }
 
+    /// <summary>
+    /// Marker interface for lookup containers used to feed UI controls with lightweight DTO data.
+    /// </summary>
     public interface IEntityLookup;
 
     public sealed class ProductLookups : IEntityLookup
@@ -23,12 +29,15 @@ namespace OrderSystem.Win.View
         public List<CustomerLookup> Lookups { get; init; }
     }
 
-    public sealed record CustomerLookup(Guid Id, string Name);
-
+    /// <summary>
+    /// Non-generic base interface for lookup providers.
+    /// </summary>
     public interface IProviderBase
     {
         public Task<IEntityLookup> GetLookups(CancellationToken ct = default);
     }
+
+    public sealed record CustomerLookup(Guid Id, string Name);
 
     public interface IProductLookupProvider : IProviderBase
     {

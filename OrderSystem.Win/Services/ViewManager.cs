@@ -10,6 +10,30 @@ using System.Reflection;
 
 namespace OrderSystem.Win.Services
 {
+    /// <summary>
+    /// Coordinates the lifecycle, scoping and reuse of views within the application
+    /// </summary>
+    ///
+    /// <remarks>
+    ///
+    /// <para>
+    /// <seealso cref="ViewManager"/> is responsible for managing active views and their associated DI scopes, controllers and entities.
+    /// </para>
+    ///
+    /// <para>
+    /// Each view is wrapped in a managed container that tracks its scope, the instantiated view (and its holder), associated controllers and the currently loaded entity.
+    /// </para>
+    ///
+    /// <para>
+    /// Enforces at most one list view per entity type and at most one detail view per entity instance. <br/>
+    /// Controllers and scopes are disposed together with their views.
+    /// </para>
+    ///
+    /// <para>
+    /// View creation is handled by <see cref="ViewFactory"/>, while lifetime and reuse are handled here
+    /// </para>
+    ///
+    /// </remarks>
     public sealed class ViewManager(IServiceProvider sp) : IDisposable
     {
         private readonly IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
@@ -42,6 +66,11 @@ namespace OrderSystem.Win.Services
             };
         }
 
+        /// <summary>
+        /// Adds a list view for the given enttiy type or returns an existing one
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type displayed in the list view</typeparam>
+        /// <returns>A <see cref="ViewHolder"/> representing the list view</returns>
         public ViewHolder AddListView<TEntity>() where TEntity : PersistentEntityBase
         {
             ManagedView<TEntity> managedView = BuildManagedView<TEntity>(ViewKind.ListView);
@@ -49,6 +78,11 @@ namespace OrderSystem.Win.Services
             return AddView(managedView);
         }
 
+        /// <summary>
+        /// Adds a detail view for an existing entity identified via its <paramref name="id"/> or returns an existing one
+        /// </summary>
+        /// <typeparam name="TEntity">The type of entity to be displayed</typeparam>
+        /// <returns>A <see cref="ViewHolder"/> representing the detail view</returns>
         public async Task<ViewHolder> AddDetailView<TEntity>(Guid id) where TEntity : PersistentEntityBase
         {
             using IServiceScope scope = scopeFactory.CreateScope();
@@ -61,6 +95,14 @@ namespace OrderSystem.Win.Services
             return await AddDetailView(existingItem);
         }
 
+        /// <summary>
+        /// Adds a detail view for a new or existing entity instance
+        /// </summary>
+        /// <typeparam name="TEntity">The type of entity to be displayed</typeparam>
+        /// <param name="entity">
+        /// Optional entity instance. If <c>null</c>, a new entity is created.
+        /// </param>
+        /// <returns>A <see cref="ViewHolder"/> representing the detail view</returns>
         public async Task<ViewHolder> AddDetailView<TEntity>(TEntity? entity = null) where TEntity : PersistentEntityBase
         {
             ManagedView<TEntity> managedView = BuildManagedView<TEntity>(ViewKind.DetailView);
@@ -93,9 +135,6 @@ namespace OrderSystem.Win.Services
             sp.GetRequiredService<MainForm>().ShowView(view);
         }
 
-        /// <summary>
-        /// Adds the Managed view or returns an existing view
-        /// </summary>
         private ViewHolder AddView<TEntity>(ManagedView<TEntity> managedView) where TEntity : PersistentEntityBase
         {
             if (managedView.Kind == ViewKind.ListView)
@@ -130,6 +169,13 @@ namespace OrderSystem.Win.Services
             views.Clear();
         }
 
+        /// <summary>
+        /// Disposes the specified view, including its controllers and DI scope.
+        /// </summary>
+        /// <param name="holder">The view holder to dispose.</param>
+        /// <returns>
+        /// <c>true</c> if the view was found and disposed; otherwise <c>false</c>.
+        /// </returns>
         public bool DisposeView(ViewHolder holder)
         {
             IManagedView? view = views.FirstOrDefault(x => x.Holder == holder);
@@ -155,6 +201,11 @@ namespace OrderSystem.Win.Services
             form.ToggleButtons();
         }
 
+        /// <summary>
+        /// Deletes the entity associated with the specified view.
+        /// </summary>
+        /// <param name="holder">The view holder to delete.</param>
+        /// <returns>A result indicating success or failure.</returns>
         public async Task<Result> DeleteAsync(ViewHolder holder)
         {
             IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
@@ -167,6 +218,10 @@ namespace OrderSystem.Win.Services
             return await service.DeleteAsync(managedView);
         }
 
+        /// <summary>
+        /// Saves the data of the specified view and reloads its state.
+        /// </summary>
+        /// <param name="holder">The view holder to save.</param>
         public async Task SaveAsync(ViewHolder holder)
         {
             IManagedView? managedView = views.FirstOrDefault(x => x.Holder == holder);
@@ -181,13 +236,16 @@ namespace OrderSystem.Win.Services
 
             if (holder.View is IDetailView dv)
             {
-
                 holder.Name = dv.ReadData().GetIdentifier();
             }
 
             await ReloadView(holder);
         }
 
+        /// <summary>
+        /// Reloads the data of the specified view
+        /// </summary>
+        /// <param name="holder">The view holder to reload</param>
         public async Task ReloadView(ViewHolder holder)
         {
             if (holder.View is IListView lv)

@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 
 namespace OrderSystem.Core.Entities
 {
     /// <summary>
-    /// Persistente Basisklasse
+    /// Base class for all entities
     /// </summary>
     public abstract class PersistentEntityBase
     {
@@ -27,6 +26,9 @@ namespace OrderSystem.Core.Entities
             IsDeleted = true;
         }
 
+        /// <summary>
+        /// Tries to validate the entity against its validation rules set up via attributes, returning a <seealso cref="Result"/> containing possible problems
+        /// </summary>
         public Result SoftValidate()
         {
             List<string> errors = ValidateCore();
@@ -39,6 +41,10 @@ namespace OrderSystem.Core.Entities
             return Result.Fail(message);
         }
 
+        /// <summary>
+        /// Tries to validate the entity against its validation rules set up via attributes.
+        /// </summary>
+        /// <exception cref="ValidationException{TEntity}">When errors are encountered during validation</exception>
         public void ValidateOrThrow()
         {
             List<string> errors = ValidateCore();
@@ -47,10 +53,14 @@ namespace OrderSystem.Core.Entities
                 string message = string.Join("\r\n", errors);
                 Type entityType = GetType();
                 Type exceptionType = typeof(ValidationException<>).MakeGenericType(entityType);
-                throw (Exception)Activator.CreateInstance(exceptionType, this, message)!;
+                throw (ValidationException<PersistentEntityBase>)Activator.CreateInstance(exceptionType, this, message)!;
             }
         }
 
+        /// <summary>
+        /// Iterates over the entity's public properties, checking each for rules set via attributes
+        /// </summary>
+        /// <returns>A list of errors encountered during validation</returns>
         private List<string> ValidateCore()
         {
             List<string> output = [];
@@ -145,6 +155,10 @@ namespace OrderSystem.Core.Entities
             return output;
         }
 
+        /// <summary>
+        /// Tries to find a property decorated with an <seealso cref="IdentifierAttribute"/>, returning its value or its ToString() representation if none is found
+        /// </summary>
+        /// <returns></returns>
         public string GetIdentifier()
         {
             PropertyInfo? identProp = GetType()
@@ -162,6 +176,10 @@ namespace OrderSystem.Core.Entities
         }
     }
 
+    /// <summary>
+    /// An entity implementing this interface will provide a method for further refining <c>Include</c>s
+    /// </summary>
+    /// <typeparam name="TEntity">A <seealso cref="PersistentEntityBase"/></typeparam>
     public interface IQueryProfile<TEntity> where TEntity : PersistentEntityBase
     {
         IQueryable<TEntity> Apply(IQueryable<TEntity> query);
@@ -221,6 +239,9 @@ namespace OrderSystem.Core.Entities
         public float Max { get; set; } = max;
     }
 
+    /// <summary>
+    /// A property decorated with this attribute will have to be between min and max before saving
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class ClampDecimalValueAttribute(double min = 0, double max = 0) : Attribute
     {
@@ -229,6 +250,9 @@ namespace OrderSystem.Core.Entities
         public double Max { get; set; } = max;
     }
 
+    /// <summary>
+    /// A collection decorated with this property will have to contain at least one element before saving
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class AtLeastOneAttribute : Attribute;
 

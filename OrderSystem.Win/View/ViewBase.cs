@@ -7,6 +7,9 @@ using OrderSystem.Win.Forms;
 
 namespace OrderSystem.Win.View
 {
+    /// <summary>
+    /// base class for all views
+    /// </summary>
     public class ViewBase : UserControl
     {
         protected IContainer? components = null;

@@ -3,6 +3,9 @@ using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.Controls
 {
+    /// <summary>
+    /// design-time representation of a <seealso cref="DetailView{TEntity}"/>.
+    /// </summary>
     public class DetailViewDummy : UserControl
     {
         public Control Root
@@ -17,7 +20,10 @@ namespace OrderSystem.Win.Controls
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void LoadData<TEntity>(TEntity? entity, IServiceProvider sp)
+        /// <summary>
+        /// Sends data from a <seealso cref="PersistentEntityBase"/> to all nested controls
+        /// </summary>
+        public void LoadData<TEntity>(TEntity? entity)
         {
             List<Control> toLoad = GetControls(Root);
             foreach (Control control in toLoad)
@@ -43,6 +49,9 @@ namespace OrderSystem.Win.Controls
             return string.Empty;
         }
 
+        /// <summary>
+        /// Returns all nested controls
+        /// </summary>
         private List<Control> GetControls(Control root, List<Control>? items = null)
         {
             items ??= [];
@@ -56,6 +65,9 @@ namespace OrderSystem.Win.Controls
             return items;
         }
 
+        /// <summary>
+        /// Returns a nested <seealso cref="ListView{TEntity}"/> for the given guid, or <c>null</c> if none is found
+        /// </summary>
         protected IListView? GetListView(Guid ident)
         {
             List<IListView> toCheck = GetControls(this).OfType<IListView>().ToList();

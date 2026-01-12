@@ -1,5 +1,10 @@
-﻿namespace OrderSystem.Win.Controls
+﻿using OrderSystem.Win.View;
+
+namespace OrderSystem.Win.Controls
 {
+    /// <summary>
+    /// design-time representation of a <seealso cref="ListView{TEntity}"/>. Replaced with the actual component during construction of a <seealso cref="DetailView{TEntity}"/>
+    /// </summary>
     public class ListViewDummy : UserControl
     {
         public ListViewDummy()

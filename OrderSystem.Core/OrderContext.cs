@@ -16,6 +16,9 @@ namespace OrderSystem.Core
 
         public DbSet<Product> Products { get; set; }
 
+        /// <summary>
+        /// Automatically excludes all entities flagged with <c>IsDeleted</c>.
+        /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Customer>().HasQueryFilter(x => !x.IsDeleted);
@@ -30,26 +33,23 @@ namespace OrderSystem.Core
         public override int SaveChanges()
         {
             ValidatePending();
+            HandleDeletion();
             UpdateTimestamp();
             return base.SaveChanges();
         }
 
-        public async Task<DateTime> SaveData(CancellationToken cancellationToken = new())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             ValidatePending();
-            DateTime updateTime = UpdateTimestamp();
-            await base.SaveChangesAsync(cancellationToken);
-
-            return updateTime;
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-        {
-            ValidatePending();
+            HandleDeletion();
             UpdateTimestamp();
             return base.SaveChangesAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// Attempts to validate all tracked entities
+        /// </summary>
+        /// <exception cref="ValidationException{TEntity}">Thrown, when an entity could not be validated</exception>
         private void ValidatePending()
         {
             IEnumerable<PersistentEntityBase> entities = ChangeTracker.Entries<PersistentEntityBase>()
@@ -62,7 +62,10 @@ namespace OrderSystem.Core
             }
         }
 
-        private DateTime UpdateTimestamp()
+        /// <summary>
+        /// Iterates over tracked entities, setting the <seealso cref="PersistentEntityBase.CreatedAt"/> and <seealso cref="PersistentEntityBase.UpdatedAt"/> timestamps
+        /// </summary>
+        private void UpdateTimestamp()
         {
             DateTime now = DateTime.UtcNow;
 
@@ -75,19 +78,27 @@ namespace OrderSystem.Core
                         entry.Entity.UpdatedAt = now;
                         break;
 
-                    case EntityState.Modified:
-                        entry.Entity.UpdatedAt = now;
-                        break;
-
                     case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.Entity.IsDeleted = true;
+                    case EntityState.Modified:
                         entry.Entity.UpdatedAt = now;
                         break;
                 }
             }
+        }
 
-            return now;
+        /// <summary>
+        /// Iterates over tracked entities, sets <seealso cref="PersistentEntityBase.IsDeleted"/> for soft-deletion
+        /// </summary>
+        private void HandleDeletion()
+        {
+            foreach (EntityEntry<PersistentEntityBase> entry in ChangeTracker.Entries<PersistentEntityBase>())
+            {
+                if (entry.State is EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                }
+            }
         }
     }
 

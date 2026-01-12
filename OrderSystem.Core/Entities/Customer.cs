@@ -2,9 +2,6 @@
 
 namespace OrderSystem.Core.Entities
 {
-    /// <summary>
-    /// Kunde
-    /// </summary>
     public class Customer : PersistentEntityBase
     {
         [Required]

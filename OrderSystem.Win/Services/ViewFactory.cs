@@ -7,6 +7,23 @@ using OrderSystem.Win.ViewControllers;
 
 namespace OrderSystem.Win.Services
 {
+    /// <summary>
+    /// Central factory responsible for discovering, constructing and wiring views and their related controllers.
+    /// </summary>
+    ///
+    ///<remarks>
+    /// <para>
+    /// Performs one-time reflection-based discovery of entity types, view templates and view controllers.
+    /// </para>
+    ///
+    /// <para>
+    /// The factory enforces controlled creation of views. Consumers must not manually instantiate <see cref="DetailView{TEntity}"/> or resolve templates themselves.
+    /// </para>
+    ///
+    /// <para>
+    /// Centralizes reflection and instantiation logic to keep view and controller code free of assembly scanning, service location and type discovery concerns.
+    /// </para>
+    /// </remarks>
     public class ViewFactory
     {
         private readonly IServiceProvider sp;
@@ -99,12 +116,26 @@ namespace OrderSystem.Win.Services
             return type ?? typeof(PersistentEntityBase);
         }
 
+        /// <summary>
+        /// Returns the property used as the identifier for a given entity type
+        /// </summary>
+        ///<remarks>
+        ///If an entity defines a custom identifier via <seealso cref="IdentifierAttribute"/>,
+        /// it is preferred over the default <c>Id</c> property.
+        /// </remarks>
         public PropertyInfo? GetIdentifier(Type type)
         {
             identifierMapping.TryGetValue(type, out PropertyInfo? info);
             return info;
         }
 
+        /// <summary>
+        /// Creates a detail view instance for the given entity type.
+        /// </summary>
+        /// <returns>
+        /// A fully constructed <see cref="DetailView{TEntity}"/> including its template
+        /// </returns>
+        /// <exception cref="InvalidOperationException">Thrown if no matching template is registered for the given entity type</exception>
         public DetailView<TEntity> CreateDetailView<TEntity>() where TEntity : PersistentEntityBase
         {
             Type entityType = typeof(TEntity);
@@ -122,7 +153,16 @@ namespace OrderSystem.Win.Services
             return ActivatorUtilities.CreateInstance<DetailView<TEntity>>(sp, dummy);
         }
 
-        public List<IControllerBase> MakeControllers<TEntity>(IServiceProvider provider,ViewBase viewBase) where TEntity : PersistentEntityBase
+        /// <summary>
+        /// Creates and attaches all controllers associated with the specified entity type
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type the controllers operate on</typeparam>
+        /// <param name="provider">Service provider scoped to the owning view, should be <seealso cref="ManagedView{TEntity}.Scope"/></param>
+        /// <param name="viewBase">The view instance</param>
+        /// <returns>
+        /// A list of instantiated controllers bound to the provided view
+        /// </returns>
+        public List<IControllerBase> MakeControllers<TEntity>(IServiceProvider provider, ViewBase viewBase) where TEntity : PersistentEntityBase
         {
             Type entityType = typeof(TEntity);
             List<IControllerBase> output = [];
