@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OrderSystem.Core;
 using OrderSystem.Core.Entities;
 using OrderSystem.Win.Forms;
@@ -17,6 +18,23 @@ namespace OrderSystem.Win
         {
             SQLitePCL.Batteries_V2.Init();
             ApplicationConfiguration.Initialize();
+
+            ILoggerFactory loggerFactory = Logger.BuildLoggerFactory();
+            ILogger logger = loggerFactory.CreateLogger<MainForm>();
+            logger.LogInformation("Started App");
+
+            ExceptionHandler.Init(loggerFactory.CreateLogger("Global"));
+
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += (_, args) => ExceptionHandler.Handle(args.Exception, "Exception in UI Thread");
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+                ExceptionHandler.Handle(args.ExceptionObject as Exception ?? new Exception("Encountered Non-Exception"), "AppDomain unhandled", args.IsTerminating);
+
+            TaskScheduler.UnobservedTaskException += (_, args) =>
+            {
+                ExceptionHandler.Handle(args.Exception, "Unobserved Task");
+                args.SetObserved();
+            };
 
             using IHost host = Host.CreateDefaultBuilder()
                                    .ConfigureAppConfiguration((_, config) =>
