@@ -55,7 +55,15 @@ namespace OrderSystem.Win.ViewControllers
                     DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
                 };
                 deleteItemButton.Click += DeleteItemButtonOnClick;
+
                 toolStrip.Items.Add(deleteItemButton);
+
+                Order order = (Order)((IDetailView)View).ReadData();
+                if (order.Status != OrderStatus.Draft)
+                {
+                    addItemButton.Enabled = false;
+                    deleteItemButton.Enabled = false;
+                }
 
                 listView.AddControl(toolStrip);
             }
@@ -105,6 +113,7 @@ namespace OrderSystem.Win.ViewControllers
 
                 order.AddItem(orderItem);
                 await ((IDetailView)View).LoadData(order, scope.ServiceProvider);
+                SetViewChanged();
             }
         }
 
@@ -120,6 +129,7 @@ namespace OrderSystem.Win.ViewControllers
             using IServiceScope scope = scopeFactory.CreateScope();
             order.DeleteItem(item.Id);
             await ((IDetailView)View).LoadData(order, scope.ServiceProvider);
+            SetViewChanged();
         }
 
         public override void Dispose()

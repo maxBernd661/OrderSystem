@@ -72,6 +72,8 @@ namespace OrderSystem.Win
                                         services.AddTransient<IQueryProfile<Order>, OrderQueryProfile>();
                                         services.AddTransient<IQueryProfile<OrderItem>, OrderItemQueryProfile>();
 
+                                        services.AddTransient<IGraphMerger<Order>, OrderGraphMerger>();
+
                                         services.AddScoped(typeof(DataManipulationService<>));
                                     }).Build();
 

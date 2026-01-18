@@ -30,6 +30,11 @@ namespace OrderSystem.Win.View
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
+        public void SetChanged()
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+
         protected IServiceProvider ServiceProvider { get; }
 
         [ActivatorUtilitiesConstructor]

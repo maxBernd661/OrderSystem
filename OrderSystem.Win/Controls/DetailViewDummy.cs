@@ -13,7 +13,7 @@ namespace OrderSystem.Win.Controls
             get { return this; }
         }
 
-        public event EventHandler<EventArgs> Changed;
+        public event EventHandler<EventArgs>? Changed;
 
         protected void OnChanged()
         {

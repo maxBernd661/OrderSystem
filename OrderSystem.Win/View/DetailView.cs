@@ -10,7 +10,7 @@ namespace OrderSystem.Win.View
     /// Visual representation of a single entity
     /// </summary>
     /// <typeparam name="TEntity">An object inheriting <seealso cref="PersistentEntityBase"/>"</typeparam>
-    public class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
+    public sealed class DetailView<TEntity> : ViewBase, IDetailView where TEntity : PersistentEntityBase
     {
         /// <summary>
         /// The underlying <seealso cref="DetailViewDummy"/>
@@ -77,7 +77,7 @@ namespace OrderSystem.Win.View
         {
             InitializeCore<TEntity>();
             Template = template;
-            Template.Changed += (sender, args) => OnChanged();
+            Template.Changed += (_, _) => OnChanged();
             Dock = DockStyle.Fill;
             Control content = template.Root;
             content.Dock = DockStyle.Fill;

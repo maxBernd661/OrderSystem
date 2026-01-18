@@ -27,7 +27,7 @@ namespace OrderSystem.Win.Services
                     "Unhandled exception Id={id} Context={context}. Terminating={terminating}", id, context,
                     isTerminating);
 
-                string message = $"An enexpected error occurred.\r\n{ex.Message}";
+                string message = $"An unexpected error occurred.\r\n{ex.Message}";
                 if (isTerminating)
                 {
                     message += "\r\nThe application will now shut down.";

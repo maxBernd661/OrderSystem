@@ -66,8 +66,7 @@ namespace OrderSystem.Core.Entities
             List<string> output = [];
 
             Type type = GetType();
-            PropertyInfo[] propsToCheck =
-                type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            PropertyInfo[] propsToCheck = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
             foreach (PropertyInfo prop in propsToCheck)
             {
@@ -93,6 +92,12 @@ namespace OrderSystem.Core.Entities
 
                 if (prop.GetCustomAttribute<RequiredAttribute>() is not null)
                 {
+                    if (prop.PropertyType == typeof(Guid) && value is Guid guidValue &&
+                        guidValue == Guid.Empty)
+                    {
+                        output.Add($"{type.Name}.{prop.Name} cannot be null.");
+                    }
+
                     if (value is null)
                     {
                         output.Add($"{type.Name}.{prop.Name} cannot be null.");
@@ -183,6 +188,15 @@ namespace OrderSystem.Core.Entities
     public interface IQueryProfile<TEntity> where TEntity : PersistentEntityBase
     {
         IQueryable<TEntity> Apply(IQueryable<TEntity> query);
+    }
+
+    /// <summary>
+    /// An entity implementining this interface will provide a method for merging child collections for saving
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public interface IGraphMerger<in TEntity> where TEntity : PersistentEntityBase
+    {
+        Task<Result> Merge(OrderContext context, TEntity tracked, TEntity incoming, CancellationToken ct = default);
     }
 
     #region Attributes

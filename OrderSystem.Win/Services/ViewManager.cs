@@ -236,7 +236,7 @@ namespace OrderSystem.Win.Services
 
             if (holder.View is IDetailView dv)
             {
-                holder.Name = dv.ReadData().GetIdentifier();
+                holder.Text = dv.ReadData().GetIdentifier();
             }
 
             await ReloadView(holder);

@@ -76,6 +76,7 @@ namespace OrderSystem.Win.Controls
             }
 
             Order order = Order.Create(id);
+            order.Status = Enum.Parse<OrderStatus>(textBoxStatus.Text);
             return order;
         }
     }

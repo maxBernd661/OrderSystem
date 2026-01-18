@@ -12,7 +12,7 @@ namespace OrderSystem.Core.Entities
         public Guid OrderId { get; set; }
 
         [HideInListView]
-        public Order Order { get; set; }
+        public Order? Order { get; set; }
 
         [Required]
         [HideInListView]
@@ -28,7 +28,7 @@ namespace OrderSystem.Core.Entities
             }
         }
 
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [ClampValue(1, 9999)]
         public int Quantity { get; set; }

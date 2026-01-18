@@ -27,6 +27,11 @@ namespace OrderSystem.Win.ViewControllers
             View.Changed -= ViewOnChanged;
             View.Load -= ViewOnLoad;
         }
+
+        protected void SetViewChanged()
+        {
+            View.SetChanged();
+        }
     }
 
     public interface IControllerBase : IDisposable
