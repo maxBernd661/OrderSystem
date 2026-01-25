@@ -10,6 +10,11 @@ namespace OrderSystem.Win.ViewControllers
             View = view;
             View.Changed += ViewOnChanged;
             View.Load += ViewOnLoad;
+            View.SelectionChanged += ViewOnSelectionChanged;
+        }
+
+        protected virtual void ViewOnSelectionChanged(object? sender, SelectionChangedArgs<PersistentEntityBase> e)
+        {
         }
 
         protected virtual void ViewOnLoad(object? sender, EventArgs e)
@@ -26,6 +31,7 @@ namespace OrderSystem.Win.ViewControllers
         {
             View.Changed -= ViewOnChanged;
             View.Load -= ViewOnLoad;
+            View.SelectionChanged -= ViewOnSelectionChanged;
         }
 
         protected void SetViewChanged()

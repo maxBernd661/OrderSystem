@@ -9,7 +9,7 @@ using OrderSystem.Win.View;
 
 namespace OrderSystem.Win.ViewControllers
 {
-    public class OrderViewController(IServiceScopeFactory scopeFactory, ViewBase view) : ViewController<Order>(view)
+    public class OrderDetailViewController(IServiceScopeFactory scopeFactory, ViewBase view) : ViewController<Order>(view)
     {
         private ToolStrip? toolStrip;
         private ListView<OrderItem>? listView;
@@ -18,55 +18,57 @@ namespace OrderSystem.Win.ViewControllers
 
         protected override void ViewOnLoad(object? sender, EventArgs e)
         {
-            if (View is DetailView<Order>)
+            if (View is not DetailView<Order> detailView)
             {
-                listView = View.GetControls().OfType<ListView<OrderItem>>().FirstOrDefault();
-                if (listView is null)
-                {
-                    return;
-                }
-
-                listView.OnCustomOpenDetailView += ListViewOnOnCustomOpenDetailView;
-
-                if (toolStrip is not null)
-                {
-                    return;
-                }
-
-                toolStrip = new ToolStrip();
-                toolStrip.Dock = DockStyle.Top;
-                toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-                toolStrip.Stretch = true;
-                toolStrip.ImageScalingSize = new Size(16, 16);
-
-                addItemButton = new ToolStripButton()
-                {
-                    Image = projectResources.newItem,
-                    Text = @"Add Item",
-                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
-                };
-                addItemButton.Click += AddItemButtonOnClick;
-                toolStrip.Items.Add(addItemButton);
-
-                deleteItemButton = new ToolStripButton()
-                {
-                    Image = projectResources.delete,
-                    Text = @"Delete Item",
-                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
-                };
-                deleteItemButton.Click += DeleteItemButtonOnClick;
-
-                toolStrip.Items.Add(deleteItemButton);
-
-                Order order = (Order)((IDetailView)View).ReadData();
-                if (order.Status != OrderStatus.Draft)
-                {
-                    addItemButton.Enabled = false;
-                    deleteItemButton.Enabled = false;
-                }
-
-                listView.AddControl(toolStrip);
+                return;
             }
+
+            listView = detailView.GetControls().OfType<ListView<OrderItem>>().FirstOrDefault();
+            if (listView is null)
+            {
+                return;
+            }
+
+            listView.OnCustomOpenDetailView += ListViewOnOnCustomOpenDetailView;
+
+            if (toolStrip is not null)
+            {
+                return;
+            }
+
+            toolStrip = new ToolStrip();
+            toolStrip.Dock = DockStyle.Top;
+            toolStrip.GripStyle = ToolStripGripStyle.Hidden;
+            toolStrip.Stretch = true;
+            toolStrip.ImageScalingSize = new Size(16, 16);
+
+            addItemButton = new ToolStripButton()
+            {
+                Image = projectResources.newItem,
+                Text = @"Add Item",
+                DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
+            };
+            addItemButton.Click += AddItemButtonOnClick;
+            toolStrip.Items.Add(addItemButton);
+
+            deleteItemButton = new ToolStripButton()
+            {
+                Image = projectResources.delete,
+                Text = @"Delete Item",
+                DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
+            };
+            deleteItemButton.Click += DeleteItemButtonOnClick;
+
+            toolStrip.Items.Add(deleteItemButton);
+
+            Order order = (Order)((IDetailView)View).ReadData();
+            if (order.Status != OrderStatus.Draft)
+            {
+                addItemButton.Enabled = false;
+                deleteItemButton.Enabled = false;
+            }
+
+            listView.AddControl(toolStrip);
         }
 
         private async void ListViewOnOnCustomOpenDetailView(object? sender, CustomOpenEventArgs<OrderItem> e)
@@ -98,7 +100,6 @@ namespace OrderSystem.Win.ViewControllers
             PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
 
             ViewHolder holder = await viewManager.AddDetailView(item);
-
 
             if (popup.ShowView(holder) && popup.ReturnedItem is OrderItem orderItem)
             {

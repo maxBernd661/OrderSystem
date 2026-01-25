@@ -105,6 +105,8 @@ namespace OrderSystem.Win.View
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
             };
 
+            Grid.SelectionChanged += GridOnSelectionChanged;
+
             Grid.Dock = DockStyle.Fill;
 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -147,6 +149,14 @@ namespace OrderSystem.Win.View
                 ViewHolder holder = await viewManager.AddDetailView(entity);
                 ServiceProvider.GetRequiredService<MainForm>().ShowView(holder);
             };
+        }
+
+        private void GridOnSelectionChanged(object? sender, EventArgs e)
+        {
+            if (GetSelectedItem() is { } item)
+            {
+                OnSelectionChanged(item);
+            }
         }
 
         public List<PersistentEntityBase> GetData()
@@ -311,6 +321,11 @@ namespace OrderSystem.Win.View
     }
 
     public class CustomOpenEventArgs<T>(T data) : EventArgs where T : PersistentEntityBase
+    {
+        public T Data { get; } = data;
+    }
+
+    public class SelectionChangedArgs<T>(T data) : EventArgs where T : PersistentEntityBase
     {
         public T Data { get; } = data;
     }

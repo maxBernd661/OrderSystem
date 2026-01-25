@@ -16,6 +16,8 @@ namespace OrderSystem.Win.View
 
         public event EventHandler<EventArgs>? Changed;
 
+        public event EventHandler<SelectionChangedArgs<PersistentEntityBase>> SelectionChanged;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -28,6 +30,11 @@ namespace OrderSystem.Win.View
         protected void OnChanged()
         {
             Changed?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void OnSelectionChanged(PersistentEntityBase item)
+        {
+            SelectionChanged?.Invoke(this, new SelectionChangedArgs<PersistentEntityBase>(item));
         }
 
         public void SetChanged()

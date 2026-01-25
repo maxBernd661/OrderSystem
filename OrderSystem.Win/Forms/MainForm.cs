@@ -12,11 +12,30 @@ namespace OrderSystem.Win.Forms
         private readonly ViewFactory factory;
         private readonly ViewManager viewManager;
 
+        private List<ToolStripItem> ownItems;
+
         public MainForm(IServiceProvider serviceProvider)
         {
             factory = serviceProvider.GetRequiredService<ViewFactory>();
             viewManager = serviceProvider.GetRequiredService<ViewManager>();
             InitializeComponent();
+
+            ownItems =
+            [
+                buttonNewOrder,
+                buttonNewCustomer,
+                buttonNewProduct,
+                buttonNewGeneric,
+                buttonSave,
+                buttonDelete,
+                buttonCloseTab,
+                buttonRefresh,
+                seperatorSave,
+                seperatorCloseTab,
+                seperatorDelete,
+                saveAndExitToolStripMenuItem,
+                saveAndNewToolStripMenuItem
+            ];
 
             ToggleButtons();
 
@@ -237,6 +256,11 @@ namespace OrderSystem.Win.Forms
 
         #region Toolstrip
 
+        public ToolStrip ToolStrip
+        {
+            get { return mainToolStrip; }
+        }
+
         private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToggleButtons();
@@ -310,7 +334,7 @@ namespace OrderSystem.Win.Forms
 
         private void ResetToolStrip()
         {
-            foreach (ToolStripItem control in mainToolStrip.Items)
+            foreach (ToolStripItem control in ownItems)
             {
                 control.Visible = true;
                 control.Enabled = true;
