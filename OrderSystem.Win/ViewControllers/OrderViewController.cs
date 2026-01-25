@@ -82,15 +82,23 @@ namespace OrderSystem.Win.ViewControllers
                 return;
             }
 
-            await AddOrUpdate();
+            OrderItem item = new();
+
+            Order order = (Order)((IDetailView)View).ReadData();
+            item.Order = order;
+            item.OrderId = order.Id;
+
+            await AddOrUpdate(item);
         }
 
-        private async Task AddOrUpdate(OrderItem? item = null)
+        private async Task AddOrUpdate(OrderItem item)
         {
             using IServiceScope scope = scopeFactory.CreateScope();
             ViewManager viewManager = scope.ServiceProvider.GetRequiredService<ViewManager>();
             PopupView popup = scope.ServiceProvider.GetRequiredService<PopupView>();
+
             ViewHolder holder = await viewManager.AddDetailView(item);
+
 
             if (popup.ShowView(holder) && popup.ReturnedItem is OrderItem orderItem)
             {

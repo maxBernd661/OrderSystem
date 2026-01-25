@@ -232,6 +232,12 @@ namespace OrderSystem.Core.Entities
 
             foreach (OrderItem item in incomingItems)
             {
+                if (item.OrderId == Guid.Empty || item.OrderId != tracked.Id)
+                {
+                    item.OrderId = tracked.Id;
+                    item.Order = tracked;
+                }
+
                 //item is new
                 if (item.CreatedAt == DateTime.MinValue &&
                     item.UpdatedAt == DateTime.MinValue)

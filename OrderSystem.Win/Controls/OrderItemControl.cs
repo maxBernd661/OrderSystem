@@ -11,6 +11,7 @@ namespace OrderSystem.Win.Controls
         }
 
         private Order? order;
+        private Guid orderId;
         private List<ProductLookup> products = [];
 
         public event EventHandler<EventArgs>? Changed;
@@ -74,7 +75,8 @@ namespace OrderSystem.Win.Controls
             {
                 Quantity = (int)numericUpDownQuantity.Value,
                 ProductId = id,
-                Order = order
+                Order = order,
+                OrderId = order?.Id ?? orderId
             };
         }
 
